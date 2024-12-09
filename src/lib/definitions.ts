@@ -62,8 +62,6 @@ export const ClassScheduleSchema = z.object({
   colors: z.record(z.string(), ColorsEnumSchema),
 });
 
-export const courseArraySchema = z.array(courseSchema);
-
 export type ClassSchedule = z.infer<typeof ClassScheduleSchema>;
 export type Schedule = z.infer<typeof scheduleSchema>;
 export type Class = z.infer<typeof classSchema>;
