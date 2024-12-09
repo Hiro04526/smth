@@ -33,7 +33,7 @@ type Props = {
 // Updated isScheduleSaved to compare only class codes
 const isScheduleSaved = (
   saved: ClassSchedule[],
-  sched2: Class[]
+  sched2: Class[],
 ): string | false => {
   // Iterate through each saved schedule
   for (const savedSched of saved) {
@@ -48,7 +48,7 @@ const isScheduleSaved = (
 
     // Compare the sorted arrays of class codes
     const isSameSchedule = savedCodes.every(
-      (code, index) => code === sched2Codes[index]
+      (code, index) => code === sched2Codes[index],
     );
 
     if (isSameSchedule) return savedSched.name;
@@ -62,7 +62,7 @@ const SaveButton = ({ activeSched, colors }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const [saved, setSaved] = useLocalStorage<ClassSchedule[]>(
     "saved_schedules",
-    []
+    [],
   );
 
   const isSaved = isScheduleSaved(saved, activeSched);
@@ -80,7 +80,7 @@ const SaveButton = ({ activeSched, colors }: Props) => {
       {
         message: "You already have a schedule with that name.",
         path: ["name"],
-      }
+      },
     );
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {

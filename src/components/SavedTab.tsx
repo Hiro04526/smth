@@ -20,7 +20,7 @@ import { HeartCrack } from "lucide-react";
 const SavedTab = () => {
   const [schedules, setSchedules] = useLocalStorage<ClassSchedule[]>(
     "saved_schedules",
-    []
+    [],
   );
   const [active, setActive] = useState<number>(0);
 

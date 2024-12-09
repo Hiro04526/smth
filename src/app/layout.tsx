@@ -22,7 +22,7 @@ export default function RootLayout({
       <body
         className={cn(
           "max-h-screen h-screen bg-background font-sans antialiased flex flex-col",
-          inter.variable
+          inter.variable,
         )}
       >
         <ThemeProvider

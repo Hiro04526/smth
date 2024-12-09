@@ -46,7 +46,7 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = useLocalStorage<RowSelectionState>(
     "selected_rows",
     {},
-    activeCourse
+    activeCourse,
   );
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -58,7 +58,7 @@ export function DataTable<TData, TValue>({
       const newRowSelectionValue =
         updater instanceof Function ? updater(rowSelection) : updater;
       const selectedRowsData = Object.keys(newRowSelectionValue).map(
-        (rowId) => data[Number.parseInt(rowId)]
+        (rowId) => data[Number.parseInt(rowId)],
       );
 
       setSelectedData(activeCourse, selectedRowsData as Class[]);
@@ -105,7 +105,7 @@ export function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -127,7 +127,7 @@ export function DataTable<TData, TValue>({
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
