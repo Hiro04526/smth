@@ -1,9 +1,10 @@
-import React from "react";
-import { ScrollArea } from "./ui/scroll-area";
-import { Class, ColorsEnum, Schedule } from "@/lib/definitions";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Class, Schedule } from "@/lib/definitions";
+import { ColorsEnum } from "@/lib/enums";
 import { convertTime, getCardColors, toProperCase } from "@/lib/utils";
 import { CalendarClock, Clock, DoorOpen, FilePen, User } from "lucide-react";
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { ScrollArea } from "./ui/scroll-area";
 
 type Props = {
   activeSchedule: Class[];

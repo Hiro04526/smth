@@ -1,5 +1,11 @@
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { Class, ClassSchedule } from "@/lib/definitions";
+import { ColorsEnum } from "@/lib/enums";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Heart, HeartOff } from "lucide-react";
 import { useState } from "react";
-import { Class, ClassSchedule, ColorsEnum } from "@/lib/definitions";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -9,7 +15,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { Heart, HeartOff } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -18,10 +23,6 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { Input } from "./ui/input";
 
 type Props = {

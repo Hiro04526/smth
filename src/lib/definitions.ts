@@ -1,15 +1,5 @@
 import { z } from "zod";
-import { ColorsEnumSchema, DaysEnumSchema } from "./enums";
-
-export const ModalityEnumSchema = z.enum([
-  "HYBRID",
-  "F2F",
-  "ONLINE",
-  "PREDOMINANTLY ONLINE",
-  "TENTATIVE",
-]);
-
-export type ModalityEnum = z.infer<typeof ModalityEnumSchema>;
+import { ColorsEnumSchema, DaysEnumSchema, ModalityEnumSchema } from "./enums";
 
 export const scheduleSchema = z.object({
   day: z.enum(["M", "T", "W", "H", "F", "S", "U"]),

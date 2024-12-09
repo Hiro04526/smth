@@ -1,13 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Class, classSchema, ColorsEnum } from "@/lib/definitions";
-import { toast } from "./ui/use-toast";
-import { createSchedules, getLocalStorage } from "@/lib/utils";
-import { z } from "zod";
-import Calendar from "./Calendar";
 import {
   Select,
   SelectContent,
@@ -15,12 +7,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FixedSizeList } from "react-window";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { Class, classSchema } from "@/lib/definitions";
+import { ColorsEnum } from "@/lib/enums";
+import { createSchedules, getLocalStorage } from "@/lib/utils";
 import { CalendarPlus2, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { FixedSizeList } from "react-window";
+import { z } from "zod";
+import Calendar from "./Calendar";
 import FilterSettings from "./FilterSettings";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { toast } from "./ui/use-toast";
 
 const ScheduleTab = () => {
   const [schedules, setSchedules] = useLocalStorage<Class[][]>("schedules", []);
