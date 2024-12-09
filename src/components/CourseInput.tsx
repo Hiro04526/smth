@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { fetchMultipleCourses } from "@/lib/actions";
 import { Course } from "@/lib/definitions";
+import { getLocalStorage } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
@@ -29,6 +30,7 @@ type props = {
 };
 
 const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
+  const id = getLocalStorage("id_number");
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,11 +39,22 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
     },
   });
 
+  if (!id) {
+    toast({
+      title: "You haven't set your ID yet!",
+      description: "Set your ID on the button at the top right corner.",
+      variant: "destructive",
+    });
+
+    return;
+  }
+
   const handleUpdate = async () => {
     setIsFetching(true);
     try {
       const newData = await fetchMultipleCourses(
-        courses.map((course) => course.courseCode)
+        courses.map((course) => course.courseCode),
+        id
       );
 
       setCourses(newData);

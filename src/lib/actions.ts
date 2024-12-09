@@ -26,9 +26,7 @@ export async function fetchCourse(courseCode: string, id: string) {
   return newCourse;
 }
 
-export async function fetchMultipleCourses(courseCodes: string[]) {
-  const id = process.env.ID_NUMBER;
-
+export async function fetchMultipleCourses(courseCodes: string[], id: string) {
   const res = await fetch(
     `${process.env.COURSE_API}/api/courses?id=${id}&courses=${courseCodes.join(
       "&courses="
