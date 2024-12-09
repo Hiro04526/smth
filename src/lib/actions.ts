@@ -46,8 +46,6 @@ export async function fetchMultipleCourses(courseCodes: string[]) {
 
   const parsedData = class2DArraySchema.parse(parsed);
 
-  console.log(parsedData);
-
   const updatedCourses = parsedData.map((classes, i) => {
     return {
       courseCode: courseCodes[i],
