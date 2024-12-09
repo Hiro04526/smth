@@ -36,7 +36,7 @@ const defaultSpecificSettings = Object.fromEntries(
   DaysEnumSchema.options.map((day) => [
     day,
     { ...defaultGeneralSettings, enabled: false },
-  ])
+  ]),
 ) as Record<DaysEnum, FilterOptions>;
 
 const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {

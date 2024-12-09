@@ -55,7 +55,7 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
     try {
       const newData = await fetchMultipleCourses(
         courses.map((course) => course.courseCode),
-        id
+        id,
       );
 
       setCourses(newData);

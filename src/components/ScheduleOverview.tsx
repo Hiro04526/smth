@@ -21,13 +21,13 @@ const ScheduleOverview = ({ activeSchedule, colors }: Props) => {
               (acc, curr) => {
                 if (
                   !acc.some(
-                    (acc) => acc.start === curr.start && acc.end === curr.end
+                    (acc) => acc.start === curr.start && acc.end === curr.end,
                   )
                 )
                   acc.push(curr);
                 return acc;
               },
-              []
+              [],
             );
 
             const days = courseClass.schedules.map((sched) => sched.day);
@@ -60,7 +60,7 @@ const ScheduleOverview = ({ activeSchedule, colors }: Props) => {
                       <Clock size={18} strokeWidth={3} />
 
                       {`${convertTime(sched.start)} - ${convertTime(
-                        sched.end
+                        sched.end,
                       )} ${schedules.length > 1 ? `(${sched.day})` : ""}`}
                     </div>
                   ))}
@@ -72,7 +72,7 @@ const ScheduleOverview = ({ activeSchedule, colors }: Props) => {
                       </div>
                     ) : (
                       <React.Fragment key={index}></React.Fragment>
-                    )
+                    ),
                   )}
                   <div className="flex gap-2">
                     <FilePen size={18} strokeWidth={3} />

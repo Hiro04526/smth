@@ -7,7 +7,7 @@ export async function fetchCourse(courseCode: string, id: string) {
     `${process.env.COURSE_API}/api/courses?id=${id}&courses=${courseCode}`,
     {
       cache: "no-store",
-    }
+    },
   );
 
   if (!res.ok) {
@@ -29,11 +29,11 @@ export async function fetchCourse(courseCode: string, id: string) {
 export async function fetchMultipleCourses(courseCodes: string[], id: string) {
   const res = await fetch(
     `${process.env.COURSE_API}/api/courses?id=${id}&courses=${courseCodes.join(
-      "&courses="
+      "&courses=",
     )}`,
     {
       cache: "no-store",
-    }
+    },
   );
 
   if (!res.ok) {

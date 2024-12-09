@@ -21,7 +21,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 const CourseTab = () => {
   const [courses, setCourses] = useLocalStorage<Course[]>("courses", []);
   const [activeCourse, setActiveCourse] = useState<Course | null>(
-    courses && courses.length > 0 ? courses[0] : null
+    courses && courses.length > 0 ? courses[0] : null,
   );
   const controls = useDragControls();
 
@@ -67,7 +67,7 @@ const CourseTab = () => {
 
   const handleDelete = (courseCode: string) => {
     const newCourses = courses.filter(
-      (course) => course.courseCode !== courseCode
+      (course) => course.courseCode !== courseCode,
     );
 
     if (activeCourse?.courseCode === courseCode) {
@@ -82,7 +82,7 @@ const CourseTab = () => {
     (newCourses: Course[]) => {
       setCourses(newCourses);
     },
-    [setCourses]
+    [setCourses],
   );
 
   useEffect(() => {

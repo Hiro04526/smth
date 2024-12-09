@@ -27,7 +27,7 @@ const ScheduleTab = () => {
   const [schedules, setSchedules] = useLocalStorage<Class[][]>("schedules", []);
   const [colors, setColors] = useLocalStorage<Record<string, ColorsEnum>>(
     "course_colors",
-    {}
+    {},
   );
   const [active, setActive] = useState<number>(0);
 
@@ -51,7 +51,7 @@ const ScheduleTab = () => {
     const selectedData = Object.entries(safeSelected).map(([_, val]) => val);
     const [newSchedules, newColors] = createSchedules(
       selectedData,
-      localFilter ?? undefined
+      localFilter ?? undefined,
     );
 
     if (newSchedules.length === 0) {
