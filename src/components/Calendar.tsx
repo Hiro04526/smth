@@ -1,6 +1,7 @@
 "use client";
 import { Card, CardTitle } from "@/components/ui/card";
-import { Class, ColorsEnum, DaysEnum, DaysEnumSchema } from "@/lib/definitions";
+import { Class } from "@/lib/definitions";
+import { ColorsEnum, DaysEnum } from "@/lib/enums";
 import { cn, convertTime, getCardColors, toProperCase } from "@/lib/utils";
 import { useCallback, useState } from "react";
 import { ScrollArea } from "./ui/scroll-area";

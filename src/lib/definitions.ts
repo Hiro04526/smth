@@ -1,39 +1,5 @@
 import { z } from "zod";
-
-export const DaysEnumSchema = z.enum(["M", "T", "W", "H", "F", "S"]);
-export type DaysEnum = z.infer<typeof DaysEnumSchema>;
-
-export const ColorsEnumSchema = z.enum([
-  "ROSE",
-  "PINK",
-  "FUCHSIA",
-  "PURPLE",
-  "VIOLET",
-  "INDIGO",
-  "BLUE",
-  "SKY",
-  "CYAN",
-  "TEAL",
-  "EMERALD",
-  "GREEN",
-  "LIME",
-  "YELLOW",
-  "AMBER",
-  "ORANGE",
-  "RED",
-]);
-
-export type ColorsEnum = z.infer<typeof ColorsEnumSchema>;
-
-export const ModalityEnumSchema = z.enum([
-  "HYBRID",
-  "F2F",
-  "ONLINE",
-  "PREDOMINANTLY ONLINE",
-  "TENTATIVE",
-]);
-
-export type ModalityEnum = z.infer<typeof ModalityEnumSchema>;
+import { ColorsEnumSchema, DaysEnumSchema, ModalityEnumSchema } from "./enums";
 
 export const scheduleSchema = z.object({
   day: z.enum(["M", "T", "W", "H", "F", "S", "U"]),
@@ -57,12 +23,9 @@ export const classSchema = z.object({
   remarks: z.string(),
 });
 
-export const classArraySchema = z.array(classSchema);
-export const class2DArraySchema = z.array(classArraySchema);
-
 export const courseSchema = z.object({
   courseCode: z.string(),
-  classes: classArraySchema,
+  classes: classSchema.array(),
   lastFetched: z.date(),
 });
 
@@ -95,11 +58,9 @@ export const filterSchema = z.object({
 
 export const ClassScheduleSchema = z.object({
   name: z.string(),
-  classes: classArraySchema,
+  classes: classSchema.array(),
   colors: z.record(z.string(), ColorsEnumSchema),
 });
-
-export const courseArraySchema = z.array(courseSchema);
 
 export type ClassSchedule = z.infer<typeof ClassScheduleSchema>;
 export type Schedule = z.infer<typeof scheduleSchema>;

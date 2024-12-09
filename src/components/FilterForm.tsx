@@ -1,7 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,20 +11,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  DaysEnum,
-  DaysEnumSchema,
-  Filter,
-  FilterOptions,
-  filterSchema,
-  ModalityEnumSchema,
-} from "@/lib/definitions";
-import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import { useEffect, useMemo } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Switch } from "./ui/switch";
-import { Card } from "./ui/card";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import { Filter, FilterOptions, filterSchema } from "@/lib/definitions";
+import { DaysEnum, DaysEnumSchema, ModalityEnumSchema } from "@/lib/enums";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { Card } from "./ui/card";
+import { Switch } from "./ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
 const defaultGeneralSettings: FilterOptions = {
   enabled: true,
