@@ -1,6 +1,6 @@
 "use server";
 
-import { class2DArraySchema, classArraySchema, Course } from "./definitions";
+import { classSchema, Course } from "./definitions";
 
 export async function fetchCourse(courseCode: string, id: string) {
   const res = await fetch(
@@ -15,7 +15,7 @@ export async function fetchCourse(courseCode: string, id: string) {
   }
 
   const parsed = (await res.json())[0];
-  const parsedData = classArraySchema.parse(parsed);
+  const parsedData = classSchema.array().parse(parsed);
 
   const newCourse: Course = {
     courseCode: courseCode,
@@ -42,7 +42,7 @@ export async function fetchMultipleCourses(courseCodes: string[], id: string) {
 
   const parsed = await res.json();
 
-  const parsedData = class2DArraySchema.parse(parsed);
+  const parsedData = classSchema.array().array().parse(parsed);
 
   const updatedCourses = parsedData.map((classes, i) => {
     return {

@@ -1,14 +1,8 @@
+import { RowSelectionState } from "@tanstack/react-table";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import {
-  Class,
-  ColorsEnum,
-  ColorsEnumSchema,
-  DaysEnum,
-  Filter,
-  Schedule,
-} from "./definitions";
-import { RowSelectionState } from "@tanstack/react-table";
+import { Class, Filter, Schedule } from "./definitions";
+import { ColorsEnum, ColorsEnumSchema, DaysEnum } from "./enums";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
