@@ -43,11 +43,14 @@ export async function fetchMultipleCourses(courseCodes: string[]) {
   }
 
   const parsed = await res.json();
+
   const parsedData = class2DArraySchema.parse(parsed);
 
-  const updatedCourses = parsedData.map((classes) => {
+  console.log(parsedData);
+
+  const updatedCourses = parsedData.map((classes, i) => {
     return {
-      courseCode: classes[0].course,
+      courseCode: courseCodes[i],
       classes: classes,
       lastFetched: new Date(),
     };

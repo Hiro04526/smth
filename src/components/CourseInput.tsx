@@ -1,22 +1,21 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { LoaderCircle } from "lucide-react";
-import { Course } from "@/lib/definitions";
 import { fetchMultipleCourses } from "@/lib/actions";
+import { Course } from "@/lib/definitions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoaderCircle } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { toast } from "./ui/use-toast";
 
 const formSchema = z.object({
