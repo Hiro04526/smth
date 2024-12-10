@@ -15,10 +15,10 @@ interface DownloadScheduleButtonProps {
  * Component for rendering a button that allows users to download their schedule as a PNG image.
  *
  * @component
- * @param {Class[]} classes - An array of classes to be displayed in the schedule calendar.
- * @param {Record<string, ColorsEnum>} colors - A record mapping classes to their respective colors.
+ * @param classes - An array of classes to be displayed in the schedule calendar.
+ * @param colors - A record mapping classes to their respective colors.
  *
- * @returns {JSX.Element} The rendered DownloadScheduleButton component.
+ * @returns The rendered DownloadScheduleButton component.
  *
  * @example
  * <DownloadScheduleButton classes={classes} colors={colors} />
