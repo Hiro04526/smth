@@ -28,7 +28,7 @@ const ScheduleTab = () => {
   const [schedules, setSchedules] = useLocalStorage<Class[][]>("schedules", []);
   const [colors, setColors] = useLocalStorage<Record<string, ColorsEnum>>(
     "course_colors",
-    {},
+    {}
   );
   const [active, setActive] = useState<number>(0);
 
@@ -52,7 +52,7 @@ const ScheduleTab = () => {
     const selectedData = Object.entries(safeSelected).map(([_, val]) => val);
     const [newSchedules, newColors] = createSchedules(
       selectedData,
-      localFilter ?? undefined,
+      localFilter ?? undefined
     );
 
     if (newSchedules.length === 0) {
@@ -85,89 +85,84 @@ const ScheduleTab = () => {
   };
 
   return (
-    <div>
-      <div className="flex flex-row w-full min-h-0 py-8 px-16 gap-4 h-full">
-        <div className="flex flex-col gap-4 grow">
-          <Card className="flex flex-row gap-4 p-4">
-            <div className="flex flex-row gap-2">
-              <Button
-                onClick={() => setActive(active - 1)}
-                disabled={active <= 0}
-                variant="outline"
-                size="icon"
-              >
-                <ChevronLeft />
-              </Button>
-              <Select
-                value={`${active}`}
-                onValueChange={(val) => setActive(Number(val))}
-                disabled={schedules.length === 0}
-              >
-                <SelectTrigger className="w-64">
-                  <SelectValue
-                    placeholder={`${
-                      schedules.length !== 0 ? `Schedule ${active}` : "-"
-                    }`}
-                  >
-                    Schedule {active}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <FixedSizeList
-                    width={`100%`}
-                    height={Math.min(350, 35 * schedules.length)}
-                    itemCount={schedules.length}
-                    itemSize={35}
-                  >
-                    {({ index, style }) => (
-                      <SelectItem
-                        key={index}
-                        value={`${index}`}
-                        style={{ ...style }}
-                      >
-                        Schedule {index}
-                      </SelectItem>
-                    )}
-                  </FixedSizeList>
-                </SelectContent>
-              </Select>
-              <Button
-                onClick={() => setActive(active + 1)}
-                disabled={active >= schedules.length - 1}
-                variant="outline"
-                size="icon"
-              >
-                <ChevronRight />
-              </Button>
-            </div>
-            <Button onClick={() => handleGenerate()}>Generate Schedules</Button>
-            <FilterSettings />
-            {schedules[active] && (
-              <SaveButton activeSched={schedules[active]} colors={colors} />
-            )}
-            {schedules[active] && (
-              <PrintScheduleButton
-                classes={schedules[active]}
-                colors={colors}
-              />
-            )}
-          </Card>
-          {schedules[active] ? (
-            <Calendar courses={schedules[active]} colors={colors} />
-          ) : (
-            <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
-              <CalendarPlus2 size={100} strokeWidth={1.25} />
-              <span className="flex flex-col gap-2">
-                <span className="font-bold text-xl">
-                  No schedules generated yet
-                </span>
-                <span>Try clicking the Generate Schedules Button!</span>
-              </span>
-            </Card>
+    <div className="flex flex-row w-full min-h-0 py-8 px-16 gap-4 h-full">
+      <div className="flex flex-col gap-4 grow">
+        <Card className="flex flex-row gap-4 p-4">
+          <div className="flex flex-row gap-2">
+            <Button
+              onClick={() => setActive(active - 1)}
+              disabled={active <= 0}
+              variant="outline"
+              size="icon"
+            >
+              <ChevronLeft />
+            </Button>
+            <Select
+              value={`${active}`}
+              onValueChange={(val) => setActive(Number(val))}
+              disabled={schedules.length === 0}
+            >
+              <SelectTrigger className="w-64">
+                <SelectValue
+                  placeholder={`${
+                    schedules.length !== 0 ? `Schedule ${active}` : "-"
+                  }`}
+                >
+                  Schedule {active}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <FixedSizeList
+                  width={`100%`}
+                  height={Math.min(350, 35 * schedules.length)}
+                  itemCount={schedules.length}
+                  itemSize={35}
+                >
+                  {({ index, style }) => (
+                    <SelectItem
+                      key={index}
+                      value={`${index}`}
+                      style={{ ...style }}
+                    >
+                      Schedule {index}
+                    </SelectItem>
+                  )}
+                </FixedSizeList>
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={() => setActive(active + 1)}
+              disabled={active >= schedules.length - 1}
+              variant="outline"
+              size="icon"
+            >
+              <ChevronRight />
+            </Button>
+          </div>
+          <Button onClick={() => handleGenerate()}>Generate Schedules</Button>
+          <FilterSettings />
+          {schedules[active] && (
+            <SaveButton activeSched={schedules[active]} colors={colors} />
           )}
-        </div>
-        <ScheduleOverview activeSchedule={schedules[active]} colors={colors} />
+          {schedules[active] && (
+            <PrintScheduleButton classes={schedules[active]} colors={colors} />
+          )}
+        </Card>
+        {schedules[active] ? (
+          <Calendar courses={schedules[active]} colors={colors} />
+        ) : (
+          <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
+            <CalendarPlus2 size={100} strokeWidth={1.25} />
+            <span className="flex flex-col gap-2">
+              <span className="font-bold text-xl">
+                No schedules generated yet
+              </span>
+              <span>Try clicking the Generate Schedules Button!</span>
+            </span>
+          </Card>
+        )}
       </div>
+      <ScheduleOverview activeSchedule={schedules[active]} colors={colors} />
     </div>
   );
 };
