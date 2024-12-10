@@ -28,7 +28,7 @@ function doClassesOverlap(sched1: Schedule[], sched2: Schedule[]) {
 
 export function filterInitialData(
   courses: Class[][],
-  filter: Filter,
+  filter: Filter
 ): Class[][] {
   return courses.map((course) =>
     course.filter((courseClass) => {
@@ -52,7 +52,7 @@ export function filterInitialData(
 
       // Keep the class if it passes both the schedule and modality filters
       return !isSchedInvalid;
-    }),
+    })
   );
 }
 
@@ -73,7 +73,7 @@ export function filterGeneratedSchedules(schedules: Class[][], filter: Filter) {
         }
         return acc;
       },
-      { M: [], T: [], W: [], H: [], F: [], S: [] },
+      { M: [], T: [], W: [], H: [], F: [], S: [] }
     );
 
     // 2. We check each of the days one by one to see if any of them violate the
@@ -120,7 +120,7 @@ export function filterGeneratedSchedules(schedules: Class[][], filter: Filter) {
 
 export function createSchedules(
   courses: Class[][],
-  filter?: Filter,
+  filter?: Filter
 ): [schedules: Class[][], colors: Record<string, ColorsEnum>] {
   // This will store all currently made schedules.
   let createdScheds: Class[][] = [[]];
@@ -145,7 +145,7 @@ export function createSchedules(
       // combinations and the current course class.
       for (const courseClass of course) {
         const overlap = currentSched.some((schedClass) =>
-          doClassesOverlap(courseClass.schedules, schedClass.schedules),
+          doClassesOverlap(courseClass.schedules, schedClass.schedules)
         );
 
         // If there's an overlap, we can't add it to the schedule.

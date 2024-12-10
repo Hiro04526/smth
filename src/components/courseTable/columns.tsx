@@ -80,7 +80,7 @@ export const columns: ColumnDef<Class>[] = [
             acc.push(curr);
           return acc;
         },
-        [],
+        []
       );
       return (
         <div className="flex flex-col gap-1">

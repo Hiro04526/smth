@@ -151,10 +151,9 @@ const ScheduleTab = () => {
             />
           )}
         </Card>
-        {schedules[active] ? (
+        {schedules[active] ?
           <Calendar courses={schedules[active]} colors={colors} />
-        ) : (
-          <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
+        : <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
             <CalendarPlus2 size={100} strokeWidth={1.25} />
             <span className="flex flex-col gap-2">
               <span className="font-bold text-xl">
@@ -163,7 +162,7 @@ const ScheduleTab = () => {
               <span>Try clicking the Generate Schedules Button!</span>
             </span>
           </Card>
-        )}
+        }
       </div>
       <ScheduleOverview activeSchedule={schedules[active]} colors={colors} />
     </div>

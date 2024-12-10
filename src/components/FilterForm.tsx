@@ -36,7 +36,7 @@ const defaultSpecificSettings = Object.fromEntries(
   DaysEnumSchema.options.map((day) => [
     day,
     { ...defaultGeneralSettings, enabled: false },
-  ]),
+  ])
 ) as Record<DaysEnum, FilterOptions>;
 
 const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
@@ -188,9 +188,9 @@ const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
                   <FormField
                     control={form.control}
                     name={
-                      day
-                        ? `specific.${day}.maxConsecutive`
-                        : "general.maxConsecutive"
+                      day ?
+                        `specific.${day}.maxConsecutive`
+                      : "general.maxConsecutive"
                     }
                     render={({ field }) => (
                       <FormItem>

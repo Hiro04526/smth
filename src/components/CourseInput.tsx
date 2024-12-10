@@ -55,7 +55,7 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
     try {
       const newData = await fetchMultipleCourses(
         courses.map((course) => course.courseCode),
-        id,
+        id
       );
 
       setCourses(newData);
@@ -113,11 +113,9 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
           )}
         />
         <Button className="w-full" type="submit" disabled={isFetching}>
-          {isFetching ? (
+          {isFetching ?
             <LoaderCircle className="animate-spin" />
-          ) : (
-            "Add Course"
-          )}
+          : "Add Course"}
         </Button>
         <Button
           variant="outline"
@@ -125,11 +123,9 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
           onClick={() => handleUpdate()}
           disabled={isFetching}
         >
-          {isFetching ? (
+          {isFetching ?
             <LoaderCircle className="animate-spin" />
-          ) : (
-            "Update All Courses"
-          )}
+          : "Update All Courses"}
         </Button>
       </form>
     </Form>

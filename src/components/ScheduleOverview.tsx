@@ -59,9 +59,9 @@ const ScheduleOverview = ({
                 <CardContent className="flex flex-col gap-2 text-sm">
                   <div className="inline-flex items-center">
                     <User className="gap-2 size-4 mr-2" strokeWidth={3} />{" "}
-                    {courseClass.professor !== ""
-                      ? toProperCase(courseClass.professor)
-                      : "TBA"}
+                    {courseClass.professor !== "" ?
+                      toProperCase(courseClass.professor)
+                    : "TBA"}
                   </div>
                   <div className="inline-flex items-center">
                     <CalendarClock
@@ -83,7 +83,7 @@ const ScheduleOverview = ({
                     </div>
                   ))}
                   {courseClass.rooms.map((room, index) =>
-                    room !== "" ? (
+                    room !== "" ?
                       <div key={room} className="inline-flex items-center">
                         <DoorOpen
                           className="gap-2 size-4 mr-2"
@@ -91,9 +91,7 @@ const ScheduleOverview = ({
                         />
                         {room}
                       </div>
-                    ) : (
-                      <React.Fragment key={index}></React.Fragment>
-                    )
+                    : <React.Fragment key={index}></React.Fragment>
                   )}
                   <div className="inline-flex items-center">
                     <FilePen className="gap-2 size-4 mr-2" strokeWidth={3} />

@@ -21,7 +21,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 const CourseTab = () => {
   const [courses, setCourses] = useLocalStorage<Course[]>("courses", []);
   const [activeCourse, setActiveCourse] = useState<Course | null>(
-    courses && courses.length > 0 ? courses[0] : null,
+    courses && courses.length > 0 ? courses[0] : null
   );
   const controls = useDragControls();
 
@@ -67,7 +67,7 @@ const CourseTab = () => {
 
   const handleDelete = (courseCode: string) => {
     const newCourses = courses.filter(
-      (course) => course.courseCode !== courseCode,
+      (course) => course.courseCode !== courseCode
     );
 
     if (activeCourse?.courseCode === courseCode) {
@@ -82,7 +82,7 @@ const CourseTab = () => {
     (newCourses: Course[]) => {
       setCourses(newCourses);
     },
-    [setCourses],
+    [setCourses]
   );
 
   useEffect(() => {
@@ -106,7 +106,7 @@ const CourseTab = () => {
             <CardTitle>Course Codes</CardTitle>
           </CardHeader>
           <CardContent className="grow">
-            {courses.length !== 0 ? (
+            {courses.length !== 0 ?
               <Reorder.Group
                 className="flex gap-2 row flex-col"
                 axis="y"
@@ -125,9 +125,9 @@ const CourseTab = () => {
                     />
                     <Button
                       variant={
-                        activeCourse?.courseCode === course.courseCode
-                          ? "default"
-                          : "outline"
+                        activeCourse?.courseCode === course.courseCode ?
+                          "default"
+                        : "outline"
                       }
                       onClick={() => setActiveCourse(course)}
                       className="w-full"
@@ -145,31 +145,29 @@ const CourseTab = () => {
                   </Reorder.Item>
                 ))}
               </Reorder.Group>
-            ) : (
-              <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center">
+            : <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center">
                 <CircleOff />
                 None added yet.
               </div>
-            )}
+            }
           </CardContent>
         </Card>
       </div>
-      {activeCourse ? (
+      {activeCourse ?
         <DataTable
           columns={columns}
           data={activeCourse.classes}
           lastFetched={activeCourse.lastFetched}
           activeCourse={activeCourse.courseCode}
         />
-      ) : (
-        <Card className="flex flex-row items-center justify-center gap-6 text-muted-foreground p-6 grow">
+      : <Card className="flex flex-row items-center justify-center gap-6 text-muted-foreground p-6 grow">
           <MousePointerClick strokeWidth={1} size={80} />
           <span className="flex flex-col gap-1">
             <span className="font-bold text-xl">No courses yet...</span>
             <span className="w-80">{`Add courses on the left. Don't forget to set your ID at the top right too!`}</span>
           </span>
         </Card>
-      )}
+      }
     </div>
   );
 };
