@@ -6,7 +6,7 @@ import Calendar from "./Calendar";
 import ScheduleOverview from "./ScheduleOverview";
 import { Button } from "./ui/button";
 
-interface PrintScheduleButtonProps {
+interface DownloadScheduleButtonProps {
   classes: Class[];
   colors: Record<string, ColorsEnum>;
 }
@@ -18,15 +18,15 @@ interface PrintScheduleButtonProps {
  * @param {Class[]} classes - An array of classes to be displayed in the schedule calendar.
  * @param {Record<string, ColorsEnum>} colors - A record mapping classes to their respective colors.
  *
- * @returns {JSX.Element} The rendered PrintScheduleButton component.
+ * @returns {JSX.Element} The rendered DownloadScheduleButton component.
  *
  * @example
- * <PrintScheduleButton classes={classes} colors={colors} />
+ * <DownloadScheduleButton classes={classes} colors={colors} />
  */
-export default function PrintScheduleButton({
+export default function DownloadScheduleButton({
   classes,
   colors,
-}: PrintScheduleButtonProps) {
+}: DownloadScheduleButtonProps) {
   const [_, convert, ref] = useToPng<HTMLDivElement>({
     quality: 1,
     onSuccess: (data) => {

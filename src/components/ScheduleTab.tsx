@@ -16,8 +16,8 @@ import { useState } from "react";
 import { FixedSizeList } from "react-window";
 import { z } from "zod";
 import Calendar from "./Calendar";
+import DownloadScheduleButton from "./DownloadScheduleButton";
 import FilterSettings from "./FilterSettings";
-import PrintScheduleButton from "./PrintScheduleButton";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
 import { Button } from "./ui/button";
@@ -145,7 +145,10 @@ const ScheduleTab = () => {
             <SaveButton activeSched={schedules[active]} colors={colors} />
           )}
           {schedules[active] && (
-            <PrintScheduleButton classes={schedules[active]} colors={colors} />
+            <DownloadScheduleButton
+              classes={schedules[active]}
+              colors={colors}
+            />
           )}
         </Card>
         {schedules[active] ? (

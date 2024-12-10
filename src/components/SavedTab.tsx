@@ -13,7 +13,7 @@ import { HeartCrack } from "lucide-react";
 import { useState } from "react";
 import { FixedSizeList } from "react-window";
 import Calendar from "./Calendar";
-import PrintScheduleButton from "./PrintScheduleButton";
+import DownloadScheduleButton from "./DownloadScheduleButton";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
 import { Card } from "./ui/card";
@@ -72,7 +72,7 @@ const SavedTab = () => {
                 activeSched={schedules[active].classes}
                 colors={schedules[active].colors}
               />
-              <PrintScheduleButton
+              <DownloadScheduleButton
                 classes={schedules[active].classes}
                 colors={schedules[active].colors}
               />
