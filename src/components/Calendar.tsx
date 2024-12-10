@@ -48,7 +48,7 @@ const Calendar = ({
 
       return acc;
     },
-    { M: [], T: [], W: [], H: [], F: [], S: [] }
+    { M: [], T: [], W: [], H: [], F: [], S: [] },
   );
 
   const headerStyle =
@@ -97,7 +97,7 @@ const Calendar = ({
                   className={cn(
                     `${
                       index === 15 ? "h-0" : CELL_HEIGHT
-                    } after:absolute after:h-[1px] after:w-full after:bg-muted/50 after:content-['']`
+                    } after:absolute after:h-[1px] after:w-full after:bg-muted/50 after:content-['']`,
                   )}
                   key={index}
                 />
@@ -115,7 +115,7 @@ const Calendar = ({
                 >
                   {sortedClasses[day].map((currClass) => {
                     const schedules = currClass.schedules.filter(
-                      (sched) => sched.day === day
+                      (sched) => sched.day === day,
                     );
 
                     return schedules.map((sched) => {
@@ -133,7 +133,7 @@ const Calendar = ({
                             } absolute w-[95%] transition-all ${
                               currClass.color
                             }`,
-                            hovered === currClass.code && currClass.shadow
+                            hovered === currClass.code && currClass.shadow,
                           )}
                           style={{
                             height: calculateHeight(start, end),

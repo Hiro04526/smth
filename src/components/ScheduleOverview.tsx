@@ -1,20 +1,25 @@
 import { Class, Schedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
-import { convertTime, getCardColors, toProperCase } from "@/lib/utils";
+import { cn, convertTime, getCardColors, toProperCase } from "@/lib/utils";
 import { CalendarClock, Clock, DoorOpen, FilePen, User } from "lucide-react";
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
 
-type Props = {
+interface ScheduleOverviewProps extends React.HTMLAttributes<HTMLDivElement> {
   activeSchedule: Class[];
   colors: Record<string, ColorsEnum>;
-};
+}
 
-const ScheduleOverview = ({ activeSchedule, colors }: Props) => {
+const ScheduleOverview = ({
+  activeSchedule,
+  colors,
+  className,
+  ...props
+}: ScheduleOverviewProps) => {
   return (
-    <ScrollArea className="w-[20%] rounded-lg border">
-      <div className="p-4 flex flex-col gap-2">
+    <ScrollArea className={cn("w-[20%] rounded-lg border", className)}>
+      <div className="p-4 flex flex-col gap-2" {...props}>
         {activeSchedule &&
           activeSchedule.map((courseClass) => {
             const schedules = courseClass.schedules.reduce<Schedule[]>(
