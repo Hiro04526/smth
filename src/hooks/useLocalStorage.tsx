@@ -6,7 +6,7 @@ const isServer = typeof window === "undefined";
 export default function useLocalStorage<T>(
   name: string,
   initVal: T,
-  key?: string,
+  key?: string
 ) {
   const [value, setValue] = useState<T>(() => initVal);
   const [snapshot, setSnapshot] = useState<Record<string, T>>({});

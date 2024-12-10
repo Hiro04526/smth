@@ -48,14 +48,14 @@ const Calendar = ({
 
       return acc;
     },
-    { M: [], T: [], W: [], H: [], F: [], S: [] },
+    { M: [], T: [], W: [], H: [], F: [], S: [] }
   );
 
   const headerStyle =
     "relative h-full w-full text-center py-2 px-2 mx-2 font-bold text-muted-foreground";
 
   return (
-    <div className="flex flex-shrink min-h-0 w-full flex-col border rounded-lg">
+    <div className="flex flex-shrink min-h-0 w-full flex-col border rounded-lg bg-background">
       {/* Day Indicator Row */}
       <div className="flex w-full flex-row border-b dark:border-muted py-1">
         <div className="w-[50px] shrink-0" />
@@ -97,7 +97,7 @@ const Calendar = ({
                   className={cn(
                     `${
                       index === 15 ? "h-0" : CELL_HEIGHT
-                    } after:absolute after:-z-10 after:h-[1px] after:w-full after:bg-muted/50 after:content-['']`,
+                    } after:absolute after:h-[1px] after:w-full after:bg-muted/50 after:content-['']`
                   )}
                   key={index}
                 />
@@ -115,7 +115,7 @@ const Calendar = ({
                 >
                   {sortedClasses[day].map((currClass) => {
                     const schedules = currClass.schedules.filter(
-                      (sched) => sched.day === day,
+                      (sched) => sched.day === day
                     );
 
                     return schedules.map((sched) => {
@@ -133,7 +133,7 @@ const Calendar = ({
                             } absolute w-[95%] transition-all ${
                               currClass.color
                             }`,
-                            hovered === currClass.code && currClass.shadow,
+                            hovered === currClass.code && currClass.shadow
                           )}
                           style={{
                             height: calculateHeight(start, end),

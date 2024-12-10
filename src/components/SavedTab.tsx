@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { Card } from "./ui/card";
-import { ClassSchedule } from "@/lib/definitions";
-import Calendar from "./Calendar";
 import {
   Select,
   SelectContent,
@@ -11,16 +7,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { ClassSchedule } from "@/lib/definitions";
+import { HeartCrack } from "lucide-react";
+import { useState } from "react";
 import { FixedSizeList } from "react-window";
+import Calendar from "./Calendar";
+import DownloadScheduleButton from "./DownloadScheduleButton";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
-import useLocalStorage from "@/hooks/useLocalStorage";
-import { HeartCrack } from "lucide-react";
+import { Card } from "./ui/card";
 
 const SavedTab = () => {
   const [schedules, setSchedules] = useLocalStorage<ClassSchedule[]>(
     "saved_schedules",
-    [],
+    []
   );
   const [active, setActive] = useState<number>(0);
 
@@ -37,9 +38,9 @@ const SavedTab = () => {
               <SelectTrigger className="w-64">
                 <SelectValue
                   placeholder={`${
-                    !!Object.keys(schedules).length
-                      ? schedules[active].name
-                      : "-"
+                    !!Object.keys(schedules).length ?
+                      schedules[active].name
+                    : "-"
                   }`}
                 >
                   {schedules[active] ? schedules[active].name : "-"}
@@ -66,32 +67,35 @@ const SavedTab = () => {
             </Select>
           </div>
           {schedules[active] && (
-            <SaveButton
-              activeSched={schedules[active].classes}
-              colors={schedules[active].colors}
-            />
+            <>
+              <SaveButton
+                activeSched={schedules[active].classes}
+                colors={schedules[active].colors}
+              />
+              <DownloadScheduleButton
+                classes={schedules[active].classes}
+                colors={schedules[active].colors}
+              />
+            </>
           )}
         </Card>
-        {schedules[active] ? (
+        {schedules[active] ?
           <Calendar
             courses={schedules[active].classes}
             colors={schedules[active].colors}
           />
-        ) : (
-          <Card className="p-6 w-full grow items-center flex flex-col justify-center text-muted-foreground gap-2">
+        : <Card className="p-6 w-full grow items-center flex flex-col justify-center text-muted-foreground gap-2">
             <HeartCrack size={100} />
             No schedules saved yet.
           </Card>
-        )}
+        }
       </div>
-      {schedules[active] ? (
+      {schedules[active] ?
         <ScheduleOverview
           activeSchedule={schedules[active].classes}
           colors={schedules[active].colors}
         />
-      ) : (
-        <Card className="w-[20%] p-6"></Card>
-      )}
+      : <Card className="w-[20%] p-6"></Card>}
     </div>
   );
 };

@@ -16,6 +16,7 @@ import { useState } from "react";
 import { FixedSizeList } from "react-window";
 import { z } from "zod";
 import Calendar from "./Calendar";
+import DownloadScheduleButton from "./DownloadScheduleButton";
 import FilterSettings from "./FilterSettings";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
@@ -27,7 +28,7 @@ const ScheduleTab = () => {
   const [schedules, setSchedules] = useLocalStorage<Class[][]>("schedules", []);
   const [colors, setColors] = useLocalStorage<Record<string, ColorsEnum>>(
     "course_colors",
-    {},
+    {}
   );
   const [active, setActive] = useState<number>(0);
 
@@ -51,7 +52,7 @@ const ScheduleTab = () => {
     const selectedData = Object.entries(safeSelected).map(([_, val]) => val);
     const [newSchedules, newColors] = createSchedules(
       selectedData,
-      localFilter ?? undefined,
+      localFilter ?? undefined
     );
 
     if (newSchedules.length === 0) {
@@ -143,11 +144,16 @@ const ScheduleTab = () => {
           {schedules[active] && (
             <SaveButton activeSched={schedules[active]} colors={colors} />
           )}
+          {schedules[active] && (
+            <DownloadScheduleButton
+              classes={schedules[active]}
+              colors={colors}
+            />
+          )}
         </Card>
-        {schedules[active] ? (
+        {schedules[active] ?
           <Calendar courses={schedules[active]} colors={colors} />
-        ) : (
-          <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
+        : <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
             <CalendarPlus2 size={100} strokeWidth={1.25} />
             <span className="flex flex-col gap-2">
               <span className="font-bold text-xl">
@@ -156,7 +162,7 @@ const ScheduleTab = () => {
               <span>Try clicking the Generate Schedules Button!</span>
             </span>
           </Card>
-        )}
+        }
       </div>
       <ScheduleOverview activeSchedule={schedules[active]} colors={colors} />
     </div>
