@@ -15,7 +15,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { Filter, FilterOptions, filterSchema } from "@/lib/definitions";
 import { DaysEnum, DaysEnumSchema, ModalityEnumSchema } from "@/lib/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Card } from "./ui/card";
 import { Switch } from "./ui/switch";
@@ -29,7 +29,7 @@ const defaultGeneralSettings: FilterOptions = {
   maxPerDay: 10,
   maxConsecutive: 10,
   modalities: ["F2F", "HYBRID", "ONLINE", "PREDOMINANTLY ONLINE", "TENTATIVE"],
-  daysInPerson: ["M"],
+  daysInPerson: ["M", "T", "W", "H", "F", "S"],
 };
 
 const defaultSpecificSettings = Object.fromEntries(
@@ -40,19 +40,23 @@ const defaultSpecificSettings = Object.fromEntries(
 ) as Record<DaysEnum, FilterOptions>;
 
 const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
+  console.log("Hello");
   const [filter, setFilter] = useLocalStorage<Filter>("filter_options", {
     general: defaultGeneralSettings,
     specific: defaultSpecificSettings,
   });
 
+  console.log(filter);
+
   const form = useForm<Filter>({
     resolver: zodResolver(filterSchema),
-    defaultValues: useMemo(() => filter, [filter]),
+    defaultValues: filter,
   });
 
   useEffect(() => {
     form.reset(filter);
-  }, [form, filter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
 
   function onSubmit(values: Filter) {
     console.log(values);
@@ -68,6 +72,7 @@ const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
     });
 
     setFilter(values);
+    form.reset(values);
     setOpen(false);
   }
 
@@ -188,9 +193,9 @@ const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
                   <FormField
                     control={form.control}
                     name={
-                      day ?
-                        `specific.${day}.maxConsecutive`
-                      : "general.maxConsecutive"
+                      day
+                        ? `specific.${day}.maxConsecutive`
+                        : "general.maxConsecutive"
                     }
                     render={({ field }) => (
                       <FormItem>
