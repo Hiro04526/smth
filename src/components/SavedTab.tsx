@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { Card } from "./ui/card";
-import { ClassSchedule } from "@/lib/definitions";
-import Calendar from "./Calendar";
 import {
   Select,
   SelectContent,
@@ -11,16 +7,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { ClassSchedule } from "@/lib/definitions";
+import { HeartCrack } from "lucide-react";
+import { useState } from "react";
 import { FixedSizeList } from "react-window";
+import Calendar from "./Calendar";
+import PrintScheduleButton from "./PrintScheduleButton";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
-import useLocalStorage from "@/hooks/useLocalStorage";
-import { HeartCrack } from "lucide-react";
+import { Card } from "./ui/card";
 
 const SavedTab = () => {
   const [schedules, setSchedules] = useLocalStorage<ClassSchedule[]>(
     "saved_schedules",
-    [],
+    []
   );
   const [active, setActive] = useState<number>(0);
 
@@ -66,10 +67,16 @@ const SavedTab = () => {
             </Select>
           </div>
           {schedules[active] && (
-            <SaveButton
-              activeSched={schedules[active].classes}
-              colors={schedules[active].colors}
-            />
+            <>
+              <SaveButton
+                activeSched={schedules[active].classes}
+                colors={schedules[active].colors}
+              />
+              <PrintScheduleButton
+                classes={schedules[active].classes}
+                colors={schedules[active].colors}
+              />
+            </>
           )}
         </Card>
         {schedules[active] ? (
