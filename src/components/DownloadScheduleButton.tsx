@@ -43,16 +43,17 @@ export default function DownloadScheduleButton({
         <Download className="mr-2 size-4" />
         Download
       </Button>
-      <div className="w-[2000px] h-[1000px] absolute -left-[9999px] -top-[9999px]">
+      <div className="w-[2300px] h-[1000px] absolute -left-[9999px] -top-[9999px]">
         <div
-          className="flex flex-row gap-8 min-h-0 w-full bg-accent p-8"
+          className="flex flex-row gap-8 min-h-0 w-full bg-primary dark:bg-secondary p-8"
           ref={ref}
         >
           <Calendar courses={classes} colors={colors} />
           <ScheduleOverview
             activeSchedule={classes}
             colors={colors}
-            className="w-[30%]"
+            columns={2}
+            className="w-[35%]"
           />
         </div>
       </div>
