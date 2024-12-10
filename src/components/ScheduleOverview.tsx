@@ -18,7 +18,9 @@ const ScheduleOverview = ({
   ...props
 }: ScheduleOverviewProps) => {
   return (
-    <ScrollArea className={cn("w-[20%] rounded-lg border", className)}>
+    <ScrollArea
+      className={cn("w-[20%] rounded-lg border bg-background", className)}
+    >
       <div className="p-4 flex flex-col gap-2" {...props}>
         {activeSchedule &&
           activeSchedule.map((courseClass) => {
@@ -26,13 +28,13 @@ const ScheduleOverview = ({
               (acc, curr) => {
                 if (
                   !acc.some(
-                    (acc) => acc.start === curr.start && acc.end === curr.end,
+                    (acc) => acc.start === curr.start && acc.end === curr.end
                   )
                 )
                   acc.push(curr);
                 return acc;
               },
-              [],
+              []
             );
 
             const days = courseClass.schedules.map((sched) => sched.day);
@@ -65,7 +67,7 @@ const ScheduleOverview = ({
                       <Clock size={18} strokeWidth={3} />
 
                       {`${convertTime(sched.start)} - ${convertTime(
-                        sched.end,
+                        sched.end
                       )} ${schedules.length > 1 ? `(${sched.day})` : ""}`}
                     </div>
                   ))}
@@ -77,7 +79,7 @@ const ScheduleOverview = ({
                       </div>
                     ) : (
                       <React.Fragment key={index}></React.Fragment>
-                    ),
+                    )
                   )}
                   <div className="flex gap-2">
                     <FilePen size={18} strokeWidth={3} />

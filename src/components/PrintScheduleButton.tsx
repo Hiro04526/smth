@@ -44,7 +44,10 @@ export default function PrintScheduleButton({
         Download
       </Button>
       <div className="w-[2000px] h-[1000px] absolute -left-[9999px] -top-[9999px]">
-        <div className="flex flex-row gap-8 min-h-0 w-full" ref={ref}>
+        <div
+          className="flex flex-row gap-8 min-h-0 w-full bg-accent p-8"
+          ref={ref}
+        >
           <Calendar courses={classes} colors={colors} />
           <ScheduleOverview
             activeSchedule={classes}
