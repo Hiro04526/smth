@@ -1,11 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { buttonVariants } from "./ui/button";
-import { usePathname } from "next/navigation";
-import { ModeToggle } from "./ModeToggle";
 import { CalendarRange, Heart, TableProperties } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import HelpDialog from "./HelpDialog";
 import IDInput from "./IDInput";
+import { ModeToggle } from "./ModeToggle";
+import { buttonVariants } from "./ui/button";
 
 const NavigationBar = () => {
   const pathName = usePathname();
@@ -51,6 +52,7 @@ const NavigationBar = () => {
       <div className="flex flex-row gap-2">
         <IDInput />
         <ModeToggle />
+        <HelpDialog />
       </div>
     </div>
   );
