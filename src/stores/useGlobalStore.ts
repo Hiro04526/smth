@@ -1,8 +1,23 @@
 import { Course } from "@/lib/definitions";
+import { del, get, set } from "idb-keyval"; // can use anything: IndexedDB, Ionic Storage, etc.
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
 
-interface CoursesState {
+// Custom Storage to interface with IndexedDB
+const storage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    return (await get(name)) || null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await set(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    console.log(name, "has been deleted");
+    await del(name);
+  },
+};
+
+interface GlobalStates {
   courses: Course[];
   setCourses: (courses: Course[]) => void;
   addCourse: (course: Course) => void;
@@ -11,7 +26,7 @@ interface CoursesState {
   setId: (id: string) => void;
 }
 
-export const useGlobalStore = create<CoursesState>()(
+export const useGlobalStore = create<GlobalStates>()(
   persist(
     (set) => ({
       courses: [],
@@ -25,6 +40,10 @@ export const useGlobalStore = create<CoursesState>()(
       id: "",
       setId: (id) => set({ id }),
     }),
-    { name: "fetched-courses", skipHydration: true }
+    {
+      name: "fetched-courses",
+      skipHydration: true,
+      storage: createJSONStorage(() => storage),
+    }
   )
 );

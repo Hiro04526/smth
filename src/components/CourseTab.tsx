@@ -13,12 +13,11 @@ import { Card, CardContent } from "./ui/card";
 import { toast } from "./ui/use-toast";
 
 const CourseTab = () => {
-  const { id, courses, setCourses, removeCourse, addCourse } = useGlobalStore(
+  const { id, courses, setCourses, addCourse } = useGlobalStore(
     useShallow((state) => ({
       courses: state.courses,
       setCourses: state.setCourses,
       id: state.id,
-      removeCourse: state.removeCourse,
       addCourse: state.addCourse,
     }))
   );
