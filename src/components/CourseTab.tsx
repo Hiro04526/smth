@@ -1,25 +1,28 @@
 "use client";
+
 import { fetchCourse } from "@/lib/actions";
 import { Course } from "@/lib/definitions";
-import { useCallback, useEffect, useState } from "react";
-import { Button } from "./ui/button";
-import CourseInput from "./CourseInput";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { DataTable } from "./courseTable/data-table";
-import { columns } from "./courseTable/columns";
 import { getLocalStorage, setSelectedData } from "@/lib/utils";
-import { toast } from "./ui/use-toast";
+import { useCoursesStore } from "@/stores/coursesStore";
 import { Reorder, useDragControls } from "framer-motion";
-import {
-  CircleOff,
-  GripVertical,
-  MousePointerClick,
-  TextCursorInput,
-} from "lucide-react";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { CircleOff, GripVertical, MousePointerClick } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+import CourseInput from "./CourseInput";
+import { columns } from "./courseTable/columns";
+import { DataTable } from "./courseTable/data-table";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { toast } from "./ui/use-toast";
 
 const CourseTab = () => {
-  const [courses, setCourses] = useLocalStorage<Course[]>("courses", []);
+  const { courses, setCourses } = useCoursesStore(
+    useShallow((state) => ({
+      courses: state.courses,
+      setCourses: state.setCourses,
+    }))
+  );
+
   const [activeCourse, setActiveCourse] = useState<Course | null>(
     courses && courses.length > 0 ? courses[0] : null
   );
@@ -27,6 +30,8 @@ const CourseTab = () => {
 
   const handleFetch = async (courseCode: string) => {
     const id = getLocalStorage("id_number");
+
+    if (!courses || !setCourses) return;
 
     if (courses.some((course) => course.courseCode === courseCode)) {
       toast({
@@ -66,6 +71,8 @@ const CourseTab = () => {
   };
 
   const handleDelete = (courseCode: string) => {
+    if (!courses || !setCourses) return;
+
     const newCourses = courses.filter(
       (course) => course.courseCode !== courseCode
     );
@@ -80,14 +87,15 @@ const CourseTab = () => {
 
   const handleSwap = useCallback(
     (newCourses: Course[]) => {
-      setCourses(newCourses);
+      setCourses?.(newCourses);
     },
     [setCourses]
   );
 
-  useEffect(() => {
-    if (courses.length !== 0 && !activeCourse) setActiveCourse(courses[0]);
-  }, [courses, activeCourse]);
+  if (!courses || !setCourses) {
+    console.log(courses, setCourses);
+    return null;
+  }
 
   return (
     <div className="flex gap-4 flex-row flex-grow py-8 px-16 w-full self-stretch min-h-0">
@@ -106,7 +114,7 @@ const CourseTab = () => {
             <CardTitle>Course Codes</CardTitle>
           </CardHeader>
           <CardContent className="grow">
-            {courses.length !== 0 ?
+            {courses.length !== 0 ? (
               <Reorder.Group
                 className="flex gap-2 row flex-col"
                 axis="y"
@@ -125,9 +133,9 @@ const CourseTab = () => {
                     />
                     <Button
                       variant={
-                        activeCourse?.courseCode === course.courseCode ?
-                          "default"
-                        : "outline"
+                        activeCourse?.courseCode === course.courseCode
+                          ? "default"
+                          : "outline"
                       }
                       onClick={() => setActiveCourse(course)}
                       className="w-full"
@@ -145,29 +153,31 @@ const CourseTab = () => {
                   </Reorder.Item>
                 ))}
               </Reorder.Group>
-            : <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center">
+            ) : (
+              <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center">
                 <CircleOff />
                 None added yet.
               </div>
-            }
+            )}
           </CardContent>
         </Card>
       </div>
-      {activeCourse ?
+      {activeCourse ? (
         <DataTable
           columns={columns}
           data={activeCourse.classes}
           lastFetched={activeCourse.lastFetched}
           activeCourse={activeCourse.courseCode}
         />
-      : <Card className="flex flex-row items-center justify-center gap-6 text-muted-foreground p-6 grow">
+      ) : (
+        <Card className="flex flex-row items-center justify-center gap-6 text-muted-foreground p-6 grow">
           <MousePointerClick strokeWidth={1} size={80} />
           <span className="flex flex-col gap-1">
             <span className="font-bold text-xl">No courses yet...</span>
             <span className="w-80">{`Add courses on the left. Don't forget to set your ID at the top right too!`}</span>
           </span>
         </Card>
-      }
+      )}
     </div>
   );
 };

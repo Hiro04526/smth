@@ -1,6 +1,5 @@
 import NavigationBar from "@/components/NavigationBar";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import StoreProvider from "@/providers/StoreProvider";
 import React from "react";
 
 type Props = {};
@@ -12,8 +11,10 @@ export default function DashboardLayout({
 }>) {
   return (
     <>
-      <NavigationBar />
-      {children}
+      <StoreProvider>
+        <NavigationBar />
+        {children}
+      </StoreProvider>
     </>
   );
 }
