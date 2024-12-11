@@ -1,4 +1,9 @@
-import { Course } from "@/lib/definitions";
+import {
+  defaultGeneralFilters,
+  defaultSpecificFilters,
+} from "@/components/FilterForm";
+import { Class, Course, Filter } from "@/lib/definitions";
+import { ColorsEnum } from "@/lib/enums";
 import { RowSelectionState } from "@tanstack/react-table";
 import { del, get, set } from "idb-keyval"; // can use anything: IndexedDB, Ionic Storage, etc.
 import { create, StateCreator } from "zustand";
@@ -36,10 +41,24 @@ interface TableStates {
     courseCode: string,
     rowSelection: RowSelectionState
   ) => void;
+  getSelectedData: () => Class[][];
+}
+
+interface ScheduleStates {
+  courseColors: Record<string, ColorsEnum>;
+  setCourseColors: (courseColors: Record<string, ColorsEnum>) => void;
+  schedules: Class[][];
+  setSchedules: (schedules: Class[][]) => void;
+  filter: Filter;
+  setFilter: (filter: Filter) => void;
 }
 
 // Collection of all the states stored in the store
-interface GlobalStates extends CourseStates, IdStates, TableStates {}
+interface GlobalStates
+  extends CourseStates,
+    IdStates,
+    TableStates,
+    ScheduleStates {}
 
 // Abstracted type for creating slices
 type Slice<T> = StateCreator<
@@ -65,12 +84,39 @@ const createIdSlice: Slice<IdStates> = (set) => ({
   setId: (id) => set({ id }),
 });
 
-const createTableSlice: Slice<TableStates> = (set) => ({
+const createTableSlice: Slice<TableStates> = (set, get) => ({
   selectedRows: {},
   setSelectedRows: (courseCode, rowSelection) =>
     set((state) => ({
       selectedRows: { ...state.selectedRows, [courseCode]: rowSelection },
     })),
+  getSelectedData: () => {
+    const selectedRows = get().selectedRows;
+    const courses = get().courses;
+
+    return Object.entries(selectedRows).map(([courseCode, selected]) => {
+      const course = courses.find((course) => course.courseCode === courseCode);
+
+      // If course is not found, return an empty array. Note that this will only
+      // happen when there's a desync between the selectedRows and courses.
+      if (!course) {
+        return [];
+      }
+
+      return Object.keys(selected).map(
+        (key) => course.classes[Number.parseInt(key)]
+      );
+    });
+  },
+});
+
+const createScheduleSlice: Slice<ScheduleStates> = (set) => ({
+  schedules: [],
+  setSchedules: (schedules) => set({ schedules }),
+  courseColors: {},
+  setCourseColors: (courseColors) => set({ courseColors }),
+  filter: { general: defaultGeneralFilters, specific: defaultSpecificFilters },
+  setFilter: (filter) => set({ filter }),
 });
 
 // Combine all slices into one global store
@@ -82,6 +128,7 @@ export const useGlobalStore = create<GlobalStates>()(
       ...createCourseSlice(...a),
       ...createIdSlice(...a),
       ...createTableSlice(...a),
+      ...createScheduleSlice(...a),
     }),
     {
       name: "global-state",

@@ -7,14 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useLocalStorage from "@/hooks/useLocalStorage";
-import { Class, classSchema } from "@/lib/definitions";
-import { ColorsEnum } from "@/lib/enums";
-import { createSchedules, getLocalStorage } from "@/lib/utils";
+import { createSchedules } from "@/lib/utils";
+import { useGlobalStore } from "@/stores/useGlobalStore";
 import { CalendarPlus2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { FixedSizeList } from "react-window";
-import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 import Calendar from "./Calendar";
 import DownloadScheduleButton from "./DownloadScheduleButton";
 import FilterSettings from "./FilterSettings";
@@ -25,35 +23,40 @@ import { Card } from "./ui/card";
 import { toast } from "./ui/use-toast";
 
 const ScheduleTab = () => {
-  const [schedules, setSchedules] = useLocalStorage<Class[][]>("schedules", []);
-  const [colors, setColors] = useLocalStorage<Record<string, ColorsEnum>>(
-    "course_colors",
-    {}
+  const {
+    schedules,
+    setSchedules,
+    colors,
+    setColors,
+    getSelectedData,
+    filter,
+  } = useGlobalStore(
+    useShallow((state) => ({
+      schedules: state.schedules,
+      setSchedules: state.setSchedules,
+      colors: state.courseColors,
+      setColors: state.setCourseColors,
+      getSelectedData: state.getSelectedData,
+      filter: state.filter,
+    }))
   );
   const [active, setActive] = useState<number>(0);
 
   const handleGenerate = () => {
-    const localSelected = getLocalStorage("selected_data");
-    const localFilter = getLocalStorage("filter_options");
+    const selectedData = getSelectedData();
+    console.log(selectedData);
 
-    if (!localSelected || localSelected.length) {
+    if (!selectedData.length) {
       toast({
-        title: "Uh oh! Generation of schedules failed...",
-        description: "No schedules could be made with your selection...",
+        title: "No rows selected...",
+        description:
+          "No schedule can be made because you haven't selected any classes yet.",
         variant: "destructive",
       });
       return;
     }
 
-    const safeSelected = z
-      .record(z.string(), z.array(classSchema))
-      .parse(localSelected);
-
-    const selectedData = Object.entries(safeSelected).map(([_, val]) => val);
-    const [newSchedules, newColors] = createSchedules(
-      selectedData,
-      localFilter ?? undefined
-    );
+    const [newSchedules, newColors] = createSchedules(selectedData, filter);
 
     if (newSchedules.length === 0) {
       toast({
@@ -76,12 +79,11 @@ const ScheduleTab = () => {
     // If no error occurs, just set schedules as normal.
     setSchedules(newSchedules);
     setColors(newColors);
+    setActive(0);
     toast({
       title: "Sucessfully generated schedules!",
       description: `A total of ${newSchedules.length} were successfully generated.`,
     });
-    localStorage.setItem("schedules", JSON.stringify(newSchedules));
-    localStorage.setItem("course_colors", JSON.stringify(newColors));
   };
 
   return (
@@ -105,10 +107,10 @@ const ScheduleTab = () => {
               <SelectTrigger className="w-64">
                 <SelectValue
                   placeholder={`${
-                    schedules.length !== 0 ? `Schedule ${active}` : "-"
+                    schedules.length !== 0 ? `Schedule ${active + 1}` : "-"
                   }`}
                 >
-                  Schedule {active}
+                  Schedule {active + 1}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
@@ -124,7 +126,7 @@ const ScheduleTab = () => {
                       value={`${index}`}
                       style={{ ...style }}
                     >
-                      Schedule {index}
+                      Schedule {index + 1}
                     </SelectItem>
                   )}
                 </FixedSizeList>
@@ -151,9 +153,10 @@ const ScheduleTab = () => {
             />
           )}
         </Card>
-        {schedules[active] ?
+        {schedules[active] ? (
           <Calendar courses={schedules[active]} colors={colors} />
-        : <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
+        ) : (
+          <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
             <CalendarPlus2 size={100} strokeWidth={1.25} />
             <span className="flex flex-col gap-2">
               <span className="font-bold text-xl">
@@ -162,7 +165,7 @@ const ScheduleTab = () => {
               <span>Try clicking the Generate Schedules Button!</span>
             </span>
           </Card>
-        }
+        )}
       </div>
       <ScheduleOverview activeSchedule={schedules[active]} colors={colors} />
     </div>
