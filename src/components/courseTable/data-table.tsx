@@ -9,7 +9,6 @@ import {
   getFacetedUniqueValues,
   getFilteredRowModel,
   getSortedRowModel,
-  RowSelectionState,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -22,12 +21,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
-import { setSelectedData } from "@/lib/utils";
-import { Class } from "@/lib/definitions";
+import { useGlobalStore } from "@/stores/useGlobalStore";
+import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { ScrollArea } from "../ui/scroll-area";
 import { FilterBar } from "./FilterBar";
-import useLocalStorage from "@/hooks/useLocalStorage";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -43,11 +41,15 @@ export function DataTable<TData, TValue>({
   activeCourse,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowSelection, setRowSelection] = useLocalStorage<RowSelectionState>(
-    "selected_rows",
-    {},
-    activeCourse
+  const { selectedRows, setSelectedRows } = useGlobalStore(
+    useShallow((state) => ({
+      selectedRows: state.selectedRows,
+      setSelectedRows: state.setSelectedRows,
+    }))
   );
+
+  const rowSelection = selectedRows[activeCourse] || {};
+
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
@@ -57,12 +59,7 @@ export function DataTable<TData, TValue>({
     onRowSelectionChange: (updater) => {
       const newRowSelectionValue =
         updater instanceof Function ? updater(rowSelection) : updater;
-      const selectedRowsData = Object.keys(newRowSelectionValue).map(
-        (rowId) => data[Number.parseInt(rowId)]
-      );
-
-      setSelectedData(activeCourse, selectedRowsData as Class[]);
-      setRowSelection(newRowSelectionValue);
+      setSelectedRows(activeCourse, newRowSelectionValue);
     },
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
@@ -85,8 +82,6 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  useEffect(() => {}, [activeCourse]);
-
   return (
     <div className="flex w-full flex-col gap-4">
       <FilterBar table={table} />
@@ -101,12 +96,12 @@ export function DataTable<TData, TValue>({
                       key={header.id}
                       className={header.column.columnDef.meta?.headerClassName}
                     >
-                      {header.isPlaceholder ? null : (
-                        flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )
-                      )}
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
@@ -114,7 +109,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ?
+            {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -133,7 +128,8 @@ export function DataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
-            : <TableRow>
+            ) : (
+              <TableRow>
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
@@ -141,17 +137,17 @@ export function DataTable<TData, TValue>({
                   No results.
                 </TableCell>
               </TableRow>
-            }
+            )}
           </TableBody>
         </Table>
       </ScrollArea>
       <div className="text-sm text-muted-foreground">
-        {`${Object.keys(rowSelection).length} out of ${
+        {`${Object.keys(selectedRows).length} out of ${
           data.length
         } rows selected. ${
-          lastFetched ?
-            `Last Fetched: ${new Date(lastFetched).toLocaleString()}`
-          : ""
+          lastFetched
+            ? `Last Fetched: ${new Date(lastFetched).toLocaleString()}`
+            : ""
         }`}
       </div>
     </div>
