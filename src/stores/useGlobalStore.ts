@@ -54,6 +54,7 @@ interface ScheduleStates {
   savedSchedules: SavedSchedule[];
   addSavedSchedule: (schedule: SavedSchedule) => void;
   deleteSavedSchedule: (name: string) => void;
+  setSavedSchedules: (schedules: SavedSchedule[]) => void;
 }
 
 // Collection of all the states stored in the store
@@ -127,6 +128,7 @@ const createScheduleSlice: Slice<ScheduleStates> = (set) => ({
     set((state) => ({
       savedSchedules: state.savedSchedules.filter((s) => s.name !== name),
     })),
+  setSavedSchedules: (schedules) => set({ savedSchedules: schedules }),
 });
 
 // Combine all slices into one global store
