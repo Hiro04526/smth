@@ -1,11 +1,12 @@
-import useLocalStorage from "@/hooks/useLocalStorage";
-import { Class, ClassSchedule } from "@/lib/definitions";
+import { Class, SavedSchedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
+import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Heart, HeartOff } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -32,7 +33,7 @@ type Props = {
 
 // Updated isScheduleSaved to compare only class codes
 const isScheduleSaved = (
-  saved: ClassSchedule[],
+  saved: SavedSchedule[],
   sched2: Class[]
 ): string | false => {
   // Iterate through each saved schedule
@@ -60,9 +61,13 @@ const isScheduleSaved = (
 
 const SaveButton = ({ activeSched, colors }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [saved, setSaved] = useLocalStorage<ClassSchedule[]>(
-    "saved_schedules",
-    []
+
+  const { saved, addSaved, deleteSaved } = useGlobalStore(
+    useShallow((state) => ({
+      saved: state.savedSchedules,
+      addSaved: state.addSavedSchedule,
+      deleteSaved: state.deleteSavedSchedule,
+    }))
   );
 
   const isSaved = isScheduleSaved(saved, activeSched);
@@ -84,20 +89,18 @@ const SaveButton = ({ activeSched, colors }: Props) => {
     );
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    const newSchedule: ClassSchedule = {
+    const newSchedule: SavedSchedule = {
       name: data.name,
       classes: activeSched,
       colors: colors,
     };
 
-    const newSaved = [...saved, newSchedule];
-    setSaved(newSaved);
+    addSaved(newSchedule);
     setOpen(false);
   };
 
   const onDelete = (name: string) => {
-    const newSaved = saved.filter((schedule) => schedule.name !== name);
-    setSaved(newSaved);
+    deleteSaved(name);
     setOpen(false);
   };
 

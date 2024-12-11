@@ -2,7 +2,7 @@ import {
   defaultGeneralFilters,
   defaultSpecificFilters,
 } from "@/components/FilterForm";
-import { Class, Course, Filter } from "@/lib/definitions";
+import { Class, Course, Filter, SavedSchedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
 import { RowSelectionState } from "@tanstack/react-table";
 import { del, get, set } from "idb-keyval"; // can use anything: IndexedDB, Ionic Storage, etc.
@@ -51,6 +51,9 @@ interface ScheduleStates {
   setSchedules: (schedules: Class[][]) => void;
   filter: Filter;
   setFilter: (filter: Filter) => void;
+  savedSchedules: SavedSchedule[];
+  addSavedSchedule: (schedule: SavedSchedule) => void;
+  deleteSavedSchedule: (name: string) => void;
 }
 
 // Collection of all the states stored in the store
@@ -117,6 +120,13 @@ const createScheduleSlice: Slice<ScheduleStates> = (set) => ({
   setCourseColors: (courseColors) => set({ courseColors }),
   filter: { general: defaultGeneralFilters, specific: defaultSpecificFilters },
   setFilter: (filter) => set({ filter }),
+  savedSchedules: [],
+  addSavedSchedule: (schedule) =>
+    set((state) => ({ savedSchedules: [...state.savedSchedules, schedule] })),
+  deleteSavedSchedule: (name) =>
+    set((state) => ({
+      savedSchedules: state.savedSchedules.filter((s) => s.name !== name),
+    })),
 });
 
 // Combine all slices into one global store
