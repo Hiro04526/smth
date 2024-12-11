@@ -1,13 +1,14 @@
 "use client";
 
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { ArrowUpDown, LoaderCircle } from "lucide-react";
+import { ArrowUpDown, LoaderCircle, Megaphone, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -34,6 +35,16 @@ export default function MigrateDataDialog() {
     setId,
   } = useGlobalStore((state) => state);
 
+  const removeLocalStorage = () => {
+    localStorage.removeItem("id_number");
+    localStorage.removeItem("courses");
+    localStorage.removeItem("saved_schedules");
+    localStorage.removeItem("filter_options");
+    localStorage.removeItem("schedules");
+    localStorage.removeItem("course_colors");
+    localStorage.removeItem("selected_data");
+    localStorage.removeItem("selected_rows");
+  };
   const handleMigrate = () => {
     setIsLoading(true);
     const courses = JSON.parse(localStorage.getItem("courses") || "[]");
@@ -57,15 +68,9 @@ export default function MigrateDataDialog() {
       setSelectedRows(courseCode, selected as Record<string, boolean>);
     });
 
+    removeLocalStorage();
+
     setId(idNumber ?? "");
-    localStorage.removeItem("id_number");
-    localStorage.removeItem("courses");
-    localStorage.removeItem("saved_schedules");
-    localStorage.removeItem("filter_options");
-    localStorage.removeItem("schedules");
-    localStorage.removeItem("course_colors");
-    localStorage.removeItem("selected_data");
-    localStorage.removeItem("selected_rows");
     setIsLoading(false);
   };
 
@@ -76,29 +81,51 @@ export default function MigrateDataDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="inline-flex items-center">
-          <ArrowUpDown className="size-4 mr-2" /> Migrate Data
+        <Button
+          className="inline-flex items-center animate-pulse"
+          variant="secondary"
+        >
+          <Megaphone className="size-4 mr-2" /> Announcement!
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Announcement!</DialogTitle>
           <DialogDescription>{"We've made some changes."}</DialogDescription>
         </DialogHeader>
         <div className="text-justify mb-2 font-normal">
           {
-            "We've made some improvements to the site! We've changed how we store data, so you'll have to migrate your data. Click the button below to migrate your data."
+            "We've made some improvements to the site! We've changed how we store data, so you'll have to migrate your data. Choose what we should do with your old data."
           }
         </div>
-        <Button className="inline-flex items-center" onClick={handleMigrate}>
-          {isLoading ? (
-            <LoaderCircle className="size-4 animate-spin" />
-          ) : (
-            <>
-              <ArrowUpDown className="size-4 mr-2" /> Migrate Data
-            </>
-          )}
-        </Button>
+        <DialogFooter>
+          <Button
+            className="inline-flex items-center"
+            onClick={removeLocalStorage}
+            variant="destructive"
+          >
+            {isLoading ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <>
+                <Trash2 className="size-4 mr-2" /> Remove Old Data
+              </>
+            )}
+          </Button>
+          <Button className="inline-flex items-center" onClick={handleMigrate}>
+            {isLoading ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <>
+                <ArrowUpDown className="size-4 mr-2" /> Migrate Data
+              </>
+            )}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
