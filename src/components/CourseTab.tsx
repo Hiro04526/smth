@@ -1,17 +1,15 @@
 "use client";
 
 import { fetchCourse } from "@/lib/actions";
-import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { Reorder, useDragControls } from "framer-motion";
-import { CircleOff, GripVertical, MousePointerClick } from "lucide-react";
-import { useCallback, useState } from "react";
+import { MousePointerClick } from "lucide-react";
+import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import CourseInput from "./CourseInput";
+import CourseList from "./CourseList";
 import { columns } from "./courseTable/columns";
 import { DataTable } from "./courseTable/data-table";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import { toast } from "./ui/use-toast";
 
 const CourseTab = () => {
@@ -26,7 +24,6 @@ const CourseTab = () => {
   );
 
   const [activeCourse, setActiveCourse] = useState<number>(0);
-  const controls = useDragControls();
 
   const handleFetch = async (courseCode: string) => {
     if (!id) {
@@ -65,21 +62,6 @@ const CourseTab = () => {
     addCourse(data);
   };
 
-  const handleDelete = (courseCode: string) => {
-    if (courses[activeCourse].courseCode === courseCode) {
-      setActiveCourse(0);
-    }
-
-    removeCourse(courseCode);
-  };
-
-  const handleSwap = useCallback(
-    (newCourses: Course[]) => {
-      setCourses(newCourses);
-    },
-    [setCourses]
-  );
-
   return (
     <div className="flex gap-4 flex-row flex-grow py-8 px-16 w-full self-stretch min-h-0">
       <div className="flex flex-col gap-4 min-w-64 max-w-64">
@@ -92,58 +74,10 @@ const CourseTab = () => {
             />
           </CardContent>
         </Card>
-        <Card className="flex flex-col grow">
-          <CardHeader>
-            <CardTitle>Course Codes</CardTitle>
-          </CardHeader>
-          <CardContent className="grow">
-            {courses.length !== 0 ? (
-              <Reorder.Group
-                className="flex gap-2 row flex-col"
-                axis="y"
-                values={courses}
-                onReorder={handleSwap}
-              >
-                {courses.map((course, i) => (
-                  <Reorder.Item
-                    key={course.courseCode}
-                    value={course}
-                    className="flex flex-row gap-2 items-center"
-                  >
-                    <GripVertical
-                      onPointerDown={(e) => controls.start(e)}
-                      className="shrink-0 text-muted-foreground cursor-grab"
-                    />
-                    <Button
-                      variant={
-                        courses[activeCourse]?.courseCode === course.courseCode
-                          ? "default"
-                          : "outline"
-                      }
-                      onClick={() => setActiveCourse(i)}
-                      className="w-full"
-                    >
-                      {course.courseCode}
-                    </Button>
-                    <Button
-                      size="icon"
-                      className="shrink-0 hover:border-rose-700"
-                      variant="outline"
-                      onClick={() => handleDelete(course.courseCode)}
-                    >
-                      X
-                    </Button>
-                  </Reorder.Item>
-                ))}
-              </Reorder.Group>
-            ) : (
-              <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center">
-                <CircleOff />
-                None added yet.
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <CourseList
+          activeCourse={activeCourse}
+          setActiveCourse={setActiveCourse}
+        />
       </div>
       {!!courses.length ? (
         <DataTable
