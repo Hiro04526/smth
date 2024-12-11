@@ -1,8 +1,6 @@
 import CourseTab from "@/components/CourseTab";
 
-type Props = {};
-
-const Home = (props: Props) => {
+const Home = () => {
   return <CourseTab />;
 };
 

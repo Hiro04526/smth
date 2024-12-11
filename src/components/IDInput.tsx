@@ -1,5 +1,11 @@
 "use client";
 
+import { useGlobalStore } from "@/stores/useGlobalStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { IdCard } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -10,7 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { IdCard } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -21,10 +26,6 @@ import {
   FormMessage,
 } from "./ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import useLocalStorage from "@/hooks/useLocalStorage";
 
 const FormSchema = z.object({
   idNumber: z
@@ -36,10 +37,15 @@ const FormSchema = z.object({
 });
 
 const IDInput = () => {
-  const [id, setID] = useLocalStorage<string>("id_number", "");
+  const { id, setId } = useGlobalStore(
+    useShallow((state) => ({
+      id: state.id,
+      setId: state.setId,
+    }))
+  );
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    setID(data.idNumber);
+    setId(data.idNumber);
   };
 
   const form = useForm<z.infer<typeof FormSchema>>({

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCoursesStore } from "@/stores/coursesStore";
+import { useGlobalStore } from "@/stores/useGlobalStore";
 import { ReactNode, useEffect } from "react";
 
 interface StoreProviderProps {
@@ -9,7 +9,7 @@ interface StoreProviderProps {
 
 export default function StoreProvider({ children }: StoreProviderProps) {
   useEffect(() => {
-    useCoursesStore.persist.rehydrate();
+    useGlobalStore.persist.rehydrate();
   }, []);
 
   return <>{children}</>;

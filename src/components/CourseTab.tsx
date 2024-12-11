@@ -2,8 +2,7 @@
 
 import { fetchCourse } from "@/lib/actions";
 import { Course } from "@/lib/definitions";
-import { getLocalStorage, setSelectedData } from "@/lib/utils";
-import { useCoursesStore } from "@/stores/coursesStore";
+import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Reorder, useDragControls } from "framer-motion";
 import { CircleOff, GripVertical, MousePointerClick } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -16,37 +15,34 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { toast } from "./ui/use-toast";
 
 const CourseTab = () => {
-  const { courses, setCourses } = useCoursesStore(
+  const { id, courses, setCourses, removeCourse, addCourse } = useGlobalStore(
     useShallow((state) => ({
       courses: state.courses,
       setCourses: state.setCourses,
+      id: state.id,
+      removeCourse: state.removeCourse,
+      addCourse: state.addCourse,
     }))
   );
 
-  const [activeCourse, setActiveCourse] = useState<Course | null>(
-    courses && courses.length > 0 ? courses[0] : null
-  );
+  const [activeCourse, setActiveCourse] = useState<number>(0);
   const controls = useDragControls();
 
   const handleFetch = async (courseCode: string) => {
-    const id = getLocalStorage("id_number");
-
-    if (!courses || !setCourses) return;
-
-    if (courses.some((course) => course.courseCode === courseCode)) {
+    if (!id) {
       toast({
-        title: "That's not possible...",
-        description: "You already added that course!",
+        title: "You haven't set your ID yet!",
+        description: "Set your ID on the button at the top right corner.",
         variant: "destructive",
       });
 
       return;
     }
 
-    if (!id) {
+    if (courses.some((course) => course.courseCode === courseCode)) {
       toast({
-        title: "You haven't set your ID yet!",
-        description: "Set your ID on the button at the top right corner.",
+        title: "That's not possible...",
+        description: "You already added that course!",
         variant: "destructive",
       });
 
@@ -65,37 +61,24 @@ const CourseTab = () => {
 
       return;
     }
-    const newCourses = [...courses, data];
 
-    setCourses(newCourses);
+    addCourse(data);
   };
 
   const handleDelete = (courseCode: string) => {
-    if (!courses || !setCourses) return;
-
-    const newCourses = courses.filter(
-      (course) => course.courseCode !== courseCode
-    );
-
-    if (activeCourse?.courseCode === courseCode) {
-      setActiveCourse(null);
+    if (courses[activeCourse].courseCode === courseCode) {
+      setActiveCourse(0);
     }
 
-    setSelectedData(courseCode, "DELETE");
-    setCourses(newCourses);
+    removeCourse(courseCode);
   };
 
   const handleSwap = useCallback(
     (newCourses: Course[]) => {
-      setCourses?.(newCourses);
+      setCourses(newCourses);
     },
     [setCourses]
   );
-
-  if (!courses || !setCourses) {
-    console.log(courses, setCourses);
-    return null;
-  }
 
   return (
     <div className="flex gap-4 flex-row flex-grow py-8 px-16 w-full self-stretch min-h-0">
@@ -121,7 +104,7 @@ const CourseTab = () => {
                 values={courses}
                 onReorder={handleSwap}
               >
-                {courses.map((course) => (
+                {courses.map((course, i) => (
                   <Reorder.Item
                     key={course.courseCode}
                     value={course}
@@ -133,11 +116,11 @@ const CourseTab = () => {
                     />
                     <Button
                       variant={
-                        activeCourse?.courseCode === course.courseCode
+                        courses[activeCourse]?.courseCode === course.courseCode
                           ? "default"
                           : "outline"
                       }
-                      onClick={() => setActiveCourse(course)}
+                      onClick={() => setActiveCourse(i)}
                       className="w-full"
                     >
                       {course.courseCode}
@@ -162,12 +145,12 @@ const CourseTab = () => {
           </CardContent>
         </Card>
       </div>
-      {activeCourse ? (
+      {!!courses.length ? (
         <DataTable
           columns={columns}
-          data={activeCourse.classes}
-          lastFetched={activeCourse.lastFetched}
-          activeCourse={activeCourse.courseCode}
+          data={courses[activeCourse].classes}
+          lastFetched={courses[activeCourse].lastFetched}
+          activeCourse={courses[activeCourse].courseCode}
         />
       ) : (
         <Card className="flex flex-row items-center justify-center gap-6 text-muted-foreground p-6 grow">
