@@ -72,7 +72,7 @@ export default function MigrateDataDialog() {
 
     removeLocalStorage();
 
-    setId(idNumber ?? "");
+    setId(idNumber?.replaceAll('"', "") ?? "");
     setIsLoading(false);
   };
 
@@ -110,20 +110,22 @@ export default function MigrateDataDialog() {
             onClick={removeLocalStorage}
             variant="destructive"
           >
-            {isLoading ?
+            {isLoading ? (
               <LoaderCircle className="size-4 animate-spin" />
-            : <>
+            ) : (
+              <>
                 <Trash2 className="size-4 mr-2" /> Remove Old Data
               </>
-            }
+            )}
           </Button>
           <Button className="inline-flex items-center" onClick={handleMigrate}>
-            {isLoading ?
+            {isLoading ? (
               <LoaderCircle className="size-4 animate-spin" />
-            : <>
+            ) : (
+              <>
                 <ArrowUpDown className="size-4 mr-2" /> Migrate Data
               </>
-            }
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
