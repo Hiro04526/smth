@@ -64,7 +64,19 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
         id
       );
 
+      if (newData.some((course) => course.classes.length === 0)) {
+        toast({
+          title: "Oops... Some of the courses don't have any classes.",
+          description:
+            "MLS may be down right now or something is terribly wrong.",
+          variant: "destructive",
+        });
+
+        return;
+      }
+
       setCourses(newData);
+
       toast({
         title: "Successfully updated all courses!",
         description: "The courses should now display updated data.",
@@ -119,9 +131,11 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
           )}
         />
         <Button className="w-full" type="submit" disabled={isFetching}>
-          {isFetching ?
+          {isFetching ? (
             <LoaderCircle className="animate-spin" />
-          : "Add Course"}
+          ) : (
+            "Add Course"
+          )}
         </Button>
         <Button
           variant="outline"
@@ -129,9 +143,11 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
           onClick={() => handleUpdate()}
           disabled={isFetching}
         >
-          {isFetching ?
+          {isFetching ? (
             <LoaderCircle className="animate-spin" />
-          : "Update All Courses"}
+          ) : (
+            "Update All Courses"
+          )}
         </Button>
       </form>
     </Form>
