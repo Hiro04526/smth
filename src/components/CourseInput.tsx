@@ -11,12 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { fetchMultipleCourses } from "@/lib/actions";
 import { Course } from "@/lib/definitions";
-import { getLocalStorage } from "@/lib/utils";
+import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useShallow } from "zustand/react/shallow";
 import { toast } from "./ui/use-toast";
 
 const formSchema = z.object({
@@ -30,6 +31,9 @@ type props = {
 };
 
 const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
+  const { id, setId } = useGlobalStore(
+    useShallow((state) => ({ id: state.id, setId: state.setId }))
+  );
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,8 +43,6 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
   });
 
   const handleUpdate = async () => {
-    const id = getLocalStorage("id_number");
-
     if (!id) {
       toast({
         title: "You haven't set your ID yet!",
@@ -49,6 +51,10 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
       });
 
       return;
+    }
+
+    if (id.includes('"')) {
+      setId(id.replaceAll('"', ""));
     }
 
     setIsFetching(true);
@@ -113,9 +119,11 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
           )}
         />
         <Button className="w-full" type="submit" disabled={isFetching}>
-          {isFetching ?
+          {isFetching ? (
             <LoaderCircle className="animate-spin" />
-          : "Add Course"}
+          ) : (
+            "Add Course"
+          )}
         </Button>
         <Button
           variant="outline"
@@ -123,9 +131,11 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
           onClick={() => handleUpdate()}
           disabled={isFetching}
         >
-          {isFetching ?
+          {isFetching ? (
             <LoaderCircle className="animate-spin" />
-          : "Update All Courses"}
+          ) : (
+            "Update All Courses"
+          )}
         </Button>
       </form>
     </Form>
