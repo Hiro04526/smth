@@ -78,9 +78,15 @@ const createCourseSlice: Slice<CourseStates> = (set) => ({
   addCourse: (course) =>
     set((state) => ({ courses: [...state.courses, course] })),
   removeCourse: (courseCode) =>
-    set((state) => ({
-      courses: state.courses.filter((c) => c.courseCode !== courseCode),
-    })),
+    set((state) => {
+      const { [courseCode]: _, ...remainingRows } = state.selectedRows;
+      const { [courseCode]: __, ...remainingColors } = state.courseColors;
+      return {
+        courses: state.courses.filter((c) => c.courseCode !== courseCode),
+        selectedRows: remainingRows,
+        courseColors: remainingColors,
+      };
+    }),
 });
 
 const createIdSlice: Slice<IdStates> = (set) => ({
