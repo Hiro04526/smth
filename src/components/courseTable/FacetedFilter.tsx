@@ -53,11 +53,12 @@ export function FacetedFilter<TData, TValue>({
                 {selectedValues.size}
               </Badge>
               <div className="hidden space-x-1 lg:flex">
-                {selectedValues.size > 2 ?
+                {selectedValues.size > 2 ? (
                   <Badge variant="secondary" className="rounded-sm px-1">
                     {selectedValues.size} selected
                   </Badge>
-                : options
+                ) : (
+                  options
                     .filter((option) => selectedValues.has(option))
                     .map((option) => (
                       <Badge
@@ -68,7 +69,7 @@ export function FacetedFilter<TData, TValue>({
                         {option}
                       </Badge>
                     ))
-                }
+                )}
               </div>
             </>
           )}
@@ -100,9 +101,9 @@ export function FacetedFilter<TData, TValue>({
                     <div
                       className={cn(
                         "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                        isSelected ?
-                          "bg-primary text-primary-foreground"
-                        : "opacity-50 [&_svg]:invisible"
+                        isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "opacity-50 [&_svg]:invisible"
                       )}
                     >
                       <CheckIcon className={cn("h-4 w-4")} />

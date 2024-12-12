@@ -34,9 +34,9 @@ const SavedTab = () => {
               <SelectTrigger className="w-64">
                 <SelectValue
                   placeholder={`${
-                    !!Object.keys(schedules).length ?
-                      schedules[active].name
-                    : "-"
+                    !!Object.keys(schedules).length
+                      ? schedules[active].name
+                      : "-"
                   }`}
                 >
                   {schedules[active] ? schedules[active].name : "-"}
@@ -75,23 +75,26 @@ const SavedTab = () => {
             </>
           )}
         </Card>
-        {schedules[active] ?
+        {schedules[active] ? (
           <Calendar
             courses={schedules[active].classes}
             colors={schedules[active].colors}
           />
-        : <Card className="p-6 w-full grow items-center flex flex-col justify-center text-muted-foreground gap-2">
+        ) : (
+          <Card className="p-6 w-full grow items-center flex flex-col justify-center text-muted-foreground gap-2">
             <HeartCrack size={100} />
             No schedules saved yet.
           </Card>
-        }
+        )}
       </div>
-      {schedules[active] ?
+      {schedules[active] ? (
         <ScheduleOverview
           activeSchedule={schedules[active].classes}
           colors={schedules[active].colors}
         />
-      : <Card className="w-[20%] p-6"></Card>}
+      ) : (
+        <Card className="w-[20%] p-6"></Card>
+      )}
     </div>
   );
 };

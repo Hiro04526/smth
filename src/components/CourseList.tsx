@@ -46,7 +46,7 @@ export default function CourseList({
         <CardTitle>Course List</CardTitle>
       </CardHeader>
       <CardContent className="grow">
-        {courses.length !== 0 ?
+        {courses.length !== 0 ? (
           <Reorder.Group
             className="flex gap-2 row flex-col"
             axis="y"
@@ -65,9 +65,9 @@ export default function CourseList({
                 />
                 <Button
                   variant={
-                    courses[activeCourse]?.courseCode === course.courseCode ?
-                      "default"
-                    : "outline"
+                    courses[activeCourse]?.courseCode === course.courseCode
+                      ? "default"
+                      : "outline"
                   }
                   onClick={() => setActiveCourse(i)}
                   className="w-full"
@@ -85,11 +85,12 @@ export default function CourseList({
               </Reorder.Item>
             ))}
           </Reorder.Group>
-        : <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center">
+        ) : (
+          <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center">
             <CircleOff />
             None added yet.
           </div>
-        }
+        )}
       </CardContent>
     </Card>
   );

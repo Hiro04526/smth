@@ -187,9 +187,9 @@ const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
                   <FormField
                     control={form.control}
                     name={
-                      day ?
-                        `specific.${day}.maxConsecutive`
-                      : "general.maxConsecutive"
+                      day
+                        ? `specific.${day}.maxConsecutive`
+                        : "general.maxConsecutive"
                     }
                     render={({ field }) => (
                       <FormItem>
