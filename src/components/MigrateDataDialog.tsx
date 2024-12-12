@@ -45,6 +45,12 @@ export default function MigrateDataDialog() {
     localStorage.removeItem("selected_data");
     localStorage.removeItem("selected_rows");
   };
+
+  const handleRemove = () => {
+    removeLocalStorage();
+    setOpen(false);
+  };
+
   const handleMigrate = () => {
     setIsLoading(true);
     const courses = JSON.parse(localStorage.getItem("courses") || "[]");
@@ -74,6 +80,7 @@ export default function MigrateDataDialog() {
 
     setId(idNumber?.replaceAll('"', "") ?? "");
     setIsLoading(false);
+    setOpen(false);
   };
 
   if (!idNumber) {
@@ -107,7 +114,7 @@ export default function MigrateDataDialog() {
         <DialogFooter>
           <Button
             className="inline-flex items-center"
-            onClick={removeLocalStorage}
+            onClick={handleRemove}
             variant="destructive"
           >
             {isLoading ?
