@@ -96,12 +96,12 @@ export function DataTable<TData, TValue>({
                       key={header.id}
                       className={header.column.columnDef.meta?.headerClassName}
                     >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                      {header.isPlaceholder ? null : (
+                        flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )
+                      )}
                     </TableHead>
                   );
                 })}
@@ -109,7 +109,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows?.length ?
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -128,8 +128,7 @@ export function DataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
-            ) : (
-              <TableRow>
+            : <TableRow>
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
@@ -137,7 +136,7 @@ export function DataTable<TData, TValue>({
                   No results.
                 </TableCell>
               </TableRow>
-            )}
+            }
           </TableBody>
         </Table>
       </ScrollArea>
@@ -145,9 +144,9 @@ export function DataTable<TData, TValue>({
         {`${Object.keys(selectedRows).length} out of ${
           data.length
         } rows selected. ${
-          lastFetched
-            ? `Last Fetched: ${new Date(lastFetched).toLocaleString()}`
-            : ""
+          lastFetched ?
+            `Last Fetched: ${new Date(lastFetched).toLocaleString()}`
+          : ""
         }`}
       </div>
     </div>
