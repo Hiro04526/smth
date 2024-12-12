@@ -11,18 +11,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { Filter, FilterOptions, filterSchema } from "@/lib/definitions";
 import { DaysEnum, DaysEnumSchema, ModalityEnumSchema } from "@/lib/enums";
+import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
 import { Card } from "./ui/card";
 import { Switch } from "./ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
-const defaultGeneralSettings: FilterOptions = {
+export const defaultGeneralFilters: FilterOptions = {
   enabled: true,
   start: 0,
   end: 2400,
@@ -32,31 +32,25 @@ const defaultGeneralSettings: FilterOptions = {
   daysInPerson: ["M", "T", "W", "H", "F", "S"],
 };
 
-const defaultSpecificSettings = Object.fromEntries(
+export const defaultSpecificFilters = Object.fromEntries(
   DaysEnumSchema.options.map((day) => [
     day,
-    { ...defaultGeneralSettings, enabled: false },
+    { ...defaultGeneralFilters, enabled: false },
   ])
 ) as Record<DaysEnum, FilterOptions>;
 
 const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
-  console.log("Hello");
-  const [filter, setFilter] = useLocalStorage<Filter>("filter_options", {
-    general: defaultGeneralSettings,
-    specific: defaultSpecificSettings,
-  });
-
-  console.log(filter);
+  const { filter, setFilter } = useGlobalStore(
+    useShallow((state) => ({
+      filter: state.filter,
+      setFilter: state.setFilter,
+    }))
+  );
 
   const form = useForm<Filter>({
     resolver: zodResolver(filterSchema),
     defaultValues: filter,
   });
-
-  useEffect(() => {
-    form.reset(filter);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
 
   function onSubmit(values: Filter) {
     console.log(values);
@@ -193,9 +187,9 @@ const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
                   <FormField
                     control={form.control}
                     name={
-                      day
-                        ? `specific.${day}.maxConsecutive`
-                        : "general.maxConsecutive"
+                      day ?
+                        `specific.${day}.maxConsecutive`
+                      : "general.maxConsecutive"
                     }
                     render={({ field }) => (
                       <FormItem>

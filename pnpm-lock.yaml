@@ -77,6 +77,9 @@ importers:
       framer-motion:
         specifier: ^11.13.5
         version: 11.13.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      idb-keyval:
+        specifier: ^6.2.1
+        version: 6.2.1
       input-otp:
         specifier: ^1.4.1
         version: 1.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -110,6 +113,9 @@ importers:
       zod:
         specifier: ^3.24.0
         version: 3.24.0
+      zustand:
+        specifier: ^5.0.2
+        version: 5.0.2(@types/react@18.3.14)(react@18.3.1)
     devDependencies:
       '@types/node':
         specifier: ^20.17.9
@@ -1587,6 +1593,9 @@ packages:
   html-to-image@1.11.11:
     resolution: {integrity: sha512-9gux8QhvjRO/erSnDPv28noDZcPZmYE7e1vFsBLKLlRlKDSqNJYebj6Qz1TGd5lsRV+X+xYyjCKjuZdABinWjA==}
 
+  idb-keyval@6.2.1:
+    resolution: {integrity: sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==}
+
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
@@ -2449,6 +2458,24 @@ packages:
 
   zod@3.24.0:
     resolution: {integrity: sha512-Hz+wiY8yD0VLA2k/+nsg2Abez674dDGTai33SwNvMPuf9uIrBC9eFgIMQxBBbHFxVXi8W+5nX9DcAh9YNSQm/w==}
+
+  zustand@5.0.2:
+    resolution: {integrity: sha512-8qNdnJVJlHlrKXi50LDqqUNmUbuBjoKLrYQBnoChIbVph7vni+sY+YpvdjXG9YLd/Bxr6scMcR+rm5H3aSqPaw==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
 
 snapshots:
 
@@ -4052,6 +4079,8 @@ snapshots:
 
   html-to-image@1.11.11: {}
 
+  idb-keyval@6.2.1: {}
+
   ignore@5.3.2: {}
 
   import-fresh@3.3.0:
@@ -4960,3 +4989,8 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zod@3.24.0: {}
+
+  zustand@5.0.2(@types/react@18.3.14)(react@18.3.1):
+    optionalDependencies:
+      '@types/react': 18.3.14
+      react: 18.3.1

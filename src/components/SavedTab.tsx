@@ -7,8 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useLocalStorage from "@/hooks/useLocalStorage";
-import { ClassSchedule } from "@/lib/definitions";
+import { useGlobalStore } from "@/stores/useGlobalStore";
 import { HeartCrack } from "lucide-react";
 import { useState } from "react";
 import { FixedSizeList } from "react-window";
@@ -19,10 +18,7 @@ import ScheduleOverview from "./ScheduleOverview";
 import { Card } from "./ui/card";
 
 const SavedTab = () => {
-  const [schedules, setSchedules] = useLocalStorage<ClassSchedule[]>(
-    "saved_schedules",
-    []
-  );
+  const schedules = useGlobalStore((state) => state.savedSchedules);
   const [active, setActive] = useState<number>(0);
 
   return (

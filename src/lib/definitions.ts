@@ -56,13 +56,13 @@ export const filterSchema = z.object({
   }),
 });
 
-export const ClassScheduleSchema = z.object({
+export const savedScheduleSchema = z.object({
   name: z.string(),
   classes: classSchema.array(),
   colors: z.record(z.string(), ColorsEnumSchema),
 });
 
-export type ClassSchedule = z.infer<typeof ClassScheduleSchema>;
+export type SavedSchedule = z.infer<typeof savedScheduleSchema>;
 export type Schedule = z.infer<typeof scheduleSchema>;
 export type Class = z.infer<typeof classSchema>;
 export type Course = z.infer<typeof courseSchema>;
