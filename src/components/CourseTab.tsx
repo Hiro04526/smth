@@ -85,22 +85,21 @@ const CourseTab = () => {
           setActiveCourse={setActiveCourse}
         />
       </div>
-      {!!courses.length ? (
+      {!!courses.length ?
         <DataTable
           columns={columns}
           data={courses[activeCourse].classes}
           lastFetched={courses[activeCourse].lastFetched}
           activeCourse={courses[activeCourse].courseCode}
         />
-      ) : (
-        <Card className="flex flex-row items-center justify-center gap-6 text-muted-foreground p-6 grow">
+      : <Card className="flex flex-row items-center justify-center gap-6 text-muted-foreground p-6 grow">
           <MousePointerClick strokeWidth={1} size={80} />
           <span className="flex flex-col gap-1">
             <span className="font-bold text-xl">No courses yet...</span>
             <span className="w-80">{`Add courses on the left. Don't forget to set your ID at the top right too!`}</span>
           </span>
         </Card>
-      )}
+      }
     </div>
   );
 };

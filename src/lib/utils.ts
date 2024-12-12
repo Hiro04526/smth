@@ -1,4 +1,3 @@
-import { RowSelectionState } from "@tanstack/react-table";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Class, Filter, Schedule } from "./definitions";
@@ -187,32 +186,6 @@ export function toProperCase(val: string) {
     .replaceAll("_", " ")
     .toLowerCase()
     .replace(/((?<=( |-)|^).)/g, (s) => s.toUpperCase());
-}
-
-export function getLocalStorage(name: string) {
-  const stored = localStorage.getItem(name);
-  const parsed = stored !== null ? JSON.parse(stored) : null;
-
-  return parsed;
-}
-
-export function setSelectedData(courseCode: string, data: Class[] | "DELETE") {
-  const selectedData = getLocalStorage("selected_data") ?? {};
-
-  if (data === "DELETE") {
-    const selectedRows =
-      (getLocalStorage("selected_rows") as Record<string, RowSelectionState>) ??
-      {};
-    delete selectedRows[courseCode];
-    delete selectedData[courseCode];
-
-    localStorage.setItem("selected_rows", JSON.stringify(selectedRows));
-    localStorage.setItem("selected_data", JSON.stringify(selectedData));
-    return;
-  }
-
-  selectedData[courseCode] = data;
-  localStorage.setItem("selected_data", JSON.stringify(selectedData));
 }
 
 export function getCardColors(color: ColorsEnum) {
