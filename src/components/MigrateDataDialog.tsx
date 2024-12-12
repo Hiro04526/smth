@@ -61,7 +61,9 @@ export default function MigrateDataDialog() {
     setCourseColors(colors);
     setCourses(courses);
     setSavedSchedules(savedSchedules);
-    setFilter(filter);
+    if (Object.keys(filter).length) {
+      setFilter(filter);
+    }
     setSchedules(schedules);
 
     Object.entries(selectedRows).forEach(([courseCode, selected]) => {
