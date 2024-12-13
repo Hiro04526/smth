@@ -1,10 +1,11 @@
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Reorder, useDragControls } from "framer-motion";
-import { CircleOff, GripVertical, ListX } from "lucide-react";
+import { CircleOff, GripVertical, ListX, X } from "lucide-react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import TooltipButton from "./common/TooltipButton";
+import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
@@ -88,17 +89,25 @@ export default function CourseList({
                       : "outline"
                   }
                   onClick={() => setActiveCourse(i)}
-                  className="w-full"
+                  className="w-full justify-between"
                 >
-                  {course.courseCode}
+                  {course.courseCode}{" "}
+                  {selectedRows[course.courseCode] && (
+                    <Badge
+                      variant="secondary"
+                      className="rounded-sm font-bold p-1 size-5 justify-center font-mono"
+                    >
+                      {Object.keys(selectedRows[course.courseCode]).length}
+                    </Badge>
+                  )}
                 </Button>
                 <Button
                   size="icon"
-                  className="shrink-0 hover:border-rose-700"
+                  className="shrink-0 group hover:bg-destructive/80"
                   variant="outline"
                   onClick={() => handleDelete(course.courseCode)}
                 >
-                  X
+                  <X className="size-4 group-hover:text-destructive-foreground" />
                 </Button>
               </Reorder.Item>
             ))}

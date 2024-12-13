@@ -70,7 +70,7 @@ const CourseTab = () => {
 
   return (
     <div className="flex gap-4 flex-row flex-grow py-8 px-16 w-full self-stretch min-h-0">
-      <div className="flex flex-col gap-4 min-w-64 max-w-64">
+      <div className="flex flex-col gap-4 min-w-72 max-w-72">
         <Card>
           <CardContent className="pt-6">
             <CourseInput
