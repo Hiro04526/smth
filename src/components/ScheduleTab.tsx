@@ -31,6 +31,7 @@ const ScheduleTab = () => {
     setColors,
     getSelectedData,
     filter,
+    randomizeColors,
   } = useGlobalStore(
     useShallow((state) => ({
       schedules: state.schedules,
@@ -39,6 +40,7 @@ const ScheduleTab = () => {
       setColors: state.setCourseColors,
       getSelectedData: state.getSelectedData,
       filter: state.filter,
+      randomizeColors: state.randomizeColors,
     }))
   );
   const [active, setActive] = useState<number>(0);
@@ -78,7 +80,20 @@ const ScheduleTab = () => {
 
     // If no error occurs, just set schedules as normal.
     setSchedules(newSchedules);
-    setColors(newColors);
+
+    // Check if colors should be randomized
+    if (randomizeColors) {
+      setColors(newColors);
+    } else {
+      // Remove any colors that are not in the new colors and keep the old ones
+      const refinedColors = Object.keys(newColors).reduce((acc, course) => {
+        acc[course] = colors[course] ?? newColors[course];
+        return acc;
+      }, {} as typeof colors);
+
+      setColors(refinedColors);
+    }
+
     setActive(0);
     toast({
       title: "Sucessfully generated schedules!",

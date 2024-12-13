@@ -68,6 +68,8 @@ interface ScheduleStates {
   addSavedSchedule: (schedule: SavedSchedule) => void;
   deleteSavedSchedule: (name: string) => void;
   setSavedSchedules: (schedules: SavedSchedule[]) => void;
+  randomizeColors: boolean;
+  setRandomizeColors: (randomizeColors: boolean) => void;
 }
 
 // Collection of all the states stored in the store
@@ -95,12 +97,10 @@ const createCourseSlice: Slice<CourseStates> = (set) => ({
   removeCourse: (courseCode) =>
     set((state) => {
       const { [courseCode]: _, ...remainingRows } = state.selectedRows;
-      const { [courseCode]: __, ...remainingColors } = state.courseColors;
       const { [courseCode]: ___, ...remainingFilters } = state.columnFilters;
       return {
         courses: state.courses.filter((c) => c.courseCode !== courseCode),
         selectedRows: remainingRows,
-        courseColors: remainingColors,
         columnFilters: remainingFilters,
       };
     }),
@@ -184,6 +184,8 @@ const createScheduleSlice: Slice<ScheduleStates> = (set) => ({
       savedSchedules: state.savedSchedules.filter((s) => s.name !== name),
     })),
   setSavedSchedules: (schedules) => set({ savedSchedules: schedules }),
+  randomizeColors: true,
+  setRandomizeColors: (randomizeColors) => set({ randomizeColors }),
 });
 
 // Combine all slices into one global store
