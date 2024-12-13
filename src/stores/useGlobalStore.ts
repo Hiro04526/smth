@@ -42,6 +42,7 @@ interface TableStates {
     rowSelection: RowSelectionState
   ) => void;
   getSelectedData: () => Class[][];
+  removeAllSelectedRows: () => void;
 }
 
 interface ScheduleStates {
@@ -136,6 +137,7 @@ const createTableSlice: Slice<TableStates> = (set, get) => ({
       );
     });
   },
+  removeAllSelectedRows: () => set({ selectedRows: {} }),
 });
 
 const createScheduleSlice: Slice<ScheduleStates> = (set) => ({

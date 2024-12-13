@@ -1,7 +1,7 @@
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Reorder, useDragControls } from "framer-motion";
-import { CircleOff, GripVertical } from "lucide-react";
+import { CircleOff, GripVertical, ListX } from "lucide-react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "./ui/button";
@@ -15,11 +15,19 @@ export default function CourseList({
   activeCourse,
   setActiveCourse,
 }: CourseListProps) {
-  const { courses, setCourses, removeCourse } = useGlobalStore(
+  const {
+    courses,
+    setCourses,
+    removeCourse,
+    selectedRows,
+    removeAllSelectedRows,
+  } = useGlobalStore(
     useShallow((state) => ({
       courses: state.courses,
       setCourses: state.setCourses,
       removeCourse: state.removeCourse,
+      selectedRows: state.selectedRows,
+      removeAllSelectedRows: state.removeAllSelectedRows,
     }))
   );
 
@@ -42,10 +50,18 @@ export default function CourseList({
 
   return (
     <Card className="flex flex-col grow">
-      <CardHeader>
+      <CardHeader className="pb-4">
         <CardTitle>Course List</CardTitle>
       </CardHeader>
       <CardContent className="grow">
+        <Button
+          variant="outline"
+          className="w-full mb-2"
+          disabled={!Object.keys(selectedRows).length}
+          onClick={removeAllSelectedRows}
+        >
+          <ListX className="mr-2 size-4" /> Clear Selected Rows
+        </Button>
         {courses.length !== 0 ? (
           <Reorder.Group
             className="flex gap-2 row flex-col"
