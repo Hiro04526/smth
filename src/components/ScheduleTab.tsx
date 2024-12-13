@@ -14,6 +14,7 @@ import { useState } from "react";
 import { FixedSizeList } from "react-window";
 import { useShallow } from "zustand/react/shallow";
 import Calendar from "./Calendar";
+import CourseColorsDialog from "./CourseColorsDialog";
 import DownloadScheduleButton from "./DownloadScheduleButton";
 import FilterSettings from "./FilterSettings";
 import SaveButton from "./SaveButton";
@@ -151,6 +152,7 @@ const ScheduleTab = () => {
               colors={colors}
             />
           )}
+          {schedules[active] && <CourseColorsDialog />}
         </Card>
         {schedules[active] ? (
           <Calendar courses={schedules[active]} colors={colors} />
