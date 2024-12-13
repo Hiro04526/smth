@@ -52,7 +52,7 @@ export default function CourseList({
 
   return (
     <Card className="flex flex-col grow">
-      <CardHeader className="pb-4 flex flex-row items-center justify-between">
+      <CardHeader className="pb-4 flex flex-row items-center justify-between space-y-0">
         <CardTitle>Course List</CardTitle>
         <TooltipButton
           tooltip="Clear Selected Rows"
