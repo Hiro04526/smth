@@ -44,7 +44,6 @@ const ScheduleTab = () => {
 
   const handleGenerate = () => {
     const selectedData = getSelectedData();
-    console.log(selectedData);
 
     if (!selectedData.length) {
       toast({

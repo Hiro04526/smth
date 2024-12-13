@@ -53,8 +53,6 @@ const FilterForm = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
   });
 
   function onSubmit(values: Filter) {
-    console.log(values);
-
     // Make all disabled days sync with general settings
     Object.keys(values.specific).forEach((day) => {
       if (!values.specific[day as DaysEnum].enabled) {

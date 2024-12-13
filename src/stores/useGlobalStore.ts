@@ -97,9 +97,15 @@ const createIdSlice: Slice<IdStates> = (set) => ({
 const createTableSlice: Slice<TableStates> = (set, get) => ({
   selectedRows: {},
   setSelectedRows: (courseCode, rowSelection) =>
-    set((state) => ({
-      selectedRows: { ...state.selectedRows, [courseCode]: rowSelection },
-    })),
+    set((state) => {
+      const newSelectedRows = { ...state.selectedRows };
+      if (Object.keys(rowSelection).length === 0) {
+        delete newSelectedRows[courseCode];
+      } else {
+        newSelectedRows[courseCode] = rowSelection;
+      }
+      return { selectedRows: newSelectedRows };
+    }),
   getSelectedData: () => {
     const selectedRows = get().selectedRows;
     const courses = get().courses;
