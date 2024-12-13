@@ -142,7 +142,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </ScrollArea>
       <div className="text-sm text-muted-foreground">
-        {`${Object.keys(selectedRows).length} out of ${
+        {`${Object.keys(rowSelection).length} out of ${
           data.length
         } rows selected. ${
           lastFetched
