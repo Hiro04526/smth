@@ -54,6 +54,7 @@ interface TableStates {
     courseCode: string,
     columnFilters: ColumnFiltersState
   ) => void;
+  getColumnFilters: (courseCode: string) => ColumnFiltersState;
 }
 
 interface ScheduleStates {
@@ -88,15 +89,19 @@ const createCourseSlice: Slice<CourseStates> = (set) => ({
   courses: [],
   setCourses: (courses) => set({ courses }),
   addCourse: (course) =>
-    set((state) => ({ courses: [...state.courses, course] })),
+    set((state) => ({
+      courses: [...state.courses, course],
+    })),
   removeCourse: (courseCode) =>
     set((state) => {
       const { [courseCode]: _, ...remainingRows } = state.selectedRows;
       const { [courseCode]: __, ...remainingColors } = state.courseColors;
+      const { [courseCode]: ___, ...remainingFilters } = state.columnFilters;
       return {
         courses: state.courses.filter((c) => c.courseCode !== courseCode),
         selectedRows: remainingRows,
         courseColors: remainingColors,
+        columnFilters: remainingFilters,
       };
     }),
 });
@@ -158,17 +163,10 @@ const createTableSlice: Slice<TableStates> = (set, get) => ({
   setColumnVisibility: (columnVisibility) => set({ columnVisibility }),
   columnFilters: {},
   setColumnFilters: (courseCode, columnFilters) =>
-    set((state) => {
-      const newColumnFilters = { ...state.columnFilters };
-
-      if (Object.keys(columnFilters).length === 0) {
-        delete newColumnFilters[courseCode];
-      } else {
-        newColumnFilters[courseCode] = columnFilters;
-      }
-
-      return { columnFilters: newColumnFilters };
-    }),
+    set((state) => ({
+      columnFilters: { ...state.columnFilters, [courseCode]: columnFilters },
+    })),
+  getColumnFilters: (courseCode) => get().columnFilters[courseCode] ?? [],
 });
 
 const createScheduleSlice: Slice<ScheduleStates> = (set) => ({

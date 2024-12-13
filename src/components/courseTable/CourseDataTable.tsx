@@ -49,7 +49,7 @@ export function CourseDataTable<TData, TValue>({
     setColumnVisibility,
   } = useGlobalStore(
     useShallow((state) => ({
-      columnFilters: state.columnFilters,
+      columnFilters: state.columnFilters[activeCourse],
       setColumnFilters: state.setColumnFilters,
       selectedRows: state.selectedRows,
       setSelectedRows: state.setSelectedRows,
@@ -58,8 +58,15 @@ export function CourseDataTable<TData, TValue>({
     }))
   );
 
+  // IMPORANT: This code is required since if there's no entry in
+  // courseColumnFilters for the activeCourse, the table will
+  // infinitely re-render. This is a bug in the library.
+  // I have no idea why this happens, but this is a workaround.
+  if (!columnFilters) {
+    setColumnFilters(activeCourse, []);
+  }
+
   const rowSelection = selectedRows[activeCourse] || {};
-  const columnFiltersValue = columnFilters[activeCourse] || [];
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -74,7 +81,7 @@ export function CourseDataTable<TData, TValue>({
     },
     onColumnFiltersChange: (updater) => {
       const newColumnFiltersValue =
-        updater instanceof Function ? updater(columnFiltersValue) : updater;
+        updater instanceof Function ? updater(columnFilters) : updater;
       setColumnFilters(activeCourse, newColumnFiltersValue);
     },
     getFilteredRowModel: getFilteredRowModel(),
@@ -88,7 +95,7 @@ export function CourseDataTable<TData, TValue>({
       setColumnVisibility(newColumnVisibilityValue);
     },
     state: {
-      columnFilters: columnFiltersValue,
+      columnFilters: columnFilters ?? [],
       rowSelection,
       sorting,
       columnVisibility,
