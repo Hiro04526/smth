@@ -134,21 +134,18 @@ export const columns: ColumnDef<Class>[] = [
       headerClassName: "w-[100px]",
     },
     filterFn: "arrIncludesSome",
+    enableHiding: false,
   },
   {
     id: "restriction",
     accessorKey: "restriction",
     filterFn: "arrIncludesSome",
+    enableHiding: false,
   },
 
   {
     header: "Remarks",
     accessorKey: "remarks",
-  },
-
-  {
-    id: "courseCode",
-    accessorKey: "course",
   },
   {
     id: "status",
@@ -158,5 +155,6 @@ export const columns: ColumnDef<Class>[] = [
       return isClosed ? "Closed" : "Open";
     },
     filterFn: "arrIncludesSome",
+    enableHiding: false,
   },
 ];

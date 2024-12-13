@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { FilterBar } from "./FilterBar";
@@ -62,9 +62,12 @@ export function CourseDataTable<TData, TValue>({
   // courseColumnFilters for the activeCourse, the table will
   // infinitely re-render. This is a bug in the library.
   // I have no idea why this happens, but this is a workaround.
-  if (!columnFilters) {
-    setColumnFilters(activeCourse, []);
-  }
+
+  useEffect(() => {
+    if (!columnFilters) {
+      setColumnFilters(activeCourse, []);
+    }
+  }, [activeCourse, columnFilters, setColumnFilters]);
 
   const rowSelection = selectedRows[activeCourse] || {};
 
