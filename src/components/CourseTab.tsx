@@ -7,8 +7,8 @@ import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import CourseInput from "./CourseInput";
 import CourseList from "./CourseList";
-import { columns } from "./courseTable/columns";
-import { DataTable } from "./courseTable/data-table";
+import { CourseDataTable } from "./courseTable/CourseDataTable";
+import { columns } from "./courseTable/CourseTableColumns";
 import { Card, CardContent } from "./ui/card";
 import { toast } from "./ui/use-toast";
 
@@ -86,7 +86,7 @@ const CourseTab = () => {
         />
       </div>
       {!!courses.length ? (
-        <DataTable
+        <CourseDataTable
           columns={columns}
           data={courses[activeCourse].classes}
           lastFetched={courses[activeCourse].lastFetched}

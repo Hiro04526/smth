@@ -2,7 +2,6 @@
 
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -24,8 +23,9 @@ import {
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { FilterBar } from "./FilterBar";
+import ViewColumnsDropdown from "./ViewColumnsDropdown";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -34,21 +34,32 @@ interface DataTableProps<TData, TValue> {
   activeCourse: string;
 }
 
-export function DataTable<TData, TValue>({
+export function CourseDataTable<TData, TValue>({
   columns,
   data,
   lastFetched,
   activeCourse,
 }: DataTableProps<TData, TValue>) {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const { selectedRows, setSelectedRows } = useGlobalStore(
+  const {
+    columnFilters,
+    setColumnFilters,
+    selectedRows,
+    setSelectedRows,
+    columnVisibility,
+    setColumnVisibility,
+  } = useGlobalStore(
     useShallow((state) => ({
+      columnFilters: state.columnFilters,
+      setColumnFilters: state.setColumnFilters,
       selectedRows: state.selectedRows,
       setSelectedRows: state.setSelectedRows,
+      columnVisibility: state.columnVisibility,
+      setColumnVisibility: state.setColumnVisibility,
     }))
   );
 
   const rowSelection = selectedRows[activeCourse] || {};
+  const columnFiltersValue = columnFilters[activeCourse] || [];
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -61,32 +72,37 @@ export function DataTable<TData, TValue>({
         updater instanceof Function ? updater(rowSelection) : updater;
       setSelectedRows(activeCourse, newRowSelectionValue);
     },
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: (updater) => {
+      const newColumnFiltersValue =
+        updater instanceof Function ? updater(columnFiltersValue) : updater;
+      setColumnFilters(activeCourse, newColumnFiltersValue);
+    },
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     onSortingChange: setSorting,
+    onColumnVisibilityChange: (updater) => {
+      const newColumnVisibilityValue =
+        updater instanceof Function ? updater(columnVisibility) : updater;
+      setColumnVisibility(newColumnVisibilityValue);
+    },
     state: {
-      columnFilters,
+      columnFilters: columnFiltersValue,
       rowSelection,
       sorting,
-    },
-    initialState: {
-      columnVisibility: {
-        courseCode: false,
-        modality: false,
-        restriction: false,
-        status: false,
-      },
+      columnVisibility,
     },
   });
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      <FilterBar table={table} />
-      <ScrollArea className="w-full rounded-md border overflow-hidden">
-        <Table>
+    <div className="flex shrink grow flex-col gap-4 min-w-0 min-h-0">
+      <div className="flex flex-row justify-between">
+        <FilterBar table={table} />
+        <ViewColumnsDropdown table={table} />
+      </div>
+      <ScrollArea className="rounded-md border ">
+        <Table className="overflow-x-auto">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -140,6 +156,8 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+        <ScrollBar orientation="horizontal" />
+        <ScrollBar orientation="vertical" />
       </ScrollArea>
       <div className="text-sm text-muted-foreground">
         {`${Object.keys(rowSelection).length} out of ${

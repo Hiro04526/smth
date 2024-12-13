@@ -4,7 +4,11 @@ import {
 } from "@/components/FilterForm";
 import { Class, Course, Filter, SavedSchedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
-import { RowSelectionState } from "@tanstack/react-table";
+import {
+  ColumnFiltersState,
+  RowSelectionState,
+  VisibilityState,
+} from "@tanstack/react-table";
 import { del, get, set } from "idb-keyval"; // can use anything: IndexedDB, Ionic Storage, etc.
 import { create, StateCreator } from "zustand";
 import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
@@ -43,6 +47,13 @@ interface TableStates {
   ) => void;
   getSelectedData: () => Class[][];
   removeAllSelectedRows: () => void;
+  columnVisibility: VisibilityState;
+  setColumnVisibility: (columnVisibility: VisibilityState) => void;
+  columnFilters: Record<string, ColumnFiltersState>;
+  setColumnFilters: (
+    courseCode: string,
+    columnFilters: ColumnFiltersState
+  ) => void;
 }
 
 interface ScheduleStates {
@@ -138,6 +149,26 @@ const createTableSlice: Slice<TableStates> = (set, get) => ({
     });
   },
   removeAllSelectedRows: () => set({ selectedRows: {} }),
+  columnVisibility: {
+    courseCode: false,
+    modality: false,
+    restriction: false,
+    status: false,
+  },
+  setColumnVisibility: (columnVisibility) => set({ columnVisibility }),
+  columnFilters: {},
+  setColumnFilters: (courseCode, columnFilters) =>
+    set((state) => {
+      const newColumnFilters = { ...state.columnFilters };
+
+      if (Object.keys(columnFilters).length === 0) {
+        delete newColumnFilters[courseCode];
+      } else {
+        newColumnFilters[courseCode] = columnFilters;
+      }
+
+      return { columnFilters: newColumnFilters };
+    }),
 });
 
 const createScheduleSlice: Slice<ScheduleStates> = (set) => ({

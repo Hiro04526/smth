@@ -1,12 +1,11 @@
 "use client";
 
 import { Class, Schedule } from "@/lib/definitions";
+import { convertTime, toProperCase } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "../ui/badge";
 import { Checkbox } from "../ui/checkbox";
 import { SortableHeader } from "./SortableHeader";
-import { Badge } from "../ui/badge";
-import { MapPin, Wifi } from "lucide-react";
-import { convertTime, toProperCase } from "@/lib/utils";
 
 export const columns: ColumnDef<Class>[] = [
   {

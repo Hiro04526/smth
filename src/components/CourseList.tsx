@@ -4,6 +4,7 @@ import { Reorder, useDragControls } from "framer-motion";
 import { CircleOff, GripVertical, ListX } from "lucide-react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
+import TooltipButton from "./common/TooltipButton";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
@@ -50,18 +51,19 @@ export default function CourseList({
 
   return (
     <Card className="flex flex-col grow">
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4 flex flex-row items-center justify-between">
         <CardTitle>Course List</CardTitle>
-      </CardHeader>
-      <CardContent className="grow">
-        <Button
+        <TooltipButton
+          tooltip="Clear Selected Rows"
           variant="outline"
-          className="w-full mb-2"
+          size="icon"
           disabled={!Object.keys(selectedRows).length}
           onClick={removeAllSelectedRows}
         >
-          <ListX className="mr-2 size-4" /> Clear Selected Rows
-        </Button>
+          <ListX />
+        </TooltipButton>
+      </CardHeader>
+      <CardContent className="grow">
         {courses.length !== 0 ? (
           <Reorder.Group
             className="flex gap-2 row flex-col"
