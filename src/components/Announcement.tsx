@@ -17,14 +17,12 @@ import { Button } from "./ui/button";
 
 export default function Announcement() {
   const [open, setOpen] = useState(false);
-  const { hasSeenAnnouncement, setHasSeenAnnouncement, courses } =
-    useGlobalStore(
-      useShallow((state) => ({
-        hasSeenAnnouncement: state.hasSeenAnnouncement,
-        setHasSeenAnnouncement: state.setHasSeenAnnouncement,
-        courses: state.courses,
-      }))
-    );
+  const { hasSeenAnnouncement, setHasSeenAnnouncement } = useGlobalStore(
+    useShallow((state) => ({
+      hasSeenAnnouncement: state.hasSeenAnnouncement,
+      setHasSeenAnnouncement: state.setHasSeenAnnouncement,
+    }))
+  );
 
   const hasHydrated = useGlobalStore.persist.hasHydrated();
 
