@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -37,18 +38,19 @@ export default function Announcement() {
         "Course Colors are now customizable in Schedules! You can also now set if you want to randomize colors.",
     },
     {
+      title: "Selected Rows Indicator",
+      description:
+        "You can now see how many rows have been selected for a specific course on the course list.",
+    },
+    {
       title: "Clear Selected Rows",
       description:
-        "All rows can now be cleared on the click of one button! It's near the Course List.",
+        "All rows can now be cleared on the click of one button! You can see it near the Course List.",
     },
     {
       title: "Toggle Columns",
       description:
         "Table Columns can now be hidden/shown using the 'View' button at the top-right corner of the table.",
-    },
-    {
-      title: "Various UI Improvements",
-      description: "Some of the UI has been cleaned up!",
     },
   ];
 
@@ -66,17 +68,21 @@ export default function Announcement() {
           <Megaphone className="size-5" />
         </TooltipButton>
       </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
-        {updates.map(({ title, description }, i) => (
-          <StepCard
-            key={i}
-            step={i + 1}
-            description={description}
-            title={title}
-          />
-        ))}
+      <DialogContent className="max-h-[75%] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 min-h-0 overflow-y-auto">
+          {updates.map(({ title, description }, i) => (
+            <StepCard
+              key={i}
+              step={i + 1}
+              description={description}
+              title={title}
+            />
+          ))}
+        </div>
         <DialogFooter className="sm:justify-start">
           <p className="text-sm text-muted-foreground">
             Patch Date: {patchDate}
