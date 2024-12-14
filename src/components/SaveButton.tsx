@@ -7,7 +7,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import TooltipButton from "./common/TooltipButton";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -114,23 +113,18 @@ const SaveButton = ({ activeSched, colors }: Props) => {
 
   if (isSaved) {
     return (
-      <TooltipButton
-        variant="secondary"
-        size="icon"
-        onClick={() => onDelete(isSaved)}
-        tooltip="Unsave Schedule"
-      >
+      <Button variant="secondary" size="icon" onClick={() => onDelete(isSaved)}>
         <HeartOff className="size-4" />
-      </TooltipButton>
+      </Button>
     );
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <TooltipButton variant="outline" size="icon" tooltip="Save Schedule">
+        <Button variant="outline" size="icon">
           <Heart className="size-4" />
-        </TooltipButton>
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-[380px]">
         <DialogHeader>

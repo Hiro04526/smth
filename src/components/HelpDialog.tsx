@@ -1,5 +1,5 @@
 import { CircleHelp } from "lucide-react";
-import TooltipButton from "./common/TooltipButton";
+import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import {
   Dialog,
@@ -65,9 +65,9 @@ export default function HelpDialog({}: HelpDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <TooltipButton variant="outline" size="icon" tooltip="Help">
+        <Button variant="outline" size="icon">
           <CircleHelp className="size-5" />
-        </TooltipButton>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

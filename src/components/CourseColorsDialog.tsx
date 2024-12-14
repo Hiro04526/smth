@@ -4,7 +4,6 @@ import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Check, CheckCheck, Palette } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
-import TooltipButton from "./common/TooltipButton";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import {
@@ -52,13 +51,9 @@ export default function CourseColorsDialog({}: CourseColorsDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <TooltipButton
-          tooltip="Change Course Colors"
-          variant="outline"
-          size="icon"
-        >
+        <Button variant="outline" size="icon">
           <Palette className="size-4" />
-        </TooltipButton>
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[75%] h-max flex flex-col">
         <DialogHeader>
