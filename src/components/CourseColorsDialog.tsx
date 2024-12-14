@@ -49,9 +49,6 @@ export default function CourseColorsDialog({}: CourseColorsDialogProps) {
     setColors({ ...courseColors });
   }, [courseColors]);
 
-  console.log(colors);
-  console.log(courseColors);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -59,15 +56,15 @@ export default function CourseColorsDialog({}: CourseColorsDialogProps) {
           <Palette className="size-4" />
         </TooltipButton>
       </DialogTrigger>
-      <DialogContent className="h-[75vh]">
+      <DialogContent className="max-h-[75%] h-max flex flex-col">
         <DialogHeader>
           <DialogTitle>Course Colors</DialogTitle>
           <DialogDescription>
             Change how your courses colors look!
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea>
-          <div className="flex flex-col gap-4 w-full">
+        <ScrollArea className="flex flex-col">
+          <div className="flex flex-col gap-4">
             {Object.entries(colors).map(([course, color]) => (
               <Card key={course} className="flex flex-col gap-2 p-4">
                 <div className="font-bold">{course}</div>

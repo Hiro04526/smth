@@ -72,12 +72,20 @@ interface ScheduleStates {
   setRandomizeColors: (randomizeColors: boolean) => void;
 }
 
+interface MiscStates {
+  _hasHydrated: boolean;
+  setHasHydrated: (hasHydrated: boolean) => void;
+  hasSeenAnnouncement: string | null;
+  setHasSeenAnnouncement: (hasSeenAnnouncement: string) => void;
+}
+
 // Collection of all the states stored in the store
 interface GlobalStates
   extends CourseStates,
     IdStates,
     TableStates,
-    ScheduleStates {}
+    ScheduleStates,
+    MiscStates {}
 
 // Abstracted type for creating slices
 type Slice<T> = StateCreator<
@@ -188,6 +196,13 @@ const createScheduleSlice: Slice<ScheduleStates> = (set) => ({
   setRandomizeColors: (randomizeColors) => set({ randomizeColors }),
 });
 
+const createMiscSlice: Slice<MiscStates> = (set) => ({
+  _hasHydrated: false,
+  setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
+  hasSeenAnnouncement: null,
+  setHasSeenAnnouncement: (hasSeenAnnouncement) => set({ hasSeenAnnouncement }),
+});
+
 // Combine all slices into one global store
 // This pattern is based on this link:
 // https://zustand.docs.pmnd.rs/guides/slices-pattern#usage-with-typescript
@@ -198,6 +213,7 @@ export const useGlobalStore = create<GlobalStates>()(
       ...createIdSlice(...a),
       ...createTableSlice(...a),
       ...createScheduleSlice(...a),
+      ...createMiscSlice(...a),
     }),
     {
       name: "global-state",

@@ -1,7 +1,12 @@
 "use client";
 
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { ArrowUpDown, LoaderCircle, Megaphone, Trash2 } from "lucide-react";
+import {
+  ArrowLeftRight,
+  ArrowUpDown,
+  LoaderCircle,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
@@ -94,7 +99,7 @@ export default function MigrateDataDialog() {
           className="inline-flex items-center animate-pulse"
           variant="secondary"
         >
-          <Megaphone className="size-4 mr-2" /> Announcement!
+          <ArrowLeftRight className="size-4 mr-2" /> Migrate
         </Button>
       </DialogTrigger>
       <DialogContent
