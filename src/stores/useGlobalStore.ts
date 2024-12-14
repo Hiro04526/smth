@@ -4,7 +4,11 @@ import {
 } from "@/components/FilterForm";
 import { Class, Course, Filter, SavedSchedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
-import { RowSelectionState } from "@tanstack/react-table";
+import {
+  ColumnFiltersState,
+  RowSelectionState,
+  VisibilityState,
+} from "@tanstack/react-table";
 import { del, get, set } from "idb-keyval"; // can use anything: IndexedDB, Ionic Storage, etc.
 import { create, StateCreator } from "zustand";
 import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
@@ -42,6 +46,15 @@ interface TableStates {
     rowSelection: RowSelectionState
   ) => void;
   getSelectedData: () => Class[][];
+  removeAllSelectedRows: () => void;
+  columnVisibility: VisibilityState;
+  setColumnVisibility: (columnVisibility: VisibilityState) => void;
+  columnFilters: Record<string, ColumnFiltersState>;
+  setColumnFilters: (
+    courseCode: string,
+    columnFilters: ColumnFiltersState
+  ) => void;
+  getColumnFilters: (courseCode: string) => ColumnFiltersState;
 }
 
 interface ScheduleStates {
@@ -55,6 +68,15 @@ interface ScheduleStates {
   addSavedSchedule: (schedule: SavedSchedule) => void;
   deleteSavedSchedule: (name: string) => void;
   setSavedSchedules: (schedules: SavedSchedule[]) => void;
+  randomizeColors: boolean;
+  setRandomizeColors: (randomizeColors: boolean) => void;
+}
+
+interface MiscStates {
+  _hasHydrated: boolean;
+  setHasHydrated: (hasHydrated: boolean) => void;
+  hasSeenAnnouncement: string | null;
+  setHasSeenAnnouncement: (hasSeenAnnouncement: string) => void;
 }
 
 // Collection of all the states stored in the store
@@ -62,7 +84,8 @@ interface GlobalStates
   extends CourseStates,
     IdStates,
     TableStates,
-    ScheduleStates {}
+    ScheduleStates,
+    MiscStates {}
 
 // Abstracted type for creating slices
 type Slice<T> = StateCreator<
@@ -76,15 +99,17 @@ const createCourseSlice: Slice<CourseStates> = (set) => ({
   courses: [],
   setCourses: (courses) => set({ courses }),
   addCourse: (course) =>
-    set((state) => ({ courses: [...state.courses, course] })),
+    set((state) => ({
+      courses: [...state.courses, course],
+    })),
   removeCourse: (courseCode) =>
     set((state) => {
       const { [courseCode]: _, ...remainingRows } = state.selectedRows;
-      const { [courseCode]: __, ...remainingColors } = state.courseColors;
+      const { [courseCode]: ___, ...remainingFilters } = state.columnFilters;
       return {
         courses: state.courses.filter((c) => c.courseCode !== courseCode),
         selectedRows: remainingRows,
-        courseColors: remainingColors,
+        columnFilters: remainingFilters,
       };
     }),
 });
@@ -136,6 +161,20 @@ const createTableSlice: Slice<TableStates> = (set, get) => ({
       );
     });
   },
+  removeAllSelectedRows: () => set({ selectedRows: {} }),
+  columnVisibility: {
+    courseCode: false,
+    modality: false,
+    restriction: false,
+    status: false,
+  },
+  setColumnVisibility: (columnVisibility) => set({ columnVisibility }),
+  columnFilters: {},
+  setColumnFilters: (courseCode, columnFilters) =>
+    set((state) => ({
+      columnFilters: { ...state.columnFilters, [courseCode]: columnFilters },
+    })),
+  getColumnFilters: (courseCode) => get().columnFilters[courseCode] ?? [],
 });
 
 const createScheduleSlice: Slice<ScheduleStates> = (set) => ({
@@ -153,6 +192,15 @@ const createScheduleSlice: Slice<ScheduleStates> = (set) => ({
       savedSchedules: state.savedSchedules.filter((s) => s.name !== name),
     })),
   setSavedSchedules: (schedules) => set({ savedSchedules: schedules }),
+  randomizeColors: true,
+  setRandomizeColors: (randomizeColors) => set({ randomizeColors }),
+});
+
+const createMiscSlice: Slice<MiscStates> = (set) => ({
+  _hasHydrated: false,
+  setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
+  hasSeenAnnouncement: null,
+  setHasSeenAnnouncement: (hasSeenAnnouncement) => set({ hasSeenAnnouncement }),
 });
 
 // Combine all slices into one global store
@@ -165,6 +213,7 @@ export const useGlobalStore = create<GlobalStates>()(
       ...createIdSlice(...a),
       ...createTableSlice(...a),
       ...createScheduleSlice(...a),
+      ...createMiscSlice(...a),
     }),
     {
       name: "global-state",

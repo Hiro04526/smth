@@ -4,6 +4,7 @@ import { CalendarRange, Heart, TableProperties } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Announcement from "./Announcement";
 import HelpDialog from "./HelpDialog";
 import IDInput from "./IDInput";
 import { ModeToggle } from "./ModeToggle";
@@ -56,6 +57,7 @@ const NavigationBar = () => {
       </div>
       <div className="flex flex-row gap-2">
         <MigrateDataDialog />
+        <Announcement />
         <IDInput />
         <ModeToggle />
         <HelpDialog />

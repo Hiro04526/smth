@@ -59,7 +59,7 @@ const IDInput = () => {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="icon">
-          <IdCard />
+          <IdCard className="size-5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-[380px]">

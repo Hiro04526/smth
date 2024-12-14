@@ -16,7 +16,7 @@ interface StepCardProps {
   title: string;
 }
 
-function StepCard({ step, description, title }: StepCardProps) {
+export function StepCard({ step, description, title }: StepCardProps) {
   return (
     <Card className="p-4 flex flex-col gap-2">
       <div className="inline-flex gap-2 items-center">

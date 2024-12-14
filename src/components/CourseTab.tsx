@@ -7,8 +7,8 @@ import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import CourseInput from "./CourseInput";
 import CourseList from "./CourseList";
-import { columns } from "./courseTable/columns";
-import { DataTable } from "./courseTable/data-table";
+import { CourseDataTable } from "./courseTable/CourseDataTable";
+import { columns } from "./courseTable/CourseTableColumns";
 import { Card, CardContent } from "./ui/card";
 import { toast } from "./ui/use-toast";
 
@@ -70,7 +70,7 @@ const CourseTab = () => {
 
   return (
     <div className="flex gap-4 flex-row flex-grow py-8 px-16 w-full self-stretch min-h-0">
-      <div className="flex flex-col gap-4 min-w-64 max-w-64">
+      <div className="flex flex-col gap-4 min-w-72 max-w-72">
         <Card>
           <CardContent className="pt-6">
             <CourseInput
@@ -86,7 +86,7 @@ const CourseTab = () => {
         />
       </div>
       {!!courses.length ? (
-        <DataTable
+        <CourseDataTable
           columns={columns}
           data={courses[activeCourse].classes}
           lastFetched={courses[activeCourse].lastFetched}

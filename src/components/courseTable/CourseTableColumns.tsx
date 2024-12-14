@@ -1,12 +1,11 @@
 "use client";
 
 import { Class, Schedule } from "@/lib/definitions";
+import { convertTime, toProperCase } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "../ui/badge";
 import { Checkbox } from "../ui/checkbox";
 import { SortableHeader } from "./SortableHeader";
-import { Badge } from "../ui/badge";
-import { MapPin, Wifi } from "lucide-react";
-import { convertTime, toProperCase } from "@/lib/utils";
 
 export const columns: ColumnDef<Class>[] = [
   {
@@ -135,21 +134,18 @@ export const columns: ColumnDef<Class>[] = [
       headerClassName: "w-[100px]",
     },
     filterFn: "arrIncludesSome",
+    enableHiding: false,
   },
   {
     id: "restriction",
     accessorKey: "restriction",
     filterFn: "arrIncludesSome",
+    enableHiding: false,
   },
 
   {
     header: "Remarks",
     accessorKey: "remarks",
-  },
-
-  {
-    id: "courseCode",
-    accessorKey: "course",
   },
   {
     id: "status",
@@ -159,5 +155,6 @@ export const columns: ColumnDef<Class>[] = [
       return isClosed ? "Closed" : "Open";
     },
     filterFn: "arrIncludesSome",
+    enableHiding: false,
   },
 ];

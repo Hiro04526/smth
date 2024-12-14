@@ -113,13 +113,8 @@ const SaveButton = ({ activeSched, colors }: Props) => {
 
   if (isSaved) {
     return (
-      <Button
-        className="flex flex-row gap-2 items-center justify-center"
-        variant="secondary"
-        onClick={() => onDelete(isSaved)}
-      >
-        <HeartOff size={16} />
-        <span>Unsave</span>
+      <Button variant="secondary" size="icon" onClick={() => onDelete(isSaved)}>
+        <HeartOff className="size-4" />
       </Button>
     );
   }
@@ -127,11 +122,8 @@ const SaveButton = ({ activeSched, colors }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="flex gap-2 items-center justify-center"
-        >
-          <Heart strokeWidth={2} size={16} /> Save
+        <Button variant="outline" size="icon">
+          <Heart className="size-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-[380px]">
