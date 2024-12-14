@@ -52,7 +52,11 @@ export default function CourseColorsDialog({}: CourseColorsDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <TooltipButton tooltip="Change Course Colors" variant="outline">
+        <TooltipButton
+          tooltip="Change Course Colors"
+          variant="outline"
+          size="icon"
+        >
           <Palette className="size-4" />
         </TooltipButton>
       </DialogTrigger>

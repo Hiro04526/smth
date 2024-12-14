@@ -6,6 +6,7 @@ import { IdCard } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+import TooltipButton from "./common/TooltipButton";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -58,9 +59,9 @@ const IDInput = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
-          <IdCard />
-        </Button>
+        <TooltipButton variant="outline" size="icon" tooltip="Set ID Number">
+          <IdCard className="size-5" />
+        </TooltipButton>
       </DialogTrigger>
       <DialogContent className="w-[380px]">
         <DialogHeader className="">

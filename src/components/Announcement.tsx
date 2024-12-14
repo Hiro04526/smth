@@ -12,8 +12,8 @@ import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Megaphone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import TooltipButton from "./common/TooltipButton";
 import { StepCard } from "./HelpDialog";
-import { Button } from "./ui/button";
 
 export default function Announcement() {
   const [open, setOpen] = useState(false);
@@ -62,9 +62,9 @@ export default function Announcement() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Megaphone className="size-4 mr-2" /> Announcement
-        </Button>
+        <TooltipButton variant="outline" tooltip="Announcement" size="icon">
+          <Megaphone className="size-5" />
+        </TooltipButton>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>{title}</DialogTitle>

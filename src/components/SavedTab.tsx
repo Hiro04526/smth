@@ -80,7 +80,7 @@ const SavedTab = () => {
             </Button>
           </div>
           {schedules[active] && (
-            <>
+            <div className="ml-auto flex flex-row gap-2">
               <SaveButton
                 activeSched={schedules[active].classes}
                 colors={schedules[active].colors}
@@ -89,7 +89,7 @@ const SavedTab = () => {
                 classes={schedules[active].classes}
                 colors={schedules[active].colors}
               />
-            </>
+            </div>
           )}
         </Card>
         {schedules[active] ? (

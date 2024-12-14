@@ -158,16 +158,18 @@ const ScheduleTab = () => {
           </div>
           <Button onClick={() => handleGenerate()}>Generate Schedules</Button>
           <FilterSettings />
-          {schedules[active] && (
-            <SaveButton activeSched={schedules[active]} colors={colors} />
-          )}
-          {schedules[active] && (
-            <DownloadScheduleButton
-              classes={schedules[active]}
-              colors={colors}
-            />
-          )}
-          {schedules[active] && <CourseColorsDialog />}
+          <div className="ml-auto flex gap-2">
+            {schedules[active] && (
+              <>
+                <SaveButton activeSched={schedules[active]} colors={colors} />
+                <CourseColorsDialog />
+                <DownloadScheduleButton
+                  classes={schedules[active]}
+                  colors={colors}
+                />
+              </>
+            )}
+          </div>
         </Card>
         {schedules[active] ? (
           <Calendar courses={schedules[active]} colors={colors} />
