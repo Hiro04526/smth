@@ -8,13 +8,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { HeartCrack } from "lucide-react";
+import { ChevronLeft, ChevronRight, HeartCrack } from "lucide-react";
 import { useState } from "react";
 import { FixedSizeList } from "react-window";
 import Calendar from "./Calendar";
 import DownloadScheduleButton from "./DownloadScheduleButton";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
+import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 
 const SavedTab = () => {
@@ -26,6 +27,14 @@ const SavedTab = () => {
       <div className="flex flex-col gap-4 grow">
         <Card className="flex flex-row gap-4 p-4">
           <div className="flex flex-row gap-2">
+            <Button
+              onClick={() => setActive(active - 1)}
+              disabled={active <= 0}
+              variant="outline"
+              size="icon"
+            >
+              <ChevronLeft />
+            </Button>
             <Select
               value={`${active}`}
               onValueChange={(val) => setActive(Number(val))}
@@ -61,6 +70,14 @@ const SavedTab = () => {
                 </FixedSizeList>
               </SelectContent>
             </Select>
+            <Button
+              onClick={() => setActive(active + 1)}
+              disabled={active >= schedules.length - 1}
+              variant="outline"
+              size="icon"
+            >
+              <ChevronRight />
+            </Button>
           </div>
           {schedules[active] && (
             <>
