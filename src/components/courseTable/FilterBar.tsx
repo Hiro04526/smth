@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import { Table } from "@tanstack/react-table";
 import {
   Calendar,
   CheckCircle,
   FilePen,
+  FilterX,
   Lock,
   LucideIcon,
   Monitor,
@@ -45,7 +45,7 @@ export function FilterBar<TData>({ table }: FilterBarProps<TData>) {
   ];
 
   return (
-    <div className="flex flex-1 items-center space-x-2 flex-wrap">
+    <div className="flex flex-1 items-center flex-wrap gap-2">
       {filterEntries.map(
         (filter) =>
           table.getColumn(filter.column) && (
@@ -64,7 +64,7 @@ export function FilterBar<TData>({ table }: FilterBarProps<TData>) {
           className="h-8 px-2 lg:px-3"
         >
           Reset
-          <Cross2Icon className="ml-2 h-4 w-4" />
+          <FilterX className="ml-2 h-4 w-4" />
         </Button>
       )}
     </div>
