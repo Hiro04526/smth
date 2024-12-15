@@ -67,6 +67,7 @@ interface ScheduleStates {
   savedSchedules: SavedSchedule[];
   addSavedSchedule: (schedule: SavedSchedule) => void;
   deleteSavedSchedule: (name: string) => void;
+  changeSavedColors: (name: string, colors: Record<string, ColorsEnum>) => void;
   setSavedSchedules: (schedules: SavedSchedule[]) => void;
   randomizeColors: boolean;
   setRandomizeColors: (randomizeColors: boolean) => void;
@@ -186,6 +187,18 @@ const createScheduleSlice: Slice<ScheduleStates> = (set) => ({
     set((state) => ({
       savedSchedules: state.savedSchedules.filter((s) => s.name !== name),
     })),
+  changeSavedColors: (name, colors) => {
+    set((state) => {
+      const savedSchedules = state.savedSchedules.map((s) => {
+        if (s.name === name) {
+          return { ...s, colors };
+        }
+        return s;
+      });
+
+      return { savedSchedules };
+    });
+  },
   setSavedSchedules: (schedules) => set({ savedSchedules: schedules }),
   randomizeColors: true,
   setRandomizeColors: (randomizeColors) => set({ randomizeColors }),
