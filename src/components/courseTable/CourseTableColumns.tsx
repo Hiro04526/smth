@@ -67,6 +67,7 @@ export const columns: ColumnDef<Class>[] = [
     header: ({ column }) => (
       <SortableHeader column={column} title={"Professor"} />
     ),
+    filterFn: "arrIncludesSome",
   },
   {
     header: "Schedules",
@@ -153,6 +154,16 @@ export const columns: ColumnDef<Class>[] = [
       const isClosed = row.enrolled >= row.enrollCap;
 
       return isClosed ? "Closed" : "Open";
+    },
+    filterFn: "arrIncludesSome",
+    enableHiding: false,
+  },
+  {
+    id: "sectionType",
+    accessorFn: (row) => {
+      const sectionType = row.section.replaceAll(/[0-9]/g, "");
+
+      return sectionType;
     },
     filterFn: "arrIncludesSome",
     enableHiding: false,

@@ -1,10 +1,25 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { Table } from "@tanstack/react-table";
+import {
+  Calendar,
+  CheckCircle,
+  Lock,
+  LucideIcon,
+  Monitor,
+  TableOfContents,
+  User,
+} from "lucide-react";
 import { FacetedFilter } from "./FacetedFilter";
-import { Button } from "@/components/ui/button";
-import { Input } from "../ui/input";
+
+interface FilterEntry {
+  type: "facet" | "range";
+  column: string;
+  title: string;
+  icon: LucideIcon;
+}
 
 interface FilterBarProps<TData> {
   table: Table<TData>;
@@ -13,46 +28,43 @@ interface FilterBarProps<TData> {
 export function FilterBar<TData>({ table }: FilterBarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
+  const filterEntries: FilterEntry[] = [
+    {
+      type: "facet",
+      column: "sectionType",
+      title: "Section",
+      icon: TableOfContents,
+    },
+    { type: "facet", column: "Professor", title: "Professor", icon: User },
+    { type: "facet", column: "Days", title: "Days", icon: Calendar },
+    { type: "facet", column: "modality", title: "Modality", icon: Monitor },
+    { type: "facet", column: "restriction", title: "Restriction", icon: Lock },
+    { type: "facet", column: "status", title: "Status", icon: CheckCircle },
+  ];
+
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
-        <Input
-          placeholder="Search by code..."
-          value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => {
-            table.getColumn("code")?.setFilterValue(event.target.value);
-          }}
-          className="h-8 w-[150px]"
-        />
-        {table.getColumn("Days") && (
-          <FacetedFilter column={table.getColumn("Days")} title="Days" />
-        )}
-        {table.getColumn("modality") && (
-          <FacetedFilter
-            column={table.getColumn("modality")}
-            title="Modality"
-          />
-        )}
-        {table.getColumn("restriction") && (
-          <FacetedFilter
-            column={table.getColumn("restriction")}
-            title="Restriction"
-          />
-        )}
-        {table.getColumn("status") && (
-          <FacetedFilter column={table.getColumn("status")} title="Status" />
-        )}
-        {isFiltered && (
-          <Button
-            variant="ghost"
-            onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
-          >
-            Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
-          </Button>
-        )}
-      </div>
+    <div className="flex flex-1 items-center space-x-2 flex-wrap">
+      {filterEntries.map(
+        (filter) =>
+          table.getColumn(filter.column) && (
+            <FacetedFilter
+              key={filter.column}
+              column={table.getColumn(filter.column)}
+              Icon={filter.icon}
+              title={filter.title}
+            />
+          )
+      )}
+      {isFiltered && (
+        <Button
+          variant="ghost"
+          onClick={() => table.resetColumnFilters()}
+          className="h-8 px-2 lg:px-3"
+        >
+          Reset
+          <Cross2Icon className="ml-2 h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 }

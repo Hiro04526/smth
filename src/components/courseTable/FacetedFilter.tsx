@@ -1,8 +1,6 @@
-import * as React from "react";
-import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
+import { CheckIcon } from "@radix-ui/react-icons";
 import { Column } from "@tanstack/react-table";
 
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,15 +18,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;
+  Icon: LucideIcon;
 }
 
 export function FacetedFilter<TData, TValue>({
   column,
   title,
+  Icon,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
   const options = facets ? [...facets.keys()] : [];
@@ -40,37 +42,16 @@ export function FacetedFilter<TData, TValue>({
         <Button
           variant="outline"
           size="sm"
-          className={`h-8 ${
-            selectedValues.size === 0 ? "border-dashed" : "border"
-          }`}
+          className={`h-8 ${!selectedValues?.size && "text-muted-foreground"}`}
         >
-          <PlusCircledIcon className="mr-2 h-4 w-4" />
+          <Icon className="mr-2 size-4" />
           {title}
           {selectedValues?.size > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
-              <Badge variant="secondary" className="rounded-sm px-1 lg:hidden">
+              <Badge variant="secondary" className="rounded-sm px-1">
                 {selectedValues.size}
               </Badge>
-              <div className="hidden space-x-1 lg:flex">
-                {selectedValues.size > 2 ? (
-                  <Badge variant="secondary" className="rounded-sm px-1">
-                    {selectedValues.size} selected
-                  </Badge>
-                ) : (
-                  options
-                    .filter((option) => selectedValues.has(option))
-                    .map((option) => (
-                      <Badge
-                        variant="secondary"
-                        key={option}
-                        className="rounded-sm px-1"
-                      >
-                        {option}
-                      </Badge>
-                    ))
-                )}
-              </div>
             </>
           )}
         </Button>
