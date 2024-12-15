@@ -27,30 +27,21 @@ export default function Announcement() {
 
   const hasHydrated = useGlobalStore.persist.hasHydrated();
 
-  const title = "Quality of Life Update!";
-  const description = "We have added some new features to our website!";
-  const patchDate = "2024-12-14";
+  const title = "Slight Update!";
+  const description =
+    "We have added some a couple of new features to the website!";
+  const patchDate = "2024-12-16";
 
   const updates = [
     {
-      title: "Customizable Colors",
+      title: "New Filters",
       description:
-        "Course Colors are now customizable in Schedules! You can also now set if you want to randomize colors.",
+        "New filters have been added to the classes table! You can now filter by professor, section, and even remarks!",
     },
     {
-      title: "Selected Rows Indicator",
+      title: "Change Saved Schedule Colors",
       description:
-        "You can now see how many rows have been selected for a specific course on the course list.",
-    },
-    {
-      title: "Clear Selected Rows",
-      description:
-        "All rows can now be cleared on the click of one button! You can see it near the Course List.",
-    },
-    {
-      title: "Toggle Columns",
-      description:
-        "Table Columns can now be hidden/shown using the 'View' button at the top-right corner of the table.",
+        "You can now change the colors of your saved schedules! Click on the Palette Button near the Download button to change it.",
     },
   ];
 

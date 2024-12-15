@@ -12,6 +12,7 @@ import { ChevronLeft, ChevronRight, HeartCrack } from "lucide-react";
 import { useState } from "react";
 import { FixedSizeList } from "react-window";
 import Calendar from "./Calendar";
+import CourseColorsDialog from "./CourseColorsDialog";
 import DownloadScheduleButton from "./DownloadScheduleButton";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
@@ -81,6 +82,7 @@ const SavedTab = () => {
           </div>
           {schedules[active] && (
             <div className="ml-auto flex flex-row gap-2">
+              <CourseColorsDialog savedSchedule={schedules[active]} />
               <SaveButton
                 activeSched={schedules[active].classes}
                 colors={schedules[active].colors}
