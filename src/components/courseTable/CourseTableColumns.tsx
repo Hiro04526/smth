@@ -90,7 +90,6 @@ export const columns: ColumnDef<Class>[] = [
               variant="outline"
               className={`bg-background/50 select-none flex gap-2 rounded-lg p-2 px-4 font-medium w-[160px]  justify-center items-center`}
             >
-              {/* {sched.isOnline ? <Wifi size={16} /> : <MapPin size={16} />} */}
               {`${convertTime(sched.start)} - ${convertTime(sched.end)}`}
             </Badge>
           ))}
@@ -124,8 +123,12 @@ export const columns: ColumnDef<Class>[] = [
     filterFn: "arrIncludesSome",
   },
   {
-    header: "Enrolled",
-    accessorFn: (row) => `${row.enrolled}/${row.enrollCap}`,
+    id: "enrolled",
+    header: ({ column }) => (
+      <SortableHeader column={column} title={"Enrolled"} />
+    ),
+    accessorKey: "enrolled",
+    cell: ({ row }) => `${row.original.enrolled}/${row.original.enrollCap}`,
   },
 
   {
@@ -147,6 +150,7 @@ export const columns: ColumnDef<Class>[] = [
   {
     header: "Remarks",
     accessorKey: "remarks",
+    filterFn: "arrIncludesSome",
   },
   {
     id: "status",

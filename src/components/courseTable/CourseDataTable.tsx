@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { Input } from "../ui/input";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { Separator } from "../ui/separator";
 import { FilterBar } from "./FilterBar";
 import ViewColumnsDropdown from "./ViewColumnsDropdown";
 
@@ -126,7 +127,8 @@ export function CourseDataTable<TData, TValue>({
         />
         <ViewColumnsDropdown table={table} />
       </div>
-      <div className="mb-2">
+      <Separator />
+      <div className="my-2">
         <FilterBar table={table} />
       </div>
       <ScrollArea className="rounded-md border">
