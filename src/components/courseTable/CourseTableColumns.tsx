@@ -67,6 +67,7 @@ export const columns: ColumnDef<Class>[] = [
     header: ({ column }) => (
       <SortableHeader column={column} title={"Professor"} />
     ),
+    filterFn: "arrIncludesSome",
   },
   {
     header: "Schedules",
@@ -89,7 +90,6 @@ export const columns: ColumnDef<Class>[] = [
               variant="outline"
               className={`bg-background/50 select-none flex gap-2 rounded-lg p-2 px-4 font-medium w-[160px]  justify-center items-center`}
             >
-              {/* {sched.isOnline ? <Wifi size={16} /> : <MapPin size={16} />} */}
               {`${convertTime(sched.start)} - ${convertTime(sched.end)}`}
             </Badge>
           ))}
@@ -123,8 +123,12 @@ export const columns: ColumnDef<Class>[] = [
     filterFn: "arrIncludesSome",
   },
   {
-    header: "Enrolled",
-    accessorFn: (row) => `${row.enrolled}/${row.enrollCap}`,
+    id: "enrolled",
+    header: ({ column }) => (
+      <SortableHeader column={column} title={"Enrolled"} />
+    ),
+    accessorKey: "enrolled",
+    cell: ({ row }) => `${row.original.enrolled}/${row.original.enrollCap}`,
   },
 
   {
@@ -146,6 +150,7 @@ export const columns: ColumnDef<Class>[] = [
   {
     header: "Remarks",
     accessorKey: "remarks",
+    filterFn: "arrIncludesSome",
   },
   {
     id: "status",
@@ -153,6 +158,16 @@ export const columns: ColumnDef<Class>[] = [
       const isClosed = row.enrolled >= row.enrollCap;
 
       return isClosed ? "Closed" : "Open";
+    },
+    filterFn: "arrIncludesSome",
+    enableHiding: false,
+  },
+  {
+    id: "sectionType",
+    accessorFn: (row) => {
+      const sectionType = row.section.replaceAll(/[0-9]/g, "");
+
+      return sectionType;
     },
     filterFn: "arrIncludesSome",
     enableHiding: false,

@@ -162,12 +162,7 @@ const createTableSlice: Slice<TableStates> = (set, get) => ({
     });
   },
   removeAllSelectedRows: () => set({ selectedRows: {} }),
-  columnVisibility: {
-    courseCode: false,
-    modality: false,
-    restriction: false,
-    status: false,
-  },
+  columnVisibility: {},
   setColumnVisibility: (columnVisibility) => set({ columnVisibility }),
   columnFilters: {},
   setColumnFilters: (courseCode, columnFilters) =>

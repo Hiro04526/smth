@@ -23,6 +23,7 @@ import {
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { Input } from "../ui/input";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { FilterBar } from "./FilterBar";
 import ViewColumnsDropdown from "./ViewColumnsDropdown";
@@ -57,6 +58,7 @@ export function CourseDataTable<TData, TValue>({
       setColumnVisibility: state.setColumnVisibility,
     }))
   );
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   // IMPORANT: This code is required since if there's no entry in
   // courseColumnFilters for the activeCourse, the table will
@@ -71,7 +73,13 @@ export function CourseDataTable<TData, TValue>({
 
   const rowSelection = selectedRows[activeCourse] || {};
 
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const hiddenColumns = {
+    courseCode: false,
+    modality: false,
+    restriction: false,
+    status: false,
+    sectionType: false,
+  };
 
   const table = useReactTable({
     data,
@@ -101,17 +109,27 @@ export function CourseDataTable<TData, TValue>({
       columnFilters: columnFilters ?? [],
       rowSelection,
       sorting,
-      columnVisibility,
+      columnVisibility: { ...columnVisibility, ...hiddenColumns },
     },
   });
 
   return (
-    <div className="flex shrink grow flex-col gap-4 min-w-0 min-h-0">
-      <div className="flex flex-row justify-between">
-        <FilterBar table={table} />
+    <div className="flex shrink grow flex-col gap-2 min-w-0 min-h-0">
+      <div className="flex flex-row justify-between items-center">
+        <Input
+          placeholder="Search by code..."
+          value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => {
+            table.getColumn("code")?.setFilterValue(event.target.value);
+          }}
+          className="h-8 w-[150px]"
+        />
         <ViewColumnsDropdown table={table} />
       </div>
-      <ScrollArea className="rounded-md border ">
+      <div>
+        <FilterBar table={table} />
+      </div>
+      <ScrollArea className="rounded-md border">
         <Table className="overflow-x-auto">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
