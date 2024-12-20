@@ -2,9 +2,9 @@
 
 import { fetchCourse } from "@/lib/actions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { MousePointerClick } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import CourseGrid from "./CourseGrid";
 import CourseInput from "./CourseInput";
 import CourseList from "./CourseList";
 import { CourseDataTable } from "./courseTable/CourseDataTable";
@@ -85,7 +85,7 @@ const CourseTab = () => {
           setActiveCourse={setActiveCourse}
         />
       </div>
-      {!!courses.length ? (
+      {!!courses.length && activeCourse !== -1 ? (
         <CourseDataTable
           columns={columns}
           data={courses[activeCourse].classes}
@@ -93,13 +93,7 @@ const CourseTab = () => {
           activeCourse={courses[activeCourse].courseCode}
         />
       ) : (
-        <Card className="flex flex-row items-center justify-center gap-6 text-muted-foreground p-6 grow">
-          <MousePointerClick strokeWidth={1} size={80} />
-          <span className="flex flex-col gap-1">
-            <span className="font-bold text-xl">No courses yet...</span>
-            <span className="w-80">{`Add courses on the left. Don't forget to set your ID at the top right too!`}</span>
-          </span>
-        </Card>
+        <CourseGrid />
       )}
     </div>
   );

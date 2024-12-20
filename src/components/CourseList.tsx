@@ -1,7 +1,7 @@
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Reorder, useDragControls } from "framer-motion";
-import { CircleOff, GripVertical, ListX, X } from "lucide-react";
+import { CircleOff, GripVertical, Group, ListX, X } from "lucide-react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import TooltipButton from "./common/TooltipButton";
@@ -134,6 +134,13 @@ export default function CourseList({
       </CardHeader>
       <ScrollArea className="min-h-0">
         <CardContent className="">
+          <Button
+            className="w-full mb-2"
+            variant={activeCourse === -1 ? "default" : "outline"}
+            onClick={() => setActiveCourse(-1)}
+          >
+            <Group className="size-4 mr-2" /> Group Courses
+          </Button>
           {courses.length !== 0 ? (
             <Reorder.Group
               className="flex gap-2 row flex-col"
