@@ -133,9 +133,9 @@ export default function CourseList({
         </TooltipButton>
       </CardHeader>
       <ScrollArea className="min-h-0">
-        <CardContent className="">
+        <CardContent>
           <Button
-            className="w-full mb-2"
+            className="w-full mb-4"
             variant={activeCourse === -1 ? "default" : "outline"}
             onClick={() => setActiveCourse(-1)}
           >
@@ -159,7 +159,7 @@ export default function CourseList({
               ))}
             </Reorder.Group>
           ) : (
-            <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center">
+            <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center mt-6">
               <CircleOff />
               None added yet.
             </div>
