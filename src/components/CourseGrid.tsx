@@ -1,5 +1,4 @@
 import { Course } from "@/lib/definitions";
-import { cn } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import {
   DndContext,
@@ -62,14 +61,19 @@ function CourseItem({
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      className={cn(
-        "cursor-grab gap-4",
-        buttonVariants({ variant: "outline", size: "sm" })
-      )}
+      className={buttonVariants({
+        variant: "outline",
+        className: "cursor-grab justify-between",
+      })}
       style={style}
     >
       <span>{course.courseCode}</span>
-      <span className="size-5 rounded-full cursor-pointer flex items-center justify-center opacity-40 hover:opacity-100 group hover:bg-destructive/80 hover:text-destructive-foreground transition-colors">
+      <span
+        className="size-6 rounded-lg cursor-pointer flex items-center justify-center opacity-40 hover:opacity-100 group hover:bg-destructive hover:text-destructive-foreground transition-colors"
+        onMouseUp={() => {
+          removeCourse(course.courseCode);
+        }}
+      >
         <X className="size-3" strokeWidth={3} />
       </span>
     </div>
