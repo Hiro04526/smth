@@ -51,7 +51,7 @@ interface TableStates {
     courseCode: string,
     rowSelection: RowSelectionState
   ) => void;
-  getSelectedData: () => Class[][];
+  getSelectedData: () => Course[];
   removeAllSelectedRows: () => void;
   columnVisibility: VisibilityState;
   setColumnVisibility: (columnVisibility: VisibilityState) => void;
@@ -212,12 +212,14 @@ const createTableSlice: Slice<TableStates> = (set, get) => ({
       // If course is not found, return an empty array. Note that this will only
       // happen when there's a desync between the selectedRows and courses.
       if (!course) {
-        return [];
+        return { classes: [], courseCode: "UNKNOWN", lastFetched: new Date() };
       }
 
-      return Object.keys(selected).map(
+      const courseData = Object.keys(selected).map(
         (key) => course.classes[Number.parseInt(key)]
       );
+
+      return { ...course, classes: courseData };
     });
   },
   removeAllSelectedRows: () => set({ selectedRows: {} }),

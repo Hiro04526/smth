@@ -118,12 +118,12 @@ const Calendar = ({
                       (sched) => sched.day === day
                     );
 
-                    return schedules.map((sched) => {
+                    return schedules.map((sched, i) => {
                       const start = sched.start;
                       const end = sched.end;
                       return (
                         <Card
-                          key={`${currClass.course + start + end + sched.day}`}
+                          key={`${currClass.course + i}`}
                           onMouseEnter={() => setHovered(currClass.code)}
                           onMouseLeave={() => setHovered(false)}
                           className={cn(

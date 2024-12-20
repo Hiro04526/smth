@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Class, Filter, Schedule } from "./definitions";
+import { Class, Course, Filter, Schedule } from "./definitions";
 import { ColorsEnum, ColorsEnumSchema, DaysEnum } from "./enums";
 
 export function cn(...inputs: ClassValue[]) {
@@ -115,6 +115,116 @@ export function filterGeneratedSchedules(schedules: Class[][], filter: Filter) {
 
     return !isInvalid;
   });
+}
+
+/**
+ * Generates all possible combinations of a given number of courses from a list.
+ *
+ * @param courses - The list of courses to choose from.
+ * @param pick - The number of courses to pick for each combination.
+ * @returns An array of course combinations, where each combination is an array of courses.
+ */
+function generateCombinations(courses: Course[], pick: number) {
+  const combinations: Course[][] = [];
+
+  if (courses.length < pick) return [courses];
+
+  const stack: { index: number; current: Course[] }[] = [
+    { index: 0, current: [] },
+  ];
+
+  while (stack.length > 0) {
+    const { index, current } = stack.pop()!;
+
+    if (current.length === pick) {
+      // We've reached the pick amount, so we add it to the combinations.
+      combinations.push([...current]);
+    } else if (index < courses.length) {
+      // Choose to keep current course.
+      stack.push({ index: index + 1, current: [...current, courses[index]] });
+
+      // Choose to skip current course.
+      stack.push({ index: index + 1, current });
+    }
+  }
+  return combinations;
+}
+
+/**
+ * Computes the Cartesian product of multiple arrays.
+ *
+ * @template T - The type of elements in the input arrays.
+ * @param  a - The arrays for which to compute the Cartesian product.
+ * @returns The Cartesian product of the input arrays.
+ *
+ * @example
+ * ```typescript
+ * const result = getCartesianProduct([1, 2], ['a', 'b']);
+ * // result is [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
+ * ```
+ */
+function getCartesianProduct<T extends unknown[]>(
+  ...a: { [K in keyof T]: T[K][] }
+) {
+  return a.reduce<T[]>(
+    (b, c) => b.flatMap((d) => c.map((e) => [...d, e] as T)),
+    [[]] as unknown as T[]
+  );
+}
+
+export function createGroupedSchedules({
+  groups,
+  courses,
+  filter,
+}: {
+  groups: Record<string, number>;
+  courses: Course[];
+  filter?: Filter;
+}): [schedules: Class[][], colors: Record<string, ColorsEnum>] {
+  console.log(groups, courses, filter);
+  const ungroupedCourses = courses.filter(
+    (course) => !course.group || course.group === "Ungrouped"
+  );
+
+  console.log("ungroupedCourses");
+  console.log(ungroupedCourses);
+
+  const groupedCombinations = Object.entries(groups)
+    .map(([groupName, pick]) => {
+      const groupCourses = courses.filter(
+        (course) => course.group === groupName
+      );
+
+      if (groupCourses.length === 0) return [];
+
+      const combinations = generateCombinations(groupCourses, pick);
+      return combinations;
+    })
+    .filter((group) => group.length > 0);
+  console.log("groupedCombinations");
+  console.log(groupedCombinations);
+
+  const groupsCartesianProduct = getCartesianProduct(...groupedCombinations);
+  console.log("groupsCartesianProduct");
+  console.log(groupsCartesianProduct);
+
+  const generatedSchedules: Class[][] = [];
+  let generatedColors: Record<string, ColorsEnum> = {};
+
+  for (const cartesian of groupsCartesianProduct) {
+    const flattenedCombination = cartesian.flat();
+    const combinedCourses = [...ungroupedCourses, ...flattenedCombination].map(
+      (course) => course.classes
+    );
+    const [schedules, colors] = createSchedules(combinedCourses, filter);
+
+    if (schedules[0].length > 0) {
+      generatedSchedules.push(...schedules);
+      generatedColors = { ...generatedColors, ...colors };
+    }
+  }
+
+  return [generatedSchedules, generatedColors];
 }
 
 export function createSchedules(
