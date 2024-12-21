@@ -23,6 +23,7 @@ import {
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import AddCustomClass from "../AddCustomClass";
 import { Input } from "../ui/input";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { FilterBar } from "./FilterBar";
@@ -124,7 +125,10 @@ export function CourseDataTable<TData, TValue>({
           }}
           className="h-8 w-[150px]"
         />
-        <ViewColumnsDropdown table={table} />
+        <div className="inline-flex gap-2">
+          <AddCustomClass courseCode={activeCourse} />
+          <ViewColumnsDropdown table={table} />
+        </div>
       </div>
       <div>
         <FilterBar table={table} />
