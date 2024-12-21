@@ -19,6 +19,7 @@ import {
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown from "./common/Dropdown";
+import TooltipWrapper from "./common/TooltipWrapper";
 import { Badge } from "./ui/badge";
 import { Button, buttonVariants } from "./ui/button";
 import { Card } from "./ui/card";
@@ -126,13 +127,18 @@ function CourseGroupColumn({
     >
       <div className="flex justify-between items-center w-full">
         {isEditing ? (
-          <div className="inline-flex gap-2">
+          <div className="inline-flex gap-2 w-full">
             <Input
               placeholder="Group Name"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
             />
-            <Button onClick={handleEdit} variant="outline" size="icon">
+            <Button
+              onClick={handleEdit}
+              variant="outline"
+              size="icon"
+              className="shrink-0"
+            >
               <Check className="size-4" />
             </Button>
           </div>
@@ -141,7 +147,11 @@ function CourseGroupColumn({
         )}
         {!noOptions && !isEditing && (
           <div className="inline-flex gap-2">
-            <Badge variant="outline">{pick}</Badge>
+            <TooltipWrapper content="# of courses to pick.">
+              <Badge variant="secondary" className="size-8 justify-center">
+                {pick}
+              </Badge>
+            </TooltipWrapper>
             {!noOptions && <Dropdown items={dropdownOptions} />}
           </div>
         )}
