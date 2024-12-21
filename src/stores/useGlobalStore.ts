@@ -16,7 +16,6 @@ const storage: StateStorage = {
     await set(name, value);
   },
   removeItem: async (name: string): Promise<void> => {
-    console.log(name, "has been deleted");
     await del(name);
   },
 };

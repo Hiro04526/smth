@@ -181,13 +181,9 @@ export function createGroupedSchedules({
   courses: Course[];
   filter?: Filter;
 }): [schedules: Class[][], colors: Record<string, ColorsEnum>] {
-  console.log(groups, courses, filter);
   const ungroupedCourses = courses.filter(
     (course) => !course.group || course.group === "Ungrouped"
   );
-
-  console.log("ungroupedCourses");
-  console.log(ungroupedCourses);
 
   const groupedCombinations = Object.entries(groups)
     .map(([groupName, pick]) => {
@@ -201,12 +197,8 @@ export function createGroupedSchedules({
       return combinations;
     })
     .filter((group) => group.length > 0);
-  console.log("groupedCombinations");
-  console.log(groupedCombinations);
 
   const groupsCartesianProduct = getCartesianProduct(...groupedCombinations);
-  console.log("groupsCartesianProduct");
-  console.log(groupsCartesianProduct);
 
   const generatedSchedules: Class[][] = [];
   let generatedColors: Record<string, ColorsEnum> = {};
