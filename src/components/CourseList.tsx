@@ -1,14 +1,27 @@
+import { fetchMultipleCourses } from "@/lib/actions";
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Reorder, useDragControls } from "framer-motion";
-import { CircleOff, GripVertical, Group, ListX, X } from "lucide-react";
-import { useCallback } from "react";
+import {
+  CircleOff,
+  Ellipsis,
+  GripVertical,
+  Group,
+  ListX,
+  LoaderCircle,
+  RefreshCcw,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useCallback, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
-import TooltipButton from "./common/TooltipButton";
+import Dropdown, { DropdownItems } from "./common/Dropdown";
+import ConfirmDialog from "./ConfirmDialog";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
+import { toast } from "./ui/use-toast";
 
 interface CourseItemProps {
   course: Course;
@@ -38,7 +51,6 @@ function CourseItem({
       removeAllSelectedRows: state.removeAllSelectedRows,
     }))
   );
-
   const handleDelete = (courseCode: string) => {
     if (activeCourse >= 0 && courses[activeCourse].courseCode === courseCode) {
       setActiveCourse(0);
@@ -100,16 +112,18 @@ export default function CourseList({
   activeCourse,
   setActiveCourse,
 }: CourseListProps) {
-  const { courses, setCourses, selectedRows, removeAllSelectedRows } =
-    useGlobalStore(
-      useShallow((state) => ({
-        courses: state.courses,
-        setCourses: state.setCourses,
-        removeCourse: state.removeCourse,
-        selectedRows: state.selectedRows,
-        removeAllSelectedRows: state.removeAllSelectedRows,
-      }))
-    );
+  const { courses, setCourses, id, removeAllSelectedRows } = useGlobalStore(
+    useShallow((state) => ({
+      courses: state.courses,
+      setCourses: state.setCourses,
+      removeCourse: state.removeCourse,
+      id: state.id,
+      removeAllSelectedRows: state.removeAllSelectedRows,
+    }))
+  );
+
+  const [isFetching, setIsFetching] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleSwap = useCallback(
     (newCourses: Course[]) => {
@@ -118,19 +132,86 @@ export default function CourseList({
     [setCourses]
   );
 
+  const handleUpdate = async () => {
+    if (!id) {
+      toast({
+        title: "You haven't set your ID yet!",
+        description: "Set your ID on the button at the top right corner.",
+        variant: "destructive",
+      });
+
+      return;
+    }
+
+    setIsFetching(true);
+    try {
+      const newData = await fetchMultipleCourses(
+        courses.filter((course) => !course.isCustom),
+        id
+      );
+
+      if (newData.some((course) => course.classes.length === 0)) {
+        toast({
+          title: "Oops... Some of the courses don't have any classes.",
+          description:
+            "MLS may be down right now or something is terribly wrong.",
+          variant: "destructive",
+        });
+      } else {
+        setCourses(newData);
+
+        toast({
+          title: "Successfully updated all courses!",
+          description: "The courses should now display updated data.",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Something went wrong while fetching...",
+        description:
+          "The server is facing some issues right now, try again in a bit.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  const courseSettingsItems: DropdownItems[] = [
+    {
+      name: "Update All Courses",
+      onClick: handleUpdate,
+      Icon: RefreshCcw,
+    },
+    {
+      name: "Clear All Selected",
+      onClick: removeAllSelectedRows,
+      Icon: ListX,
+    },
+    {
+      name: "Remove All Courses",
+      onClick: () => setOpen(true),
+      Icon: Trash2,
+    },
+  ];
+
   return (
     <Card className="flex flex-col grow shrink min-h-0">
       <CardHeader className="pb-4 flex flex-row items-center justify-between space-y-0">
         <CardTitle>Course List</CardTitle>
-        <TooltipButton
-          tooltip="Clear Selected Rows"
-          variant="outline"
-          size="icon"
-          disabled={!Object.keys(selectedRows).length}
-          onClick={removeAllSelectedRows}
-        >
-          <ListX />
-        </TooltipButton>
+        <Dropdown items={courseSettingsItems} align="start" className="w-52">
+          <Button
+            size="icon"
+            variant="outline"
+            disabled={isFetching || courses.length === 0}
+          >
+            {isFetching ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <Ellipsis className="size-4" />
+            )}
+          </Button>
+        </Dropdown>
       </CardHeader>
       <ScrollArea className="min-h-0">
         <CardContent>
@@ -166,6 +247,15 @@ export default function CourseList({
           )}
         </CardContent>
       </ScrollArea>
+      <ConfirmDialog
+        action={() => {
+          setCourses([]);
+          setActiveCourse(-1);
+        }}
+        open={open}
+        setOpen={setOpen}
+        description="Are you sure you want to remove all courses? This action cannot be reversed."
+      />
     </Card>
   );
 }

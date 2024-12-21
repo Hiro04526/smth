@@ -46,7 +46,11 @@ export default function Dropdown({
           </>
         )}
         {items.map((item, index) => (
-          <DropdownMenuItem key={index} onClick={item?.onClick}>
+          <DropdownMenuItem
+            key={index}
+            onClick={item?.onClick}
+            className="items-center h-8 inline-flex w-full"
+          >
             {item.Icon && <item.Icon className="size-4 mr-2" />}
             {item.name}
           </DropdownMenuItem>

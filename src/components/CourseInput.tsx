@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { fetchCourse, fetchMultipleCourses } from "@/lib/actions";
+import { fetchCourse } from "@/lib/actions";
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,51 +51,6 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
       courseCode: "",
     },
   });
-
-  const handleUpdate = async () => {
-    if (!id) {
-      toast({
-        title: "You haven't set your ID yet!",
-        description: "Set your ID on the button at the top right corner.",
-        variant: "destructive",
-      });
-
-      return;
-    }
-
-    setIsFetching(true);
-    try {
-      const newData = await fetchMultipleCourses(
-        courses.filter((course) => !course.isCustom),
-        id
-      );
-
-      if (newData.some((course) => course.classes.length === 0)) {
-        toast({
-          title: "Oops... Some of the courses don't have any classes.",
-          description:
-            "MLS may be down right now or something is terribly wrong.",
-          variant: "destructive",
-        });
-      } else {
-        setCourses(newData);
-
-        toast({
-          title: "Successfully updated all courses!",
-          description: "The courses should now display updated data.",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Something went wrong while fetching...",
-        description:
-          "The server is facing some issues right now, try again in a bit.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsFetching(false);
-    }
-  };
 
   const handleFetch = async (courseCode: string) => {
     if (!id) {
@@ -223,18 +178,6 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
             )}
           </Button>
         </Dropdown>
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => handleUpdate()}
-          disabled={isFetching}
-        >
-          {isFetching ? (
-            <LoaderCircle className="animate-spin" />
-          ) : (
-            "Update All Courses"
-          )}
-        </Button>
       </form>
     </Form>
   );
