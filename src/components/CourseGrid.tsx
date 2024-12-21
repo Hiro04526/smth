@@ -23,6 +23,7 @@ import { Badge } from "./ui/badge";
 import { Button, buttonVariants } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
+import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
 
 interface CourseItemProps {
@@ -136,7 +137,7 @@ function CourseGroupColumn({
             </Button>
           </div>
         ) : (
-          <h3 className="text-xl font-semibold">{groupName}</h3>
+          <h3 className="text-xl font-semibold truncate">{groupName}</h3>
         )}
         {!noOptions && !isEditing && (
           <div className="inline-flex gap-2">
@@ -257,75 +258,77 @@ export default function CourseGrid({}: CourseGridProps) {
           drop to move courses.
         </p>
       </div>
-      <div className="grid grid-cols-4 gap-4 w-full">
-        <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-          <CourseGroupColumn
-            groupName="Ungrouped"
-            pick={-1}
-            courses={courses.filter(
-              (course) => !course.group || course.group === "Ungrouped"
-            )}
-            {...groupFunctions}
-            noOptions
-          />
-          {Object.entries(courseGroups).map(([groupName, pick]) => (
+      <ScrollArea>
+        <div className="grid grid-cols-3 2xl:grid-cols-4 gap-4 w-full">
+          <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
             <CourseGroupColumn
-              key={groupName}
-              groupName={groupName}
-              pick={pick}
-              courses={courses.filter((course) => course.group === groupName)}
+              groupName="Ungrouped"
+              pick={-1}
+              courses={courses.filter(
+                (course) => !course.group || course.group === "Ungrouped"
+              )}
               {...groupFunctions}
+              noOptions
             />
-          ))}
-          <DragOverlay dropAnimation={{ duration: 150, easing: "ease-out" }}>
-            {activeId && (
-              <div
-                className={cn(
-                  buttonVariants({
-                    variant: "outline",
-                    className: "w-full",
-                  }),
-                  "justify-start"
-                )}
-              >
-                {activeId}
+            {Object.entries(courseGroups).map(([groupName, pick]) => (
+              <CourseGroupColumn
+                key={groupName}
+                groupName={groupName}
+                pick={pick}
+                courses={courses.filter((course) => course.group === groupName)}
+                {...groupFunctions}
+              />
+            ))}
+            <DragOverlay dropAnimation={{ duration: 150, easing: "ease-out" }}>
+              {activeId && (
+                <div
+                  className={cn(
+                    buttonVariants({
+                      variant: "outline",
+                      className: "w-full",
+                    }),
+                    "justify-start"
+                  )}
+                >
+                  {activeId}
+                </div>
+              )}
+            </DragOverlay>
+          </DndContext>
+          {isCreating ? (
+            <div className="border-border border p-4 h-max flex flex-col gap-4">
+              <Input
+                type="text"
+                placeholder="Group Name"
+                value={newGroupName}
+                onChange={(e) => setNewGroupName(e.target.value)}
+              />
+              <div className="justify-end flex gap-2">
+                <Button
+                  onClick={() => setIsCreating(false)}
+                  variant="outline"
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleCreateGroup} size="sm">
+                  <Plus className="size-4 mr-2" /> Create
+                </Button>
               </div>
-            )}
-          </DragOverlay>
-        </DndContext>
-        {isCreating ? (
-          <div className="border-border border p-4 h-max flex flex-col gap-4">
-            <Input
-              type="text"
-              placeholder="Group Name"
-              value={newGroupName}
-              onChange={(e) => setNewGroupName(e.target.value)}
-            />
-            <div className="justify-end flex gap-2">
-              <Button
-                onClick={() => setIsCreating(false)}
-                variant="outline"
-                size="sm"
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleCreateGroup} size="sm">
-                <Plus className="size-4 mr-2" /> Create
-              </Button>
             </div>
-          </div>
-        ) : (
-          <Button
-            onClick={() => {
-              setIsCreating(true);
-            }}
-            variant="ghost"
-          >
-            <Plus className="size-4 mr-2" />
-            Add Group
-          </Button>
-        )}
-      </div>
+          ) : (
+            <Button
+              onClick={() => {
+                setIsCreating(true);
+              }}
+              variant="ghost"
+            >
+              <Plus className="size-4 mr-2" />
+              Add Group
+            </Button>
+          )}
+        </div>
+      </ScrollArea>
     </div>
   );
 }
