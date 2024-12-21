@@ -9,26 +9,13 @@ import {
   useDraggable,
   useDroppable,
 } from "@dnd-kit/core";
-import {
-  Ellipsis,
-  MousePointerClick,
-  Plus,
-  SquareMousePointer,
-  X,
-} from "lucide-react";
+import { MousePointerClick, Plus, SquareMousePointer, X } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import Dropdown from "./common/Dropdown";
 import { Badge } from "./ui/badge";
 import { Button, buttonVariants } from "./ui/button";
 import { Card } from "./ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
 
@@ -75,7 +62,6 @@ interface CourseGroupColumnProps {
   removeCourse: (courseCode: string) => void;
   pick: number;
   noOptions?: boolean;
-  activeId: string | null;
 }
 
 function CourseGroupColumn({
@@ -85,11 +71,16 @@ function CourseGroupColumn({
   removeCourse,
   removeCourseGroup,
   noOptions = false,
-  activeId,
 }: CourseGroupColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: groupName,
   });
+
+  const dropdownOptions = [
+    { name: "Rename", onClick: () => {} },
+    { name: "Change Picks", onClick: () => {} },
+    { name: "Delete", onClick: () => removeCourseGroup(groupName) },
+  ];
 
   return (
     <Card
@@ -103,22 +94,7 @@ function CourseGroupColumn({
         {!noOptions && (
           <div className="inline-flex gap-2">
             <Badge variant="outline">{pick}</Badge>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="ghost">
-                  <Ellipsis className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>Group Options</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Rename</DropdownMenuItem>
-                <DropdownMenuItem>Change Picks</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => removeCourseGroup(groupName)}>
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {!noOptions && <Dropdown items={dropdownOptions} />}
           </div>
         )}
       </div>
@@ -234,7 +210,6 @@ export default function CourseGrid({}: CourseGridProps) {
             )}
             {...groupFunctions}
             noOptions
-            activeId={activeId}
           />
           {Object.entries(courseGroups).map(([groupName, pick]) => (
             <CourseGroupColumn
@@ -243,7 +218,6 @@ export default function CourseGrid({}: CourseGridProps) {
               pick={pick}
               courses={courses.filter((course) => course.group === groupName)}
               {...groupFunctions}
-              activeId={activeId}
             />
           ))}
           <DragOverlay dropAnimation={{ duration: 150, easing: "ease-out" }}>
