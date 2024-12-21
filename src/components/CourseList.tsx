@@ -213,7 +213,7 @@ export default function CourseList({
           </Button>
         </Dropdown>
       </CardHeader>
-      <ScrollArea className="min-h-0">
+      <ScrollArea className="min-h-0 grow">
         <CardContent>
           <Button
             className="w-full mb-4"
