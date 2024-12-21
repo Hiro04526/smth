@@ -122,7 +122,7 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
 
     if (courses.some((course) => course.courseCode === courseCode)) {
       toast({
-        title: "That's not possible...",
+        title: "Invalid Course!",
         description: "You already added that course!",
         variant: "destructive",
       });
@@ -146,7 +146,7 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
     addCourse(data);
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const addMLSCourse = async (values: z.infer<typeof formSchema>) => {
     setIsFetching(true);
 
     try {
@@ -163,15 +163,35 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
     }
   };
 
+  const addCustomCourse = (values: z.infer<typeof formSchema>) => {
+    if (courses.some((course) => course.courseCode === values.courseCode)) {
+      toast({
+        title: "Duplicate Course Code!",
+        description:
+          "You've already added that course. To update it, click the course settings button.",
+        variant: "destructive",
+      });
+
+      return;
+    }
+
+    addCourse({
+      courseCode: values.courseCode,
+      classes: [],
+      lastFetched: new Date(),
+      isCustom: true,
+    });
+  };
+
   const dropdownItems: DropdownItems[] = [
     {
       name: "Add from MLS",
       Icon: Import,
-      onClick: () => form.handleSubmit(onSubmit)(),
+      onClick: () => form.handleSubmit(addMLSCourse)(),
     },
     {
       name: "Add as Custom Course",
-      onClick: () => console.log("Add Custom Course"),
+      onClick: () => form.handleSubmit(addCustomCourse)(),
       Icon: SquarePen,
     },
   ];
@@ -180,7 +200,7 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
     <Form {...form}>
       <form
         noValidate
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(addMLSCourse)}
         className="space-y-4"
       >
         <FormField
