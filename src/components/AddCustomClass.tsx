@@ -2,6 +2,7 @@ import { ModalityEnumSchema } from "@/lib/enums";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { FormSelectField } from "./form/form-select-field";
@@ -32,11 +33,11 @@ const classFormSchema = z.object({
           day: z.enum(["M", "T", "W", "H", "F", "S", "U"]),
           start: z.coerce
             .number({ message: "Invalid Input" })
-            .min(0, "Lowest is 0.")
+            .min(700, "Lowest is 700.")
             .max(2400, "Highest is 2400."),
           end: z.coerce
             .number({ message: "Invalid Input" })
-            .min(0, "Lowest is 0.")
+            .min(700, "Lowest is 700.")
             .max(2400, "Highest is 2400."),
           date: z.string(),
           isOnline: z.boolean(),
@@ -60,6 +61,7 @@ interface AddCustomClassProps {
 }
 
 export default function AddCustomClass({ courseCode }: AddCustomClassProps) {
+  const [open, setOpen] = useState(false);
   const addClassToCourse = useGlobalStore((state) => state.addClassToCourse);
 
   const form = useForm<z.infer<typeof classFormSchema>>({
@@ -94,17 +96,18 @@ export default function AddCustomClass({ courseCode }: AddCustomClassProps) {
 
   const onSubmit = (values: z.infer<typeof classFormSchema>) => {
     addClassToCourse(courseCode, values);
+    setOpen(false);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Plus className="size-4 mr-2" />
           Add Class
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[40%] max-h-[80%] flex flex-col">
+      <DialogContent className="max-w-[600px] max-h-[80%] flex flex-col">
         <DialogHeader>
           <DialogTitle>Add Custom Class</DialogTitle>
           <DialogDescription>
