@@ -9,7 +9,13 @@ import {
   useDraggable,
   useDroppable,
 } from "@dnd-kit/core";
-import { MousePointerClick, Plus, SquareMousePointer, X } from "lucide-react";
+import {
+  Check,
+  MousePointerClick,
+  Plus,
+  SquareMousePointer,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown from "./common/Dropdown";
@@ -60,6 +66,7 @@ interface CourseGroupColumnProps {
   courses: Course[];
   removeCourseGroup: (groupName: string) => void;
   removeCourse: (courseCode: string) => void;
+  renameCourseGroup: (groupName: string, newGroupName: string) => void;
   pick: number;
   noOptions?: boolean;
 }
@@ -70,17 +77,44 @@ function CourseGroupColumn({
   courses,
   removeCourse,
   removeCourseGroup,
+  renameCourseGroup,
   noOptions = false,
 }: CourseGroupColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: groupName,
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [newTitle, setNewTitle] = useState(groupName);
 
   const dropdownOptions = [
-    { name: "Rename", onClick: () => {} },
+    {
+      name: "Rename",
+      onClick: () => {
+        setIsEditing(true);
+      },
+    },
     { name: "Change Picks", onClick: () => {} },
     { name: "Delete", onClick: () => removeCourseGroup(groupName) },
   ];
+
+  const handleEdit = () => {
+    const newTitleFormatted = newTitle.trim();
+
+    if (!newTitleFormatted) {
+      toast({
+        title: "Group name cannot be empty!",
+        description: "Please enter a valid group name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (groupName !== newTitleFormatted) {
+      renameCourseGroup(groupName, newTitleFormatted);
+    }
+
+    setIsEditing(false);
+  };
 
   return (
     <Card
@@ -90,8 +124,21 @@ function CourseGroupColumn({
       ref={setNodeRef}
     >
       <div className="flex justify-between items-center w-full">
-        <h3 className="text-xl font-semibold">{groupName}</h3>
-        {!noOptions && (
+        {isEditing ? (
+          <div className="inline-flex gap-2">
+            <Input
+              placeholder="Group Name"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+            />
+            <Button onClick={handleEdit} variant="outline" size="icon">
+              <Check className="size-4" />
+            </Button>
+          </div>
+        ) : (
+          <h3 className="text-xl font-semibold">{groupName}</h3>
+        )}
+        {!noOptions && !isEditing && (
           <div className="inline-flex gap-2">
             <Badge variant="outline">{pick}</Badge>
             {!noOptions && <Dropdown items={dropdownOptions} />}
@@ -159,6 +206,16 @@ export default function CourseGrid({}: CourseGridProps) {
 
   const handleCreateGroup = () => {
     const newGroup = newGroupName.trim();
+
+    if (!newGroup) {
+      toast({
+        title: "Group name cannot be empty!",
+        description: "Please enter a valid group name.",
+        variant: "destructive",
+      });
+
+      return;
+    }
 
     if (Object.hasOwn(courseGroups, newGroup)) {
       toast({
