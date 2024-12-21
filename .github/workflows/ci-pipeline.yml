@@ -27,7 +27,7 @@ jobs:
         run: pnpm install
 
       - name: Lint Code
-        run: pnpm dlx eslint@8.57.0 ./src
+        run: pnpm lint
 
       - name: Check Code Formatting
         run: pnpm dlx prettier --check ./src

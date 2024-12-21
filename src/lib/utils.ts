@@ -210,7 +210,7 @@ export function createGroupedSchedules({
     );
     const [schedules, colors] = createSchedules(combinedCourses, filter);
 
-    if (schedules[0].length > 0) {
+    if (schedules.length && schedules[0].length > 0) {
       generatedSchedules.push(...schedules);
       generatedColors = { ...generatedColors, ...colors };
     }
