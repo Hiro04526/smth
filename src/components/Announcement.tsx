@@ -27,21 +27,26 @@ export default function Announcement() {
 
   const hasHydrated = useGlobalStore.persist.hasHydrated();
 
-  const title = "Slight Update!";
+  const title = "Big Update!";
   const description =
     "We have added some a couple of new features to the website!";
-  const patchDate = "2024-12-16";
+  const patchDate = "2024-12-22";
 
   const updates = [
     {
-      title: "New Filters",
+      title: "Grouped Courses",
       description:
-        "New filters have been added to the classes table! You can now filter by professor, section, and even remarks!",
+        "Courses can now be grouped! Groups allow you to make your schedules more flexible by allowing only a specific amount of courses from a specific group.",
     },
     {
-      title: "Change Saved Schedule Colors",
+      title: "Custom Courses & Classes",
       description:
-        "You can now change the colors of your saved schedules! Click on the Palette Button near the Download button to change it.",
+        "You can now add custom courses and classes! You can add a custom course by clicking the 'Add Course' button.",
+    },
+    {
+      title: "New QOL Functions",
+      description:
+        "You can now remove all courses with the click of one button. Click the '...' button near Course List to view the functions!",
     },
   ];
 
