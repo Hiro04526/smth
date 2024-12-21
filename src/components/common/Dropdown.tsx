@@ -1,5 +1,5 @@
 import { DropdownMenuContentProps } from "@radix-ui/react-dropdown-menu";
-import { Ellipsis } from "lucide-react";
+import { Ellipsis, LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
 import { Button } from "../ui/button";
 import {
@@ -11,7 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-interface DropdownItems {
+export interface DropdownItems {
+  Icon?: LucideIcon;
   name: string;
   onClick?: () => void;
 }
@@ -23,9 +24,10 @@ interface DropdownProps extends DropdownMenuContentProps {
 }
 
 export default function Dropdown({
-  title = "Options",
+  title,
   children,
   items,
+  ...props
 }: DropdownProps) {
   return (
     <DropdownMenu>
@@ -36,7 +38,7 @@ export default function Dropdown({
           </Button>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent {...props}>
         {title && (
           <>
             <DropdownMenuLabel>{title}</DropdownMenuLabel>
@@ -45,6 +47,7 @@ export default function Dropdown({
         )}
         {items.map((item, index) => (
           <DropdownMenuItem key={index} onClick={item?.onClick}>
+            {item.Icon && <item.Icon className="size-4 mr-2" />}
             {item.name}
           </DropdownMenuItem>
         ))}

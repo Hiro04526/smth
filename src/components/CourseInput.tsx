@@ -9,30 +9,40 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { fetchMultipleCourses } from "@/lib/actions";
+import { fetchCourse, fetchMultipleCourses } from "@/lib/actions";
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoaderCircle } from "lucide-react";
+import {
+  ChevronDown,
+  Import,
+  ListPlus,
+  LoaderCircle,
+  SquarePen,
+} from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
+import Dropdown, { DropdownItems } from "./common/Dropdown";
 import { toast } from "./ui/use-toast";
 
 const formSchema = z.object({
   courseCode: z.string().length(7, "Length should be 7!"),
 });
 
-type props = {
-  fetchHandler: (courseCode: string) => Promise<void>;
+type CourseInputprops = {
   courses: Course[];
   setCourses: (courses: Course[]) => void;
 };
 
-const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
-  const { id, setId } = useGlobalStore(
-    useShallow((state) => ({ id: state.id, setId: state.setId }))
+const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
+  const { id, setId, addCourse } = useGlobalStore(
+    useShallow((state) => ({
+      id: state.id,
+      setId: state.setId,
+      addCourse: state.addCourse,
+    }))
   );
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -93,11 +103,54 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
     }
   };
 
+  const handleFetch = async (courseCode: string) => {
+    if (!id) {
+      toast({
+        title: "You haven't set your ID yet!",
+        description: "Set your ID on the button at the top right corner.",
+        variant: "destructive",
+      });
+
+      return;
+    }
+
+    // This is here because ID may accidentally contain quotes
+    // Remove this once everyone has migrated properly.
+    if (id.includes('"')) {
+      setId(id.replaceAll('"', ""));
+    }
+
+    if (courses.some((course) => course.courseCode === courseCode)) {
+      toast({
+        title: "That's not possible...",
+        description: "You already added that course!",
+        variant: "destructive",
+      });
+
+      return;
+    }
+
+    const data = await fetchCourse(courseCode, id);
+
+    if (data.classes.length === 0) {
+      toast({
+        title: "Oops... That course doesn't have any classes.",
+        description:
+          "Either that course doesn't exist or no classes have been published yet.",
+        variant: "destructive",
+      });
+
+      return;
+    }
+
+    addCourse(data);
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsFetching(true);
 
     try {
-      await fetchHandler(values.courseCode.toUpperCase());
+      await handleFetch(values.courseCode.toUpperCase());
     } catch (error) {
       toast({
         title: "Something went wrong while fetching...",
@@ -109,6 +162,19 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
       setIsFetching(false);
     }
   };
+
+  const dropdownItems: DropdownItems[] = [
+    {
+      name: "Add from MLS",
+      Icon: Import,
+      onClick: () => form.handleSubmit(onSubmit)(),
+    },
+    {
+      name: "Add as Custom Course",
+      onClick: () => console.log("Add Custom Course"),
+      Icon: SquarePen,
+    },
+  ];
 
   return (
     <Form {...form}>
@@ -130,13 +196,24 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit" disabled={isFetching}>
-          {isFetching ? (
-            <LoaderCircle className="animate-spin" />
-          ) : (
-            "Add Course"
-          )}
-        </Button>
+        <Dropdown items={dropdownItems} className="dropdown-content-width-full">
+          <Button
+            size="sm"
+            variant="default"
+            className="w-full"
+            disabled={isFetching}
+          >
+            {isFetching ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <>
+                <ListPlus className="size-4 mr-2" />
+                Add Course
+                <ChevronDown className="size-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </Dropdown>
         <Button
           variant="outline"
           className="w-full"

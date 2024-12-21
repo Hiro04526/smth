@@ -178,7 +178,7 @@ function CourseGroupColumn({
                 {pick}
               </Badge>
             </TooltipWrapper>
-            {!noOptions && <Dropdown items={dropdownOptions} />}
+            {!noOptions && <Dropdown items={dropdownOptions} title="Options" />}
           </div>
         )}
         {isEditingPick && (
