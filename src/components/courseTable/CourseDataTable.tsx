@@ -34,6 +34,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   lastFetched?: Date;
   activeCourse: string;
+  isCustom?: boolean | null;
 }
 
 export function CourseDataTable<TData, TValue>({
@@ -41,6 +42,7 @@ export function CourseDataTable<TData, TValue>({
   data,
   lastFetched,
   activeCourse,
+  isCustom = false,
 }: DataTableProps<TData, TValue>) {
   const {
     columnFilters,
@@ -126,7 +128,7 @@ export function CourseDataTable<TData, TValue>({
           className="h-8 w-[150px]"
         />
         <div className="inline-flex gap-2">
-          <AddCustomClass courseCode={activeCourse} />
+          {isCustom && <AddCustomClass courseCode={activeCourse} />}
           <ViewColumnsDropdown table={table} />
         </div>
       </div>

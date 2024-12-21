@@ -39,6 +39,7 @@ const CourseTab = () => {
           data={courses[activeCourse].classes}
           lastFetched={courses[activeCourse].lastFetched}
           activeCourse={courses[activeCourse].courseCode}
+          isCustom={courses[activeCourse].isCustom}
         />
       ) : (
         <CourseGrid />
