@@ -63,10 +63,6 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
       return;
     }
 
-    if (id.includes('"')) {
-      setId(id.replaceAll('"', ""));
-    }
-
     setIsFetching(true);
     try {
       const newData = await fetchMultipleCourses(
@@ -81,16 +77,14 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
             "MLS may be down right now or something is terribly wrong.",
           variant: "destructive",
         });
+      } else {
+        setCourses(newData);
 
-        return;
+        toast({
+          title: "Successfully updated all courses!",
+          description: "The courses should now display updated data.",
+        });
       }
-
-      setCourses(newData);
-
-      toast({
-        title: "Successfully updated all courses!",
-        description: "The courses should now display updated data.",
-      });
     } catch (error) {
       toast({
         title: "Something went wrong while fetching...",
@@ -114,16 +108,11 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
       return;
     }
 
-    // This is here because ID may accidentally contain quotes
-    // Remove this once everyone has migrated properly.
-    if (id.includes('"')) {
-      setId(id.replaceAll('"', ""));
-    }
-
     if (courses.some((course) => course.courseCode === courseCode)) {
       toast({
-        title: "Invalid Course!",
-        description: "You already added that course!",
+        title: "Duplicate Course Code!",
+        description:
+          "You've already added that course. To update it, click the course settings button.",
         variant: "destructive",
       });
 
