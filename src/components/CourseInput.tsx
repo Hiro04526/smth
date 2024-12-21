@@ -60,7 +60,7 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
     setIsFetching(true);
     try {
       const newData = await fetchMultipleCourses(
-        courses.map((course) => course.courseCode),
+        courses.filter((course) => !course.isCustom),
         id
       );
 

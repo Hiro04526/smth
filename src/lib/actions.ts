@@ -21,12 +21,15 @@ export async function fetchCourse(courseCode: string, id: string) {
     courseCode: courseCode,
     classes: parsedData,
     lastFetched: new Date(),
+    isCustom: false,
   };
 
   return newCourse;
 }
 
-export async function fetchMultipleCourses(courseCodes: string[], id: string) {
+export async function fetchMultipleCourses(courses: Course[], id: string) {
+  const courseCodes = courses.map((course) => course.courseCode);
+
   const res = await fetch(
     `${process.env.COURSE_API}/api/courses?id=${id}&courses=${courseCodes.join(
       "&courses="
@@ -46,8 +49,8 @@ export async function fetchMultipleCourses(courseCodes: string[], id: string) {
 
   const updatedCourses = parsedData.map((classes, i) => {
     return {
-      courseCode: courseCodes[i],
-      classes: classes,
+      ...courses[i],
+      classes: classes.length ? classes : courses[i].classes,
       lastFetched: new Date(),
     };
   });
