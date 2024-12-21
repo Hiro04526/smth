@@ -30,7 +30,7 @@ export default function Announcement() {
   const title = "Big Update!";
   const description =
     "We have added some a couple of new features to the website!";
-  const patchDate = "2024-12-22";
+  const patchDate = "December 22, 2024";
 
   const updates = [
     {
