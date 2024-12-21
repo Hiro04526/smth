@@ -69,6 +69,7 @@ interface CourseGroupColumnProps {
   removeCourseGroup: (groupName: string) => void;
   removeCourse: (courseCode: string) => void;
   renameCourseGroup: (groupName: string, newGroupName: string) => void;
+  setGroupPick: (groupName: string, pick: number) => void;
   pick: number;
   noOptions?: boolean;
 }
@@ -80,27 +81,36 @@ function CourseGroupColumn({
   removeCourse,
   removeCourseGroup,
   renameCourseGroup,
+  setGroupPick,
   noOptions = false,
 }: CourseGroupColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: groupName,
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const [newTitle, setNewTitle] = useState(groupName);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingPick, setIsEditingPick] = useState(false);
+  const [input, setInput] = useState(groupName);
 
   const dropdownOptions = [
     {
       name: "Rename",
       onClick: () => {
-        setIsEditing(true);
+        setInput(groupName);
+        setIsEditingTitle(true);
       },
     },
-    { name: "Change Picks", onClick: () => {} },
+    {
+      name: "Change Picks",
+      onClick: () => {
+        setInput(pick.toString());
+        setIsEditingPick(true);
+      },
+    },
     { name: "Delete", onClick: () => removeCourseGroup(groupName) },
   ];
 
-  const handleEdit = () => {
-    const newTitleFormatted = newTitle.trim();
+  const handleTitleEdit = () => {
+    const newTitleFormatted = input.trim();
 
     if (!newTitleFormatted) {
       toast({
@@ -115,7 +125,23 @@ function CourseGroupColumn({
       renameCourseGroup(groupName, newTitleFormatted);
     }
 
-    setIsEditing(false);
+    setIsEditingTitle(false);
+  };
+
+  const handlePickEdit = () => {
+    const newPick = parseInt(input);
+
+    if (isNaN(newPick) || newPick < 0) {
+      toast({
+        title: "Invalid number of courses!",
+        description: "Please enter a valid number.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setGroupPick(groupName, newPick);
+    setIsEditingPick(false);
   };
 
   return (
@@ -126,15 +152,15 @@ function CourseGroupColumn({
       ref={setNodeRef}
     >
       <div className="flex justify-between items-center w-full">
-        {isEditing ? (
+        {isEditingTitle ? (
           <div className="inline-flex gap-2 w-full">
             <Input
               placeholder="Group Name"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
             />
             <Button
-              onClick={handleEdit}
+              onClick={handleTitleEdit}
               variant="outline"
               size="icon"
               className="shrink-0"
@@ -145,7 +171,7 @@ function CourseGroupColumn({
         ) : (
           <h3 className="text-xl font-semibold truncate">{groupName}</h3>
         )}
-        {!noOptions && !isEditing && (
+        {!noOptions && !isEditingTitle && !isEditingPick && (
           <div className="inline-flex gap-2">
             <TooltipWrapper content="# of courses to pick.">
               <Badge variant="secondary" className="size-8 justify-center">
@@ -153,6 +179,29 @@ function CourseGroupColumn({
               </Badge>
             </TooltipWrapper>
             {!noOptions && <Dropdown items={dropdownOptions} />}
+          </div>
+        )}
+        {isEditingPick && (
+          <div className="inline-flex gap-2 w-40">
+            <Input
+              type="text"
+              placeholder="# of courses to pick"
+              value={input}
+              onChange={(e) => {
+                const re = /^[0-9\b]+$/;
+                if (e.target.value === "" || re.test(e.target.value))
+                  setInput(e.target.value);
+              }}
+              pattern="\d*"
+            />
+            <Button
+              onClick={handlePickEdit}
+              variant="outline"
+              size="icon"
+              className="shrink-0"
+            >
+              <Check className="size-4" />
+            </Button>
           </div>
         )}
       </div>
@@ -196,6 +245,7 @@ export default function CourseGrid({}: CourseGridProps) {
       removeCourse: state.removeCourse,
       addCourseGroup: state.addCourseGroup,
       renameCourseGroup: state.renameCourseGroup,
+      setGroupPick: state.setGroupPick,
     }))
   );
 
