@@ -75,11 +75,15 @@ const config = {
           "0%,70%,100%": { opacity: "1" },
           "20%,50%": { opacity: "0" },
         },
+        "border-pulse": {
+          "50%": { borderColor: "rgba(255, 255, 255, 0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "caret-blink": "caret-blink 1.25s ease-out infinite",
+        "border-pulse": "border-pulse 1.5s infinite",
       },
     },
   },

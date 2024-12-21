@@ -1,7 +1,7 @@
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Reorder, useDragControls } from "framer-motion";
-import { CircleOff, GripVertical, ListX, X } from "lucide-react";
+import { CircleOff, GripVertical, Group, ListX, X } from "lucide-react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import TooltipButton from "./common/TooltipButton";
@@ -40,7 +40,7 @@ function CourseItem({
   );
 
   const handleDelete = (courseCode: string) => {
-    if (courses[activeCourse].courseCode === courseCode) {
+    if (activeCourse >= 0 && courses[activeCourse].courseCode === courseCode) {
       setActiveCourse(0);
     }
 
@@ -133,7 +133,14 @@ export default function CourseList({
         </TooltipButton>
       </CardHeader>
       <ScrollArea className="min-h-0">
-        <CardContent className="">
+        <CardContent>
+          <Button
+            className="w-full mb-4"
+            variant={activeCourse === -1 ? "default" : "outline"}
+            onClick={() => setActiveCourse(-1)}
+          >
+            <Group className="size-4 mr-2" /> Group Courses
+          </Button>
           {courses.length !== 0 ? (
             <Reorder.Group
               className="flex gap-2 row flex-col"
@@ -152,7 +159,7 @@ export default function CourseList({
               ))}
             </Reorder.Group>
           ) : (
-            <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center">
+            <div className="text-sm text-muted-foreground size-full flex flex-col gap-2 items-center justify-center mt-6">
               <CircleOff />
               None added yet.
             </div>

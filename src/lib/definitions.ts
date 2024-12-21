@@ -27,6 +27,7 @@ export const courseSchema = z.object({
   courseCode: z.string(),
   classes: classSchema.array(),
   lastFetched: z.date(),
+  group: z.string().nullish(),
 });
 
 const filterOptionsSchema = z

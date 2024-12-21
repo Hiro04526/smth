@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createSchedules } from "@/lib/utils";
+import { createGroupedSchedules } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { CalendarPlus2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
@@ -32,6 +32,7 @@ const ScheduleTab = () => {
     getSelectedData,
     filter,
     randomizeColors,
+    groups,
   } = useGlobalStore(
     useShallow((state) => ({
       schedules: state.schedules,
@@ -41,6 +42,7 @@ const ScheduleTab = () => {
       getSelectedData: state.getSelectedData,
       filter: state.filter,
       randomizeColors: state.randomizeColors,
+      groups: state.courseGroups,
     }))
   );
   const [active, setActive] = useState<number>(0);
@@ -58,7 +60,11 @@ const ScheduleTab = () => {
       return;
     }
 
-    const [newSchedules, newColors] = createSchedules(selectedData, filter);
+    const [newSchedules, newColors] = createGroupedSchedules({
+      groups,
+      courses: selectedData,
+      filter,
+    });
 
     if (newSchedules.length === 0) {
       toast({
