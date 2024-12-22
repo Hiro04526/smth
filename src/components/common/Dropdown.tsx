@@ -51,7 +51,7 @@ export default function Dropdown({
             onClick={item?.onClick}
             className="items-center h-8 inline-flex w-full"
           >
-            {item.Icon && <item.Icon className="size-4 mr-2" />}
+            {item.Icon && <item.Icon className="size-4 mr-2 ml-1" />}
             {item.name}
           </DropdownMenuItem>
         ))}
