@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 
 import {
   Command,
@@ -9,18 +9,18 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
+} from "@/components/ui/popover";
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
-import { Badge } from './badge';
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { Badge } from "./badge";
 
 export interface ComboboxProps {
   id?: string;
@@ -40,26 +40,25 @@ export interface ComboboxProps {
 export function Combobox({
   id,
   options = [],
-  selectMessage = 'Please select an option...',
-  searchMessage = 'Search options...',
-  emptyMessage = 'No options found.',
+  selectMessage = "Please select an option...",
+  searchMessage = "Search options...",
+  emptyMessage = "No options found.",
   value,
   allowCustom = false,
   onValueChange,
-  className = '',
+  className = "",
   disabled = false,
   isCustom,
   onCustomChange = () => {},
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
-  const [search, setSearch] = React.useState('');
-  const selectedOption =
-    isCustom ?
-      { badge: null, label: value, value: value }
+  const [search, setSearch] = React.useState("");
+  const selectedOption = isCustom
+    ? { badge: null, label: value, value: value }
     : options.find((option) => option.value === value);
 
   const handleSelect = (currentValue: string) => {
-    onValueChange(currentValue === value ? '' : currentValue);
+    onValueChange(currentValue === value ? "" : currentValue);
     setOpen(false);
     onCustomChange?.(false);
   };
@@ -72,15 +71,15 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn('w-full justify-between', className)}
+          className={cn("w-full justify-between", className)}
         >
           <span
             className={cn(
-              'min-w-0 overflow-hidden text-ellipsis',
-              !selectedOption && 'text-muted-foreground',
+              "min-w-0 overflow-hidden text-ellipsis",
+              !selectedOption && "text-muted-foreground"
             )}
           >
-            {selectedOption ?
+            {selectedOption ? (
               <>
                 {selectedOption.badge && (
                   <Badge variant="secondary" className="mr-2">
@@ -89,7 +88,9 @@ export function Combobox({
                 )}
                 {selectedOption.label}
               </>
-            : selectMessage}
+            ) : (
+              selectMessage
+            )}
           </span>
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -97,7 +98,7 @@ export function Combobox({
       <PopoverContent className="max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width] p-0">
         <Command
           filter={(value, search, keywords = []) => {
-            const extendValue = value + ' ' + keywords.join(' ');
+            const extendValue = value + " " + keywords.join(" ");
             if (extendValue.toLowerCase().includes(search.toLowerCase())) {
               return 1;
             }
@@ -132,7 +133,7 @@ export function Combobox({
                 {isCustom && (
                   <CommandItem value={value} onSelect={handleSelect}>
                     <Badge className="mr-2">New</Badge> {`"${value}"`}
-                    <CheckIcon className={cn('ml-auto h-4 w-4')} />
+                    <CheckIcon className={cn("ml-auto h-4 w-4")} />
                   </CommandItem>
                 )}
                 {options.map((option) => (
@@ -140,7 +141,7 @@ export function Combobox({
                     key={option.value}
                     value={option.value}
                     onSelect={handleSelect}
-                    keywords={[option.label, ...[option.badge ?? '']]}
+                    keywords={[option.label, ...[option.badge ?? ""]]}
                   >
                     {option.badge && (
                       <Badge variant="secondary" className="mr-2">
@@ -150,8 +151,8 @@ export function Combobox({
                     {option.label}
                     <CheckIcon
                       className={cn(
-                        'ml-auto h-4 w-4',
-                        value === option.value ? 'opacity-100' : 'opacity-0',
+                        "ml-auto h-4 w-4",
+                        value === option.value ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>
