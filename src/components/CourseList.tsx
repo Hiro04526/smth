@@ -190,7 +190,7 @@ export default function CourseList({
 
   const courseSettingsItems: DropdownItems[] = [
     {
-      name: "Update All Courses",
+      name: "Update Courses",
       onClick: handleUpdate,
       Icon: RefreshCcw,
     },
@@ -200,7 +200,7 @@ export default function CourseList({
       Icon: ListX,
     },
     {
-      name: "Remove All Courses",
+      name: "Remove Courses",
       onClick: () => setOpen(true),
       Icon: Trash2,
     },
