@@ -9,30 +9,40 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { fetchMultipleCourses } from "@/lib/actions";
+import { fetchCourse } from "@/lib/actions";
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoaderCircle } from "lucide-react";
+import {
+  ChevronDown,
+  Import,
+  ListPlus,
+  LoaderCircle,
+  SquarePen,
+} from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
+import Dropdown, { DropdownItems } from "./common/Dropdown";
 import { toast } from "./ui/use-toast";
 
 const formSchema = z.object({
   courseCode: z.string().length(7, "Length should be 7!"),
 });
 
-type props = {
-  fetchHandler: (courseCode: string) => Promise<void>;
+type CourseInputprops = {
   courses: Course[];
   setCourses: (courses: Course[]) => void;
 };
 
-const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
-  const { id, setId } = useGlobalStore(
-    useShallow((state) => ({ id: state.id, setId: state.setId }))
+const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
+  const { id, setId, addCourse } = useGlobalStore(
+    useShallow((state) => ({
+      id: state.id,
+      setId: state.setId,
+      addCourse: state.addCourse,
+    }))
   );
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,7 +52,7 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
     },
   });
 
-  const handleUpdate = async () => {
+  const handleFetch = async (courseCode: string) => {
     if (!id) {
       toast({
         title: "You haven't set your ID yet!",
@@ -53,34 +63,38 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
       return;
     }
 
-    if (id.includes('"')) {
-      setId(id.replaceAll('"', ""));
+    if (courses.some((course) => course.courseCode === courseCode)) {
+      toast({
+        title: "Duplicate Course Code!",
+        description:
+          "You've already added that course. To update it, click the course settings button.",
+        variant: "destructive",
+      });
+
+      return;
     }
 
-    setIsFetching(true);
-    try {
-      const newData = await fetchMultipleCourses(
-        courses.filter((course) => !course.isCustom),
-        id
-      );
+    const data = await fetchCourse(courseCode, id);
 
-      if (newData.some((course) => course.classes.length === 0)) {
-        toast({
-          title: "Oops... Some of the courses don't have any classes.",
-          description:
-            "MLS may be down right now or something is terribly wrong.",
-          variant: "destructive",
-        });
-
-        return;
-      }
-
-      setCourses(newData);
-
+    if (data.classes.length === 0) {
       toast({
-        title: "Successfully updated all courses!",
-        description: "The courses should now display updated data.",
+        title: "Oops... That course doesn't have any classes.",
+        description:
+          "Either that course doesn't exist or no classes have been published yet.",
+        variant: "destructive",
       });
+
+      return;
+    }
+
+    addCourse(data);
+  };
+
+  const addMLSCourse = async (values: z.infer<typeof formSchema>) => {
+    setIsFetching(true);
+
+    try {
+      await handleFetch(values.courseCode.toUpperCase());
     } catch (error) {
       toast({
         title: "Something went wrong while fetching...",
@@ -93,28 +107,44 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsFetching(true);
-
-    try {
-      await fetchHandler(values.courseCode.toUpperCase());
-    } catch (error) {
+  const addCustomCourse = (values: z.infer<typeof formSchema>) => {
+    if (courses.some((course) => course.courseCode === values.courseCode)) {
       toast({
-        title: "Something went wrong while fetching...",
+        title: "Duplicate Course Code!",
         description:
-          "The server is facing some issues right now, try again in a bit.",
+          "You've already added that course. To update it, click the course settings button.",
         variant: "destructive",
       });
-    } finally {
-      setIsFetching(false);
+
+      return;
     }
+
+    addCourse({
+      courseCode: values.courseCode,
+      classes: [],
+      lastFetched: new Date(),
+      isCustom: true,
+    });
   };
+
+  const dropdownItems: DropdownItems[] = [
+    {
+      name: "Add from MLS",
+      Icon: Import,
+      onClick: () => form.handleSubmit(addMLSCourse)(),
+    },
+    {
+      name: "Add as Custom Course",
+      onClick: () => form.handleSubmit(addCustomCourse)(),
+      Icon: SquarePen,
+    },
+  ];
 
   return (
     <Form {...form}>
       <form
         noValidate
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(addMLSCourse)}
         className="space-y-4"
       >
         <FormField
@@ -130,25 +160,24 @@ const CourseInput = ({ fetchHandler, courses, setCourses }: props) => {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit" disabled={isFetching}>
-          {isFetching ? (
-            <LoaderCircle className="animate-spin" />
-          ) : (
-            "Add Course"
-          )}
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => handleUpdate()}
-          disabled={isFetching}
-        >
-          {isFetching ? (
-            <LoaderCircle className="animate-spin" />
-          ) : (
-            "Update All Courses"
-          )}
-        </Button>
+        <Dropdown items={dropdownItems} className="dropdown-content-width-full">
+          <Button
+            size="sm"
+            variant="default"
+            className="w-full"
+            disabled={isFetching}
+          >
+            {isFetching ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <>
+                <ListPlus className="size-4 mr-2" />
+                Add Course
+                <ChevronDown className="size-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </Dropdown>
       </form>
     </Form>
   );

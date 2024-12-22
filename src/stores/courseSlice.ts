@@ -1,4 +1,4 @@
-import { Course } from "@/lib/definitions";
+import { Class, Course } from "@/lib/definitions";
 import { Slice } from "./useGlobalStore";
 
 export interface CourseStates {
@@ -12,6 +12,7 @@ export interface CourseStates {
   setGroupPick: (groupName: string, pick: number) => void;
   moveCourseToGroup: (groupName: string, courseCode: string) => void;
   renameCourseGroup: (oldName: string, newName: string) => void;
+  addClassToCourse: (courseCode: string, newClass: Class) => void;
 }
 
 export const createCourseSlice: Slice<CourseStates> = (set) => ({
@@ -81,6 +82,17 @@ export const createCourseSlice: Slice<CourseStates> = (set) => ({
       delete courseGroups[oldName];
 
       return { courses, courseGroups };
+    });
+  },
+  addClassToCourse: (courseCode, newClass) => {
+    set((state) => {
+      const courses = state.courses.map((course) => {
+        if (course.courseCode === courseCode) {
+          return { ...course, classes: [...course.classes, newClass] };
+        }
+        return course;
+      });
+      return { courses };
     });
   },
 });

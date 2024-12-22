@@ -23,6 +23,7 @@ import {
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import AddCustomClass from "../AddCustomClass";
 import { Input } from "../ui/input";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { FilterBar } from "./FilterBar";
@@ -33,6 +34,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   lastFetched?: Date;
   activeCourse: string;
+  isCustom?: boolean | null;
 }
 
 export function CourseDataTable<TData, TValue>({
@@ -40,6 +42,7 @@ export function CourseDataTable<TData, TValue>({
   data,
   lastFetched,
   activeCourse,
+  isCustom = false,
 }: DataTableProps<TData, TValue>) {
   const {
     columnFilters,
@@ -124,7 +127,10 @@ export function CourseDataTable<TData, TValue>({
           }}
           className="h-8 w-[150px]"
         />
-        <ViewColumnsDropdown table={table} />
+        <div className="inline-flex gap-2">
+          {isCustom && <AddCustomClass courseCode={activeCourse} />}
+          <ViewColumnsDropdown table={table} />
+        </div>
       </div>
       <div>
         <FilterBar table={table} />
