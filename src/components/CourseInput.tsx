@@ -74,20 +74,40 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
       return;
     }
 
-    const data = await fetchCourse(courseCode, id);
+    try {
+      const { data } = await fetchCourse(courseCode, id);
 
-    if (data.classes.length === 0) {
+      if (!data) {
+        toast({
+          title: "Something went wrong while fetching...",
+          description:
+            "The server is facing some issues right now, try again in a bit.",
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      if (data.classes.length === 0) {
+        toast({
+          title: "Oops... That course doesn't have any classes.",
+          description:
+            "Either that course doesn't exist or no classes have been published yet.",
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      addCourse(data);
+    } catch (error) {
       toast({
-        title: "Oops... That course doesn't have any classes.",
+        title: "Slow down!",
         description:
-          "Either that course doesn't exist or no classes have been published yet.",
+          "You're doing too many requests too quickly. Wait a bit before adding more.",
         variant: "destructive",
       });
-
-      return;
     }
-
-    addCourse(data);
   };
 
   const addMLSCourse = async (values: z.infer<typeof formSchema>) => {

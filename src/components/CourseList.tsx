@@ -145,12 +145,23 @@ export default function CourseList({
 
     setIsFetching(true);
     try {
-      const newData = await fetchMultipleCourses(
+      const { data } = await fetchMultipleCourses(
         courses.filter((course) => !course.isCustom),
         id
       );
 
-      if (newData.some((course) => course.classes.length === 0)) {
+      if (!data) {
+        toast({
+          title: "Something went wrong while fetching...",
+          description:
+            "The server is facing some issues right now, try again in a bit.",
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      if (data.some((course) => course.classes.length === 0)) {
         toast({
           title: "Oops... Some of the courses don't have any classes.",
           description:
@@ -158,7 +169,7 @@ export default function CourseList({
           variant: "destructive",
         });
       } else {
-        setCourses(newData);
+        setCourses(data);
 
         toast({
           title: "Successfully updated all courses!",
