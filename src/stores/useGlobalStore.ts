@@ -52,6 +52,9 @@ export const useGlobalStore = create<GlobalStates>()(
       name: "global-state",
       skipHydration: true,
       storage: createJSONStorage(() => storage),
+      onRehydrateStorage: (state) => {
+        return () => state.setHasHydrated(true);
+      },
     }
   )
 );

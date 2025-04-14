@@ -18,19 +18,22 @@ import { Button } from "./ui/button";
 
 export default function Announcement() {
   const [open, setOpen] = useState(false);
-  const { hasSeenAnnouncement, setHasSeenAnnouncement } = useGlobalStore(
+  const {
+    hasSeenAnnouncement,
+    setHasSeenAnnouncement,
+    _hasHydrated: hasHydrated,
+  } = useGlobalStore(
     useShallow((state) => ({
       hasSeenAnnouncement: state.hasSeenAnnouncement,
       setHasSeenAnnouncement: state.setHasSeenAnnouncement,
+      _hasHydrated: state._hasHydrated,
     }))
   );
-
-  const hasHydrated = useGlobalStore.persist.hasHydrated();
 
   const title = "Big Update!";
   const description =
     "We have added some a couple of new features to the website!";
-  const patchDate = "December 22, 2024";
+  const patchDate = "December 22, 2025";
 
   const updates = [
     {
