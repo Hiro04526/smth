@@ -84,15 +84,21 @@ export const columns: ColumnDef<Class>[] = [
       );
       return (
         <div className="flex flex-col gap-1">
-          {schedules.map((sched, i) => (
-            <Badge
-              key={i}
-              variant="outline"
-              className={`bg-background/50 select-none flex gap-2 rounded-lg p-2 px-4 font-medium w-[160px]  justify-center items-center`}
-            >
-              {`${convertTime(sched.start)} - ${convertTime(sched.end)}`}
-            </Badge>
-          ))}
+          {schedules.map((sched, i) => {
+            if (i !== 0 && sched.start === sched.end) return null;
+
+            return (
+              <Badge
+                key={i}
+                variant="outline"
+                className={`bg-background/50 select-none flex gap-2 rounded-lg p-2 px-4 font-medium w-[160px]  justify-center items-center`}
+              >
+                {sched.start === sched.end
+                  ? "N/A"
+                  : `${convertTime(sched.start)} - ${convertTime(sched.end)}`}
+              </Badge>
+            );
+          })}
         </div>
       );
     },
