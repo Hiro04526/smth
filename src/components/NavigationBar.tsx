@@ -23,20 +23,23 @@ const NavigationBar = () => {
     buttonVariants({
       variant: "ghost",
     }),
-    "flex gap-2 items-center"
+    "flex gap-2 items-center font-medium"
   );
 
   const activeButton = cn(
     buttonVariants({
       variant: "default",
     }),
-    "flex gap-2 items-center"
+    "flex gap-2 items-center font-medium"
   );
 
   return (
     <div className="p-4 flex items-center justify-between gap-2 w-full border-b px-16 bg-background">
-      <Link href="/" className="flex gap-2 font-extrabold text-lg items-center">
-        <div className="p-2 bg-accent rounded-lg flex justify-center pl-3 max-w-[40px]">
+      <Link
+        href="/"
+        className="flex gap-2 font-extrabold text-lg items-center tracking-tight"
+      >
+        <div className="p-2 bg-accent rounded-lg flex justify-center pl-3 max-w-[40px] ">
           <SchedaddleLogo
             className="text-accent-foreground"
             width={24}
@@ -50,21 +53,21 @@ const NavigationBar = () => {
           href="/"
           className={pathName === "/" ? activeButton : normalButton}
         >
-          <TableProperties strokeWidth={1.5} size={22} />
+          <TableProperties strokeWidth={1.75} size={22} />
           Courses
         </Link>
         <Link
           href="/schedules"
           className={pathName === "/schedules" ? activeButton : normalButton}
         >
-          <CalendarRange strokeWidth={1.5} size={22} />
+          <CalendarRange strokeWidth={1.75} size={22} />
           Schedules
         </Link>
         <Link
           href="/saved"
           className={pathName === "/saved" ? activeButton : normalButton}
         >
-          <Heart strokeWidth={1.5} size={22} />
+          <Heart strokeWidth={1.75} size={22} />
           Saved
         </Link>
       </div>
