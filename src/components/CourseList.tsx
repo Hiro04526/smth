@@ -1,3 +1,5 @@
+"use client";
+
 import { fetchMultipleCourses } from "@/lib/actions";
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
@@ -211,11 +213,7 @@ export default function CourseList({
       <CardHeader className="pb-4 flex flex-row items-center justify-between space-y-0">
         <CardTitle>Course List</CardTitle>
         <Dropdown items={courseSettingsItems} align="start" className="w-52">
-          <Button
-            size="icon"
-            variant="outline"
-            disabled={isFetching || courses.length === 0}
-          >
+          <Button size="icon" variant="outline" disabled={isFetching}>
             {isFetching ? (
               <LoaderCircle className="size-4 animate-spin" />
             ) : (
