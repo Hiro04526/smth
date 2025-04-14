@@ -1,9 +1,9 @@
 "use client";
-import { Card, CardTitle } from "@/components/ui/card";
 import { Class } from "@/lib/definitions";
 import { ColorsEnum, DaysEnum } from "@/lib/enums";
-import { cn, convertTime, getCardColors, toProperCase } from "@/lib/utils";
+import { cn, getCardColors } from "@/lib/utils";
 import { useCallback, useState } from "react";
+import CalendarCard from "./CalendarCard";
 import { ScrollArea } from "./ui/scroll-area";
 
 const CELL_SIZE_PX = 56;
@@ -122,40 +122,15 @@ const Calendar = ({
                       const start = sched.start;
                       const end = sched.end;
                       return (
-                        <Card
+                        <CalendarCard
                           key={`${currClass.course + i}`}
+                          currClass={currClass}
+                          height={calculateHeight(start, end)}
+                          top={calculateHeight(700, start) + 16}
+                          hovered={hovered}
                           onMouseEnter={() => setHovered(currClass.code)}
                           onMouseLeave={() => setHovered(false)}
-                          className={cn(
-                            `border-0 p-3 ${
-                              hovered === currClass.code &&
-                              `scale-105 shadow-[0_0px_10px_3px_rgba(0,0,0,0.3)]`
-                            } absolute w-[95%] transition-all ${
-                              currClass.color
-                            }`,
-                            hovered === currClass.code && currClass.shadow
-                          )}
-                          style={{
-                            height: calculateHeight(start, end),
-                            top: calculateHeight(700, start) + 16,
-                          }}
-                        >
-                          <div className="flex h-full flex-col justify-center gap-1">
-                            <CardTitle className="text-xs font-bold">
-                              {`${currClass.course} [${currClass.code}]`}
-                            </CardTitle>
-                            <div className="text-xs">
-                              <div>
-                                {convertTime(start)} - {convertTime(end)}
-                              </div>
-                              {currClass.professor && (
-                                <div className="overflow-hidden text-ellipsis text-nowrap">
-                                  {`${toProperCase(currClass.professor)}`}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </Card>
+                        />
                       );
                     });
                   })}
