@@ -114,9 +114,16 @@ export const columns: ColumnDef<Class>[] = [
     header: "Days",
     accessorFn: (row) => {
       const days = [...new Set(row.schedules.map((sched) => sched.day))];
+      const dates = [...new Set(row.schedules.map((sched) => sched.date))];
 
+      // Case: If there are 4 days, it most likely means that their schedule are in pairs
+      // i.e. MT is 3:30 to 4:30 and HF is 2:30 to 3:30
       if (days.length === 4)
         return `${days.slice(0, 2).join("")}/${days.slice(2).join("")}`;
+
+      if (dates[0].length !== 0) {
+        return dates.join("/");
+      }
 
       return days.join("/");
     },
