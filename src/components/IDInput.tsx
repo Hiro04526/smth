@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IdCard } from "lucide-react";
@@ -58,7 +59,11 @@ const IDInput = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button
+          variant="outline"
+          size="icon"
+          className={cn(!id && "border-primary animate-pulse")}
+        >
           <IdCard className="size-5" />
         </Button>
       </DialogTrigger>
