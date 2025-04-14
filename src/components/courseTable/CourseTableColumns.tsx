@@ -3,6 +3,8 @@
 import { Class, Schedule } from "@/lib/definitions";
 import { convertTime, toProperCase } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { SquareArrowOutUpRight } from "lucide-react";
+import TooltipWrapper from "../common/TooltipWrapper";
 import { Badge } from "../ui/badge";
 import { Checkbox } from "../ui/checkbox";
 import { SortableHeader } from "./SortableHeader";
@@ -68,6 +70,33 @@ export const columns: ColumnDef<Class>[] = [
       <SortableHeader column={column} title={"Professor"} />
     ),
     filterFn: "arrIncludesSome",
+    cell: ({ row, cell }) => {
+      if (!row.original.professor) return "-";
+      const [lastName, firstName] = row.original.professor
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\b[A-Z]\.\s?/g, "")
+        .split(",")
+        .map((name) => name.trim().toLowerCase().replace(/\s+/g, "-"));
+
+      const profLink = `/${firstName}-${lastName}`;
+
+      return (
+        <TooltipWrapper content="View ArcherEye Profile" delayDuration={300}>
+          <a
+            href={"https://archer-eye.com/professor" + profLink}
+            target="_blank"
+            className="inline-flex gap-2 items-center"
+          >
+            {cell.getValue() as string}{" "}
+            <SquareArrowOutUpRight
+              className="size-3 text-accent-foreground shrink-0"
+              strokeWidth={2.5}
+            />
+          </a>
+        </TooltipWrapper>
+      );
+    },
   },
   {
     header: "Schedules",
