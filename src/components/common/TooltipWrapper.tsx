@@ -1,3 +1,4 @@
+import { TooltipProps } from "@radix-ui/react-tooltip";
 import { ReactNode } from "react";
 import {
   Tooltip,
@@ -6,7 +7,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 
-interface TooltipWrapperProps {
+interface TooltipWrapperProps extends TooltipProps {
   children: ReactNode;
   content: ReactNode;
 }
@@ -14,10 +15,11 @@ interface TooltipWrapperProps {
 export default function TooltipWrapper({
   children,
   content,
+  ...props
 }: TooltipWrapperProps) {
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip {...props}>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent>{content}</TooltipContent>
       </Tooltip>

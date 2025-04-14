@@ -185,6 +185,10 @@ export function createGroupedSchedules({
     (course) => !course.group || course.group === "Ungrouped"
   );
 
+  // Generates possible combinations per group
+  // Example: [SUBJ1, SUBJ2, SUBJ3] with pick 2 and [SUBJ4, SUBJ5] with pick 1
+  // will generate: [[[SUBJ1, SUBJ2], [SUBJ1, SUBJ3], [SUBJ2, SUBJ3]], [[SUBJ4], [SUBJ5]]]
+  // Dimensions: Groups -> Combinations -> Courses
   const groupedCombinations = Object.entries(groups)
     .map(([groupName, pick]) => {
       const groupCourses = courses.filter(
@@ -198,6 +202,10 @@ export function createGroupedSchedules({
     })
     .filter((group) => group.length > 0);
 
+  // Gets the Cartesian product of the combinations
+  // Example: [[[SUBJ1, SUBJ2]], [[SUBJ4], [SUBJ5]]]
+  // will generate: [[[SUBJ1, SUBJ2], [SUBJ4]], [[SUBJ1, SUBJ2], [SUBJ5]]]
+  // Dimensions: Cartesian -> Groups -> Courses
   const groupsCartesianProduct = getCartesianProduct(...groupedCombinations);
 
   const generatedSchedules: Class[][] = [];

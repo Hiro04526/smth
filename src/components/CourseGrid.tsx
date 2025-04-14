@@ -100,7 +100,7 @@ function CourseGroupColumn({
       },
     },
     {
-      name: "Change Picks",
+      name: "Change # of Picks",
       onClick: () => {
         setInput(pick.toString());
         setIsEditingPick(true);
@@ -173,8 +173,14 @@ function CourseGroupColumn({
         )}
         {!noOptions && !isEditingTitle && !isEditingPick && (
           <div className="inline-flex gap-2">
-            <TooltipWrapper content="# of courses to pick.">
-              <Badge variant="secondary" className="size-8 justify-center">
+            <TooltipWrapper
+              content="# of courses to pick from this group"
+              delayDuration={0}
+            >
+              <Badge
+                variant="secondary"
+                className="size-8 justify-center select-none"
+              >
                 {pick}
               </Badge>
             </TooltipWrapper>
@@ -320,8 +326,8 @@ export default function CourseGrid({}: CourseGridProps) {
       <div className="flex flex-col gap-2">
         <h2 className="font-bold text-2xl">Group Courses</h2>
         <p className="text-muted-foreground">
-          Create groups and choose how many to pick from each group! Drag and
-          drop to move courses.
+          Create groups and choose how many to subjects to pick from each group!
+          To start, drag and drop to move the courses.
         </p>
       </div>
       <ScrollArea>
