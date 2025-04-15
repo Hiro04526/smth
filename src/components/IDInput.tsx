@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IdCard } from "lucide-react";
+import { ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -37,7 +38,11 @@ const FormSchema = z.object({
     .regex(/^\d+$/, "Your ID should only contain numbers!"),
 });
 
-const IDInput = () => {
+interface IDInputProps {
+  children?: ReactNode;
+}
+
+const IDInput = ({ children }: IDInputProps) => {
   const { id, setId } = useGlobalStore(
     useShallow((state) => ({
       id: state.id,
@@ -59,13 +64,15 @@ const IDInput = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className={cn(!id && "border-primary animate-pulse")}
-        >
-          <IdCard className="size-5" />
-        </Button>
+        {children ?? (
+          <Button
+            variant="outline"
+            size="icon"
+            className={cn(!id && "border-primary animate-pulse")}
+          >
+            <IdCard className="size-5" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="w-[380px]">
         <DialogHeader className="">

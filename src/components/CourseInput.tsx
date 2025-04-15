@@ -15,6 +15,7 @@ import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ChevronDown,
+  IdCard,
   Import,
   ListPlus,
   LoaderCircle,
@@ -25,6 +26,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown, { DropdownItems } from "./common/Dropdown";
+import IDInput from "./IDInput";
 import { toast } from "./ui/use-toast";
 
 const formSchema = z.object({
@@ -159,6 +161,19 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
       Icon: SquarePen,
     },
   ];
+
+  if (!id) {
+    return (
+      <IDInput>
+        <Button
+          variant="outline"
+          className="w-full border-primary animate-pulse inline-flex items-center"
+        >
+          <IdCard className="size-4 mr-2" /> Set ID Number
+        </Button>
+      </IDInput>
+    );
+  }
 
   return (
     <Form {...form}>
