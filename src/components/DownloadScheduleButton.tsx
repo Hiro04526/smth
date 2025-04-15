@@ -64,7 +64,7 @@ export default function DownloadScheduleButton({
   return (
     <div className="relative">
       <Dropdown items={dropdownItems} className="dropdown-content-width-full">
-        <Button size="sm" variant="default" className="w-full h-10">
+        <Button variant="default" className="w-full px-5">
           <Download className="mr-2 size-4" /> Download
         </Button>
       </Dropdown>

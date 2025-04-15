@@ -20,13 +20,13 @@ const ScheduleTabSkeleton = () => {
           <ButtonSkeleton className="w-40" />
 
           {/* Filter button */}
-          <ButtonSkeleton isIcon />
+          <ButtonSkeleton className="w-32" />
 
           {/* Right side buttons */}
           <div className="ml-auto flex gap-2">
             <ButtonSkeleton isIcon />
             <ButtonSkeleton isIcon />
-            <ButtonSkeleton className="w-28" />
+            <ButtonSkeleton className="w-32" />
           </div>
         </Card>
 

@@ -20,7 +20,8 @@ const SavedTabSkeleton = () => {
           <div className="ml-auto flex gap-2">
             <ButtonSkeleton isIcon />
             <ButtonSkeleton isIcon />
-            <ButtonSkeleton className="w-28" />
+            <ButtonSkeleton isIcon />
+            <ButtonSkeleton className="w-32" />
           </div>
         </Card>
 

@@ -15,6 +15,7 @@ import { useShallow } from "zustand/react/shallow";
 import Calendar from "./Calendar";
 import CourseColorsDialog from "./CourseColorsDialog";
 import DownloadScheduleButton from "./DownloadScheduleButton";
+import RenameButton from "./RenameButton";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
 import SavedTabSkeleton from "./skeletons/SavedTabSkeleton";
@@ -93,6 +94,7 @@ const SavedTab = () => {
           </div>
           {schedules[active] && (
             <div className="ml-auto flex flex-row gap-2">
+              <RenameButton activeSched={schedules[active]} />
               <SaveButton
                 activeSched={schedules[active].classes}
                 colors={schedules[active].colors}
