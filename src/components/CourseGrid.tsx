@@ -9,17 +9,13 @@ import {
   useDraggable,
   useDroppable,
 } from "@dnd-kit/core";
-import {
-  Check,
-  MousePointerClick,
-  Plus,
-  SquareMousePointer,
-  X,
-} from "lucide-react";
+import { Check, MousePointerClick, SquareMousePointer, X } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown from "./common/Dropdown";
 import TooltipWrapper from "./common/TooltipWrapper";
+import CreateGroupDialog from "./CreateGroupDialog";
+import GroupHelp from "./GroupHelp";
 import { Badge } from "./ui/badge";
 import { Button, buttonVariants } from "./ui/button";
 import { Card } from "./ui/card";
@@ -63,7 +59,7 @@ function CourseItem({ course, removeCourse }: CourseItemProps) {
   );
 }
 
-interface CourseGroupColumnProps {
+interface CourseGroupProps {
   groupName: string;
   courses: Course[];
   removeCourseGroup: (groupName: string) => void;
@@ -74,7 +70,7 @@ interface CourseGroupColumnProps {
   noOptions?: boolean;
 }
 
-function CourseGroupColumn({
+function CourseGroup({
   groupName,
   pick,
   courses,
@@ -83,7 +79,7 @@ function CourseGroupColumn({
   renameCourseGroup,
   setGroupPick,
   noOptions = false,
-}: CourseGroupColumnProps) {
+}: CourseGroupProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: groupName,
   });
@@ -261,8 +257,6 @@ export default function CourseGrid({}: CourseGridProps) {
     }))
   );
 
-  const [isCreating, setIsCreating] = useState(false);
-  const [newGroupName, setNewGroupName] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const handleDragEnd = (e: DragEndEvent) => {
@@ -277,32 +271,8 @@ export default function CourseGrid({}: CourseGridProps) {
     setActiveId(null);
   };
 
-  const handleCreateGroup = () => {
-    const newGroup = newGroupName.trim();
-
-    if (!newGroup) {
-      toast({
-        title: "Group name cannot be empty!",
-        description: "Please enter a valid group name.",
-        variant: "destructive",
-      });
-
-      return;
-    }
-
-    if (Object.hasOwn(courseGroups, newGroup)) {
-      toast({
-        title: "Group already exists!",
-        description: "Please choose a different name.",
-        variant: "destructive",
-      });
-
-      return;
-    }
-
-    addCourseGroup(newGroup);
-    setIsCreating(false);
-    setNewGroupName("");
+  const handleCreateGroup = (groupName: string) => {
+    addCourseGroup(groupName);
   };
 
   const handleDragStart = (e: DragStartEvent) => {
@@ -324,7 +294,10 @@ export default function CourseGrid({}: CourseGridProps) {
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="flex flex-col gap-2">
-        <h2 className="font-bold text-2xl">Group Courses</h2>
+        <div className="inline-flex gap-4 items-center">
+          <h2 className="font-bold text-2xl">Group Courses</h2>
+          <GroupHelp />
+        </div>
         <p className="text-muted-foreground">
           Create groups and choose how many to subjects to pick from each group!
           To start, drag and drop to move the courses.
@@ -333,7 +306,7 @@ export default function CourseGrid({}: CourseGridProps) {
       <ScrollArea>
         <div className="grid grid-cols-3 2xl:grid-cols-4 gap-4 w-full">
           <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-            <CourseGroupColumn
+            <CourseGroup
               groupName="Ungrouped"
               pick={-1}
               courses={courses.filter(
@@ -343,7 +316,7 @@ export default function CourseGrid({}: CourseGridProps) {
               noOptions
             />
             {Object.entries(courseGroups).map(([groupName, pick]) => (
-              <CourseGroupColumn
+              <CourseGroup
                 key={groupName}
                 groupName={groupName}
                 pick={pick}
@@ -367,38 +340,11 @@ export default function CourseGrid({}: CourseGridProps) {
               )}
             </DragOverlay>
           </DndContext>
-          {isCreating ? (
-            <div className="border-border border p-4 h-max flex flex-col gap-4">
-              <Input
-                type="text"
-                placeholder="Group Name"
-                value={newGroupName}
-                onChange={(e) => setNewGroupName(e.target.value)}
-              />
-              <div className="justify-end flex gap-2">
-                <Button
-                  onClick={() => setIsCreating(false)}
-                  variant="outline"
-                  size="sm"
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleCreateGroup} size="sm">
-                  <Plus className="size-4 mr-2" /> Create
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <Button
-              onClick={() => {
-                setIsCreating(true);
-              }}
-              variant="ghost"
-            >
-              <Plus className="size-4 mr-2" />
-              Add Group
-            </Button>
-          )}
+
+          <CreateGroupDialog
+            onCreateGroup={handleCreateGroup}
+            existingGroups={courseGroups}
+          />
         </div>
       </ScrollArea>
     </div>
