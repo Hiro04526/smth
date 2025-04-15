@@ -11,17 +11,28 @@ import { useGlobalStore } from "@/stores/useGlobalStore";
 import { ChevronLeft, ChevronRight, HeartCrack } from "lucide-react";
 import { useState } from "react";
 import { FixedSizeList } from "react-window";
+import { useShallow } from "zustand/react/shallow";
 import Calendar from "./Calendar";
 import CourseColorsDialog from "./CourseColorsDialog";
 import DownloadScheduleButton from "./DownloadScheduleButton";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
+import SavedTabSkeleton from "./skeletons/SavedTabSkeleton";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 
 const SavedTab = () => {
-  const schedules = useGlobalStore((state) => state.savedSchedules);
+  const { schedules, hasHydrated } = useGlobalStore(
+    useShallow((state) => ({
+      schedules: state.savedSchedules,
+      hasHydrated: state._hasHydrated,
+    }))
+  );
   const [active, setActive] = useState<number>(0);
+
+  if (!hasHydrated) {
+    return <SavedTabSkeleton />;
+  }
 
   return (
     <div className="flex flex-row w-full min-h-0 py-8 px-16 gap-4 h-full">
@@ -82,11 +93,11 @@ const SavedTab = () => {
           </div>
           {schedules[active] && (
             <div className="ml-auto flex flex-row gap-2">
-              <CourseColorsDialog savedSchedule={schedules[active]} />
               <SaveButton
                 activeSched={schedules[active].classes}
                 colors={schedules[active].colors}
               />
+              <CourseColorsDialog savedSchedule={schedules[active]} />
               <DownloadScheduleButton
                 classes={schedules[active].classes}
                 colors={schedules[active].colors}

@@ -19,6 +19,7 @@ import DownloadScheduleButton from "./DownloadScheduleButton";
 import FilterSettings from "./FilterSettings";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
+import ScheduleTabSkeleton from "./skeletons/ScheduleTabSkeleton";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { toast } from "./ui/use-toast";
@@ -33,6 +34,7 @@ const ScheduleTab = () => {
     filter,
     randomizeColors,
     groups,
+    hasHydrated,
   } = useGlobalStore(
     useShallow((state) => ({
       schedules: state.schedules,
@@ -43,9 +45,14 @@ const ScheduleTab = () => {
       filter: state.filter,
       randomizeColors: state.randomizeColors,
       groups: state.courseGroups,
+      hasHydrated: state._hasHydrated,
     }))
   );
   const [active, setActive] = useState<number>(0);
+
+  if (!hasHydrated) {
+    return <ScheduleTabSkeleton />;
+  }
 
   const handleGenerate = () => {
     const selectedData = getSelectedData();
@@ -117,6 +124,7 @@ const ScheduleTab = () => {
               disabled={active <= 0}
               variant="outline"
               size="icon"
+              suppressHydrationWarning
             >
               <ChevronLeft />
             </Button>
@@ -125,7 +133,7 @@ const ScheduleTab = () => {
               onValueChange={(val) => setActive(Number(val))}
               disabled={schedules.length === 0}
             >
-              <SelectTrigger className="w-64">
+              <SelectTrigger className="w-64" suppressHydrationWarning>
                 <SelectValue
                   placeholder={`${
                     schedules.length !== 0 ? `Schedule ${active + 1}` : "-"
