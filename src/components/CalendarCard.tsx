@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardTitle } from "@/components/ui/card";
-import { Class } from "@/lib/definitions";
+import { Card } from "@/components/ui/card";
+import { Class, Schedule } from "@/lib/definitions";
 import { cn, convertTime, toProperCase } from "@/lib/utils";
 
 interface CalendarCardProps {
@@ -11,17 +11,21 @@ interface CalendarCardProps {
   hovered: number | false;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  isMobile?: boolean;
+  sched: Schedule;
 }
 
 const CalendarCard = ({
   currClass,
   height,
   top,
+  sched,
   hovered,
   onMouseEnter,
   onMouseLeave,
+  isMobile = false,
 }: CalendarCardProps) => {
-  const sched = currClass.schedules[0]; // We're rendering one schedule at a time
+  const room = currClass.rooms.filter((r) => r !== "");
 
   return (
     <Card
@@ -40,11 +44,22 @@ const CalendarCard = ({
       }}
     >
       <div className="flex h-full flex-col justify-center gap-1">
-        <CardTitle className="text-xs font-bold">
-          {`${currClass.course} [${currClass.code}]`}
-        </CardTitle>
+        <div
+          className={cn(
+            "text-xs font-bold tracking-tight",
+            isMobile && "text-lg -space-y-1"
+          )}
+        >
+          {isMobile && <div>[{currClass.section}]</div>}
+          <div>{`${isMobile ? "" : `[${currClass.section}]`} ${
+            currClass.course
+          }`}</div>
+        </div>
         <div className="text-xs">
-          <div>
+          <div className="font-medium">
+            {sched.isOnline ? "Online" : !!room.length ? room : "TBA"}
+          </div>
+          <div className="font-medium">
             {convertTime(sched.start)} - {convertTime(sched.end)}
           </div>
           {currClass.professor && (

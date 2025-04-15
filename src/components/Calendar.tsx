@@ -6,28 +6,37 @@ import { useCallback, useState } from "react";
 import CalendarCard from "./CalendarCard";
 import { ScrollArea } from "./ui/scroll-area";
 
-const CELL_SIZE_PX = 56;
-const CELL_HEIGHT = "h-14";
+const CELL_SIZE_PX = 64;
+const CELL_HEIGHT = "h-16";
 
 const Calendar = ({
   courses,
   colors,
+  cellSizePx = CELL_SIZE_PX,
+  cellHeight = CELL_HEIGHT,
+  isMobile = false,
 }: {
   courses: Class[];
   colors: Record<string, ColorsEnum>;
+  cellSizePx?: number;
+  cellHeight?: string;
+  isMobile?: boolean;
 }) => {
-  const calculateHeight = useCallback((start: number, end: number) => {
-    const startHour = Math.floor(start / 100);
-    const endHour = Math.floor(end / 100);
-    const startMinutes = start % 100;
-    const endMinutes = end % 100;
+  const calculateHeight = useCallback(
+    (start: number, end: number) => {
+      const startHour = Math.floor(start / 100);
+      const endHour = Math.floor(end / 100);
+      const startMinutes = start % 100;
+      const endMinutes = end % 100;
 
-    const totalMinutes =
-      (endHour - startHour) * 60 + (endMinutes - startMinutes);
+      const totalMinutes =
+        (endHour - startHour) * 60 + (endMinutes - startMinutes);
 
-    // 16 here is to account for offset
-    return (totalMinutes / 60) * CELL_SIZE_PX;
-  }, []);
+      // 16 here is to account for offset
+      return (totalMinutes / 60) * cellSizePx;
+    },
+    [cellSizePx]
+  );
 
   const [hovered, setHovered] = useState<number | false>(false);
 
@@ -77,7 +86,7 @@ const Calendar = ({
           <div className="ml-2 flex w-[50px] shrink-0 flex-col items-end">
             {[...Array(16)].map((_, index) => (
               <div
-                className={cn(`${CELL_HEIGHT} shrink-0`)}
+                className={cn(`${cellHeight} shrink-0`)}
                 key={"time" + index}
               >
                 {" "}
@@ -96,7 +105,7 @@ const Calendar = ({
                 <div
                   className={cn(
                     `${
-                      index === 15 ? "h-0" : CELL_HEIGHT
+                      index === 15 ? "h-0" : cellHeight
                     } after:absolute after:h-[1px] after:w-full after:bg-muted/50 after:content-['']`
                   )}
                   key={index}
@@ -125,11 +134,13 @@ const Calendar = ({
                         <CalendarCard
                           key={`${currClass.course + i}`}
                           currClass={currClass}
+                          sched={sched}
                           height={calculateHeight(start, end)}
                           top={calculateHeight(700, start) + 16}
                           hovered={hovered}
                           onMouseEnter={() => setHovered(currClass.code)}
                           onMouseLeave={() => setHovered(false)}
+                          isMobile={isMobile}
                         />
                       );
                     });
