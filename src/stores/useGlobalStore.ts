@@ -1,3 +1,4 @@
+import { hasOwnProperty } from "@/lib/utils";
 import { del, get, set } from "idb-keyval"; // can use anything: IndexedDB, Ionic Storage, etc.
 import { create, StateCreator } from "zustand";
 import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
@@ -53,7 +54,29 @@ export const useGlobalStore = create<GlobalStates>()(
       skipHydration: true,
       storage: createJSONStorage(() => storage),
       onRehydrateStorage: (state) => {
-        return () => state.setHasHydrated(true);
+        return () => {
+          state.setHasHydrated(true);
+        };
+      },
+      version: 1,
+      migrate: (persistedState, version) => {
+        if (!persistedState) return persistedState;
+
+        if (
+          version === 0 &&
+          typeof persistedState === "object" &&
+          hasOwnProperty(persistedState, "courseGroups") &&
+          !Array.isArray(persistedState["courseGroups"])
+        ) {
+          persistedState["courseGroups"] = Object.entries(
+            persistedState["courseGroups"] as Record<string, number>
+          ).map(([key, value]) => ({
+            name: key,
+            pick: value,
+          }));
+        }
+
+        return persistedState;
       },
     }
   )

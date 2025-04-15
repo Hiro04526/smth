@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Class, Course, Filter, Schedule } from "./definitions";
+import { Class, Course, CourseGroup, Filter, Schedule } from "./definitions";
 import { ColorsEnum, ColorsEnumSchema, DaysEnum } from "./enums";
 
 export function cn(...inputs: ClassValue[]) {
@@ -39,8 +39,7 @@ export function filterInitialData(
         if (!sched.isOnline && !filter.general.daysInPerson.includes(sched.day))
           return true;
 
-        const { start, end, modalities, daysInPerson } =
-          filter.specific[sched.day];
+        const { start, end, modalities } = filter.specific[sched.day];
 
         return (
           sched.start < start ||
@@ -177,7 +176,7 @@ export function createGroupedSchedules({
   courses,
   filter,
 }: {
-  groups: Record<string, number>;
+  groups: CourseGroup[];
   courses: Course[];
   filter?: Filter;
 }): [schedules: Class[][], colors: Record<string, ColorsEnum>] {
@@ -189,15 +188,15 @@ export function createGroupedSchedules({
   // Example: [SUBJ1, SUBJ2, SUBJ3] with pick 2 and [SUBJ4, SUBJ5] with pick 1
   // will generate: [[[SUBJ1, SUBJ2], [SUBJ1, SUBJ3], [SUBJ2, SUBJ3]], [[SUBJ4], [SUBJ5]]]
   // Dimensions: Groups -> Combinations -> Courses
-  const groupedCombinations = Object.entries(groups)
-    .map(([groupName, pick]) => {
+  const groupedCombinations = groups
+    .map((group) => {
       const groupCourses = courses.filter(
-        (course) => course.group === groupName
+        (course) => course.group === group.name
       );
 
       if (groupCourses.length === 0) return [];
 
-      const combinations = generateCombinations(groupCourses, pick);
+      const combinations = generateCombinations(groupCourses, group.pick);
       return combinations;
     })
     .filter((group) => group.length > 0);
@@ -397,4 +396,11 @@ export function getRandomColors(courses: string[]): Record<string, ColorsEnum> {
   });
 
   return courseColors;
+}
+
+export function hasOwnProperty<X extends {}, Y extends PropertyKey>(
+  obj: X,
+  prop: Y
+): obj is X & Record<Y, unknown> {
+  return obj.hasOwnProperty(prop);
 }

@@ -1,12 +1,12 @@
-import { Class, Course } from "@/lib/definitions";
+import { Class, Course, CourseGroup } from "@/lib/definitions";
 import { Slice } from "./useGlobalStore";
 
 export interface CourseStates {
   courses: Course[];
+  courseGroups: CourseGroup[];
   setCourses: (courses: Course[]) => void;
   addCourse: (course: Course) => void;
   removeCourse: (courseCode: string) => void;
-  courseGroups: Record<string, number>;
   addCourseGroup: (groupName: string) => void;
   removeCourseGroup: (groupName: string) => void;
   setGroupPick: (groupName: string, pick: number) => void;
@@ -23,19 +23,13 @@ export const createCourseSlice: Slice<CourseStates> = (set) => ({
       courses: [...state.courses, course],
     })),
   removeCourse: (courseCode) =>
-    set((state) => {
-      const { [courseCode]: _, ...remainingRows } = state.selectedRows;
-      const { [courseCode]: ___, ...remainingFilters } = state.columnFilters;
-      return {
-        courses: state.courses.filter((c) => c.courseCode !== courseCode),
-        selectedRows: remainingRows,
-        columnFilters: remainingFilters,
-      };
-    }),
-  courseGroups: {},
+    set((state) => ({
+      courses: state.courses.filter((c) => c.courseCode !== courseCode),
+    })),
+  courseGroups: [],
   addCourseGroup: (groupName) =>
     set((state) => ({
-      courseGroups: { ...state.courseGroups, [groupName]: 1 },
+      courseGroups: [...state.courseGroups, { name: groupName, pick: 1 }],
     })),
   moveCourseToGroup: (groupName, courseCode) => {
     set((state) => {
@@ -58,15 +52,18 @@ export const createCourseSlice: Slice<CourseStates> = (set) => ({
         return course;
       });
 
-      const { [groupName]: _, ...courseGroups } = state.courseGroups;
+      const courseGroups = state.courseGroups.filter(
+        (group) => group.name !== groupName
+      );
 
       return { courses, courseGroups };
     }),
   setGroupPick: (groupName, pick) => {
-    set((state) => {
-      const courseGroups = { ...state.courseGroups, [groupName]: pick };
-      return { courseGroups };
-    });
+    set((state) => ({
+      courseGroups: state.courseGroups.map((group) =>
+        group.name === groupName ? { ...group, pick } : group
+      ),
+    }));
   },
   renameCourseGroup: (oldName, newName) => {
     set((state) => {
@@ -77,9 +74,9 @@ export const createCourseSlice: Slice<CourseStates> = (set) => ({
         return course;
       });
 
-      const courseGroups = { ...state.courseGroups };
-      courseGroups[newName] = courseGroups[oldName];
-      delete courseGroups[oldName];
+      const courseGroups = state.courseGroups.map((group) =>
+        group.name === oldName ? { ...group, name: newName } : group
+      );
 
       return { courses, courseGroups };
     });

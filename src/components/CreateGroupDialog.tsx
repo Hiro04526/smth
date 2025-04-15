@@ -1,3 +1,4 @@
+import { CourseGroup } from "@/lib/definitions";
 import { Plus, PlusSquare } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
@@ -13,7 +14,7 @@ import { toast } from "./ui/use-toast";
 
 interface CreateGroupDialogProps {
   onCreateGroup: (groupName: string) => void;
-  existingGroups: Record<string, number>;
+  existingGroups: CourseGroup[];
 }
 
 export default function CreateGroupDialog({

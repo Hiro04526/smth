@@ -257,6 +257,8 @@ export default function CourseGrid({}: CourseGridProps) {
     }))
   );
 
+  console.log("courseGroups in courseGrid", courseGroups);
+
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const handleDragEnd = (e: DragEndEvent) => {
@@ -315,12 +317,12 @@ export default function CourseGrid({}: CourseGridProps) {
               {...groupFunctions}
               noOptions
             />
-            {Object.entries(courseGroups).map(([groupName, pick]) => (
+            {courseGroups.map(({ name, pick }) => (
               <CourseGroup
-                key={groupName}
-                groupName={groupName}
+                key={name}
+                groupName={name}
                 pick={pick}
-                courses={courses.filter((course) => course.group === groupName)}
+                courses={courses.filter((course) => course.group === name)}
                 {...groupFunctions}
               />
             ))}
