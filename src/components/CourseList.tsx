@@ -171,7 +171,7 @@ export default function CourseList({
           variant: "destructive",
         });
       } else {
-        setCourses(data);
+        setCourses([...data, ...courses.filter((course) => course.isCustom)]);
 
         toast({
           title: "Successfully updated all courses!",
