@@ -32,7 +32,11 @@ const formSchema = z.object({
   courseCode: z.string().length(7, "Length should be 7!"),
 });
 
-const CourseInput = () => {
+interface CourseInputProps {
+  setActiveCourse: (index: number) => void;
+}
+
+const CourseInput = ({ setActiveCourse }: CourseInputProps) => {
   const { id, addCourse, courses } = useGlobalStore(
     useShallow((state) => ({
       id: state.id,
@@ -88,6 +92,7 @@ const CourseInput = () => {
       }
 
       toast.success(`Course ${courseCode} added successfully!`);
+      setActiveCourse(courses.length);
       addCourse(data);
     } catch (error) {
       toast.warning("Slow down!", {

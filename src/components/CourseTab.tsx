@@ -19,7 +19,7 @@ const CourseTab = () => {
       <div className="flex flex-col gap-4 min-w-72 max-w-72">
         <Card>
           <CardContent className="pt-6">
-            <CourseInput />
+            <CourseInput setActiveCourse={setActiveCourse} />
           </CardContent>
         </Card>
         <CourseList
