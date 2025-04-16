@@ -108,15 +108,17 @@ export default function CourseList({
   activeCourse,
   setActiveCourse,
 }: CourseListProps) {
-  const { courses, setCourses, id, removeAllSelectedRows } = useGlobalStore(
-    useShallow((state) => ({
-      courses: state.courses,
-      setCourses: state.setCourses,
-      removeCourse: state.removeCourse,
-      id: state.id,
-      removeAllSelectedRows: state.removeAllSelectedRows,
-    }))
-  );
+  const { courses, setCourses, id, resetSelectedRows, resetColumnFilters } =
+    useGlobalStore(
+      useShallow((state) => ({
+        courses: state.courses,
+        setCourses: state.setCourses,
+        removeCourse: state.removeCourse,
+        id: state.id,
+        resetSelectedRows: state.resetSelectedRows,
+        resetColumnFilters: state.resetColumnFilters,
+      }))
+    );
 
   const [isFetching, setIsFetching] = useState(false);
   const [open, setOpen] = useState(false);
@@ -183,7 +185,7 @@ export default function CourseList({
     },
     {
       name: "Clear All Selected",
-      onClick: removeAllSelectedRows,
+      onClick: resetSelectedRows,
       Icon: ListX,
     },
     {
@@ -192,6 +194,13 @@ export default function CourseList({
       Icon: Trash2,
     },
   ];
+
+  const handleReset = () => {
+    setCourses([]);
+    setActiveCourse(-1);
+    resetSelectedRows();
+    resetColumnFilters();
+  };
 
   return (
     <Card className="flex flex-col grow shrink min-h-0">
@@ -242,10 +251,7 @@ export default function CourseList({
         </CardContent>
       </ScrollArea>
       <ConfirmDialog
-        onSubmit={() => {
-          setCourses([]);
-          setActiveCourse(-1);
-        }}
+        onSubmit={() => handleReset()}
         open={open}
         setOpen={setOpen}
         description="Are you sure you want to remove all courses? This action cannot be reversed."

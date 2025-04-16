@@ -13,7 +13,6 @@ export interface TableStates {
     rowSelection: RowSelectionState
   ) => void;
   getSelectedData: () => Course[];
-  removeAllSelectedRows: () => void;
   columnVisibility: VisibilityState;
   setColumnVisibility: (columnVisibility: VisibilityState) => void;
   columnFilters: Record<string, ColumnFiltersState>;
@@ -23,6 +22,8 @@ export interface TableStates {
   ) => void;
   getColumnFilters: (courseCode: string) => ColumnFiltersState;
   deleteColumnFilters: (courseCode: string) => void;
+  resetSelectedRows: () => void;
+  resetColumnFilters: () => void;
 }
 
 export const createTableSlice: Slice<TableStates> = (set, get) => ({
@@ -60,7 +61,7 @@ export const createTableSlice: Slice<TableStates> = (set, get) => ({
       return { ...course, classes: courseData };
     });
   },
-  removeAllSelectedRows: () => set({ selectedRows: {} }),
+  resetSelectedRows: () => set({ selectedRows: {} }),
   columnVisibility: {},
   setColumnVisibility: (columnVisibility) => set({ columnVisibility }),
   columnFilters: {},
@@ -75,4 +76,5 @@ export const createTableSlice: Slice<TableStates> = (set, get) => ({
       return { columnFilters: newColumnFilters };
     }),
   getColumnFilters: (courseCode) => get().columnFilters[courseCode] ?? [],
+  resetColumnFilters: () => set({ columnFilters: {} }),
 });
