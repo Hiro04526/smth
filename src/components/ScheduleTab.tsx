@@ -12,6 +12,7 @@ import { useGlobalStore } from "@/stores/useGlobalStore";
 import { CalendarPlus2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { FixedSizeList } from "react-window";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import Calendar from "./Calendar";
 import CourseColorsDialog from "./CourseColorsDialog";
@@ -22,7 +23,6 @@ import ScheduleOverview from "./ScheduleOverview";
 import ScheduleTabSkeleton from "./skeletons/ScheduleTabSkeleton";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { toast } from "./ui/use-toast";
 
 const ScheduleTab = () => {
   const {
@@ -58,11 +58,9 @@ const ScheduleTab = () => {
     const selectedData = getSelectedData();
 
     if (!selectedData.length) {
-      toast({
-        title: "No rows selected...",
+      toast.error("No rows selected...", {
         description:
           "No schedule can be made because you haven't selected any classes yet.",
-        variant: "destructive",
       });
       return;
     }
@@ -74,19 +72,15 @@ const ScheduleTab = () => {
     });
 
     if (newSchedules.length === 0) {
-      toast({
-        title: "Uh oh! No schedules could be generated.",
+      toast.error("Uh oh! No schedules could be generated.", {
         description:
           "Try selecting more classes that don't conflict with each other.",
-        variant: "destructive",
       });
       return;
     } else if (newSchedules.length >= 2048) {
-      toast({
-        title: "Uh oh! Too many classes will be generated.",
+      toast.error("Uh oh! Too many classes will be generated.", {
         description:
-          "Narrow down your options and select less classes, then generate again.",
-        variant: "destructive",
+          "Adjust your filters and select less classes, then try generating again.",
       });
       return;
     }
@@ -111,8 +105,7 @@ const ScheduleTab = () => {
     }
 
     setActive(0);
-    toast({
-      title: "Sucessfully generated schedules!",
+    toast.success("Sucessfully generated schedules!", {
       description: `A total of ${newSchedules.length} were successfully generated.`,
     });
   };

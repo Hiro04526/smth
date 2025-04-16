@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import type { Metadata } from "next";
@@ -32,7 +32,15 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <Toaster />
+          <Toaster
+            richColors
+            toastOptions={{
+              classNames: {
+                title: "font-sans",
+                description: "font-sans",
+              },
+            }}
+          />
         </ThemeProvider>
       </body>
     </html>

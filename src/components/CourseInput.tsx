@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { fetchCourse } from "@/lib/actions";
-import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -23,27 +22,26 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown, { DropdownItems } from "./common/Dropdown";
 import IDInput from "./IDInput";
-import { toast } from "./ui/use-toast";
 
 const formSchema = z.object({
   courseCode: z.string().length(7, "Length should be 7!"),
 });
 
-type CourseInputprops = {
-  courses: Course[];
-  setCourses: (courses: Course[]) => void;
-};
+interface CourseInputProps {
+  setActiveCourse: (index: number) => void;
+}
 
-const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
-  const { id, setId, addCourse } = useGlobalStore(
+const CourseInput = ({ setActiveCourse }: CourseInputProps) => {
+  const { id, addCourse, courses } = useGlobalStore(
     useShallow((state) => ({
       id: state.id,
-      setId: state.setId,
       addCourse: state.addCourse,
+      courses: state.courses,
     }))
   );
   const [isFetching, setIsFetching] = useState<boolean>(false);
@@ -56,21 +54,17 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
 
   const handleFetch = async (courseCode: string) => {
     if (!id) {
-      toast({
-        title: "You haven't set your ID yet!",
+      toast.error("You haven't set your ID number yet.", {
         description: "Set your ID on the button at the top right corner.",
-        variant: "destructive",
       });
 
       return;
     }
 
     if (courses.some((course) => course.courseCode === courseCode)) {
-      toast({
-        title: "Duplicate Course Code!",
+      toast.error("Duplicate Course Code Detected", {
         description:
-          "You've already added that course. To update it, click the course settings button.",
-        variant: "destructive",
+          "You've already added that course. To update it, click the course list settings button.",
       });
 
       return;
@@ -80,34 +74,30 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
       const { data } = await fetchCourse(courseCode, id);
 
       if (!data) {
-        toast({
-          title: "Something went wrong while fetching...",
+        toast.error("Something went wrong while fetching...", {
           description:
             "The server is facing some issues right now, try again in a bit.",
-          variant: "destructive",
         });
 
         return;
       }
 
       if (data.classes.length === 0) {
-        toast({
-          title: "Oops... That course doesn't have any classes.",
+        toast.error("Something went wrong while fetching...", {
           description:
-            "Either that course doesn't exist or no classes have been published yet.",
-          variant: "destructive",
+            "No classes were found for that course. Either MLS is down or no classes exist yet for that course.",
         });
 
         return;
       }
 
+      toast.success(`Course ${courseCode} added successfully!`);
+      setActiveCourse(courses.length);
       addCourse(data);
     } catch (error) {
-      toast({
-        title: "Slow down!",
+      toast.warning("Slow down!", {
         description:
-          "You're doing too many requests too quickly. Wait a bit before adding more.",
-        variant: "destructive",
+          "You're doing too many requests too quickly. Please wait a bit before adding more. This is to prevent spamming the server.",
       });
     }
   };
@@ -118,11 +108,9 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
     try {
       await handleFetch(values.courseCode.toUpperCase());
     } catch (error) {
-      toast({
-        title: "Something went wrong while fetching...",
+      toast.error("Something went wrong while fetching...", {
         description:
           "The server is facing some issues right now, try again in a bit.",
-        variant: "destructive",
       });
     } finally {
       setIsFetching(false);
@@ -131,11 +119,9 @@ const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
 
   const addCustomCourse = (values: z.infer<typeof formSchema>) => {
     if (courses.some((course) => course.courseCode === values.courseCode)) {
-      toast({
-        title: "Duplicate Course Code!",
+      toast.error("Duplicate Course Code Detected", {
         description:
           "You've already added that course. To update it, click the course settings button.",
-        variant: "destructive",
       });
 
       return;

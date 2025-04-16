@@ -6,7 +6,7 @@ import { CourseStates, createCourseSlice } from "./courseSlice";
 import { createIdSlice, IdStates } from "./idSlice";
 import { createMiscSlice, MiscStates } from "./miscSlice";
 import { createScheduleSlice, ScheduleStates } from "./scheduleSlice";
-import { createTableSlice, TableStates } from "./tableStates";
+import { createTableSlice, TableStates } from "./tableSlice";
 
 // Custom Storage to interface with IndexedDB
 const storage: StateStorage = {

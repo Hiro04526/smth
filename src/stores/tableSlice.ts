@@ -22,6 +22,7 @@ export interface TableStates {
     columnFilters: ColumnFiltersState
   ) => void;
   getColumnFilters: (courseCode: string) => ColumnFiltersState;
+  deleteColumnFilters: (courseCode: string) => void;
 }
 
 export const createTableSlice: Slice<TableStates> = (set, get) => ({
@@ -29,15 +30,6 @@ export const createTableSlice: Slice<TableStates> = (set, get) => ({
   setSelectedRows: (courseCode, rowSelection) =>
     set((state) => {
       const newSelectedRows = { ...state.selectedRows };
-
-      Object.entries(newSelectedRows).forEach(([key, value]) => {
-        // Removes any remaining empty objects in the selectedRows.
-        // This is removable in the future, just here to clean up
-        // any existing bugs.
-        if (Object.entries(value).length === 0) {
-          delete newSelectedRows[key];
-        }
-      });
 
       // Remove the object if it's empty
       if (Object.keys(rowSelection).length === 0) {
@@ -76,5 +68,11 @@ export const createTableSlice: Slice<TableStates> = (set, get) => ({
     set((state) => ({
       columnFilters: { ...state.columnFilters, [courseCode]: columnFilters },
     })),
+  deleteColumnFilters: (courseCode) =>
+    set((state) => {
+      const newColumnFilters = { ...state.columnFilters };
+      delete newColumnFilters[courseCode];
+      return { columnFilters: newColumnFilters };
+    }),
   getColumnFilters: (courseCode) => get().columnFilters[courseCode] ?? [],
 });

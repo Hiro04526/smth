@@ -1,4 +1,5 @@
 import { Class, Course, CourseGroup } from "@/lib/definitions";
+import { RowSelectionState } from "@tanstack/react-table";
 import { Slice } from "./useGlobalStore";
 
 export interface CourseStates {
@@ -13,19 +14,27 @@ export interface CourseStates {
   moveCourseToGroup: (groupName: string, courseCode: string) => void;
   renameCourseGroup: (oldName: string, newName: string) => void;
   addClassToCourse: (courseCode: string, newClass: Class) => void;
+  editClass: (courseCode: string, classCode: number, newClass: Class) => void;
+  deleteClass: (courseCode: string, classCode: number) => void;
 }
 
-export const createCourseSlice: Slice<CourseStates> = (set) => ({
+export const createCourseSlice: Slice<CourseStates> = (set, get) => ({
   courses: [],
   setCourses: (courses) => set({ courses }),
   addCourse: (course) =>
     set((state) => ({
       courses: [...state.courses, course],
     })),
-  removeCourse: (courseCode) =>
-    set((state) => ({
-      courses: state.courses.filter((c) => c.courseCode !== courseCode),
-    })),
+  removeCourse: (courseCode) => {
+    get().setSelectedRows(courseCode, {});
+    get().deleteColumnFilters(courseCode);
+
+    set((state) => {
+      return {
+        courses: state.courses.filter((c) => c.courseCode !== courseCode),
+      };
+    });
+  },
   courseGroups: [],
   addCourseGroup: (groupName) =>
     set((state) => ({
@@ -90,6 +99,73 @@ export const createCourseSlice: Slice<CourseStates> = (set) => ({
         return course;
       });
       return { courses };
+    });
+  },
+  editClass: (courseCode, classCode, newClass) => {
+    set((state) => {
+      const courses = state.courses.map((course) => {
+        if (course.courseCode === courseCode) {
+          const classes = course.classes.map((cls) => {
+            if (cls.code === classCode) {
+              return newClass;
+            }
+            return cls;
+          });
+          return { ...course, classes };
+        }
+        return course;
+      });
+      return { courses };
+    });
+  },
+  deleteClass: (courseCode, classCode) => {
+    set((state) => {
+      let rowIndex = -1;
+      const courses = state.courses.map((course) => {
+        if (course.courseCode === courseCode) {
+          const classes = course.classes.filter((cls, i) => {
+            // Get the index of the class to be deleted
+            if (cls.code === classCode) {
+              rowIndex = i;
+            }
+
+            return cls.code !== classCode;
+          });
+          return { ...course, classes };
+        }
+        return course;
+      });
+
+      // Adjust the selected row indices in selectedRows
+      // to account for the deleted class
+      const courseRows: RowSelectionState = {};
+
+      Object.keys(state.selectedRows[courseCode]).forEach((key) => {
+        const index = parseInt(key, 10);
+
+        if (index === rowIndex) {
+          return;
+        }
+
+        if (index > rowIndex) {
+          courseRows[`${index - 1}`] = state.selectedRows[courseCode][key];
+        } else {
+          courseRows[`${index}`] = state.selectedRows[courseCode][key];
+        }
+      });
+
+      const newSelectedRows = {
+        ...state.selectedRows,
+        [courseCode]: courseRows,
+      };
+
+      // Reset columnFilters and rowSelections to empty
+      return {
+        courses,
+        selectedRows: newSelectedRows,
+        columnFilters: {},
+        rowSelections: {},
+      };
     });
   },
 });
