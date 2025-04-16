@@ -2,7 +2,6 @@
 
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { useState } from "react";
-import { useShallow } from "zustand/react/shallow";
 import CourseGrid from "./CourseGrid";
 import CourseInput from "./CourseInput";
 import CourseList from "./CourseList";
@@ -11,12 +10,7 @@ import { columns } from "./courseTable/CourseTableColumns";
 import { Card, CardContent } from "./ui/card";
 
 const CourseTab = () => {
-  const { courses, setCourses } = useGlobalStore(
-    useShallow((state) => ({
-      courses: state.courses,
-      setCourses: state.setCourses,
-    }))
-  );
+  const courses = useGlobalStore((state) => state.courses);
 
   const [activeCourse, setActiveCourse] = useState<number>(0);
 
@@ -25,7 +19,7 @@ const CourseTab = () => {
       <div className="flex flex-col gap-4 min-w-72 max-w-72">
         <Card>
           <CardContent className="pt-6">
-            <CourseInput courses={courses} setCourses={setCourses} />
+            <CourseInput />
           </CardContent>
         </Card>
         <CourseList

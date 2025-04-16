@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { fetchCourse } from "@/lib/actions";
-import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -33,17 +32,12 @@ const formSchema = z.object({
   courseCode: z.string().length(7, "Length should be 7!"),
 });
 
-type CourseInputprops = {
-  courses: Course[];
-  setCourses: (courses: Course[]) => void;
-};
-
-const CourseInput = ({ courses, setCourses }: CourseInputprops) => {
-  const { id, setId, addCourse } = useGlobalStore(
+const CourseInput = () => {
+  const { id, addCourse, courses } = useGlobalStore(
     useShallow((state) => ({
       id: state.id,
-      setId: state.setId,
       addCourse: state.addCourse,
+      courses: state.courses,
     }))
   );
   const [isFetching, setIsFetching] = useState<boolean>(false);
