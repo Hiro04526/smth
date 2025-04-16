@@ -1,7 +1,13 @@
 import { Class } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import ClassForm from "./ClassForm";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 interface EditClassDialogProps {
   data: Class;
@@ -26,6 +32,9 @@ export default function EditClassDialog({
       <DialogContent className="max-w-[600px] max-h-[80%] flex flex-col">
         <DialogHeader>
           <DialogTitle>Edit Class Details</DialogTitle>
+          <DialogDescription>
+            Edit the details of the class manually here.
+          </DialogDescription>
         </DialogHeader>
         <ClassForm
           onSubmit={onSubmit}

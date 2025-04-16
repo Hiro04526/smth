@@ -2,7 +2,7 @@ import { Class } from "@/lib/definitions";
 import { ModalityEnumSchema } from "@/lib/enums";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Plus, Trash2 } from "lucide-react";
+import { Check, CheckCheck, Plus, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { FormSelectField } from "./form/form-select-field";
@@ -252,7 +252,8 @@ export default function ClassForm({
         </ScrollArea>
         <DialogFooter>
           <Button type="submit" size="sm">
-            Add Class
+            <CheckCheck className="size-4 mr-2" />
+            Submit
           </Button>
         </DialogFooter>
       </form>

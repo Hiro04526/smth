@@ -243,7 +243,7 @@ export default function CourseList({
         </CardContent>
       </ScrollArea>
       <ConfirmDialog
-        action={() => {
+        onSubmit={() => {
           setCourses([]);
           setActiveCourse(-1);
         }}

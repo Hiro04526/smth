@@ -9,7 +9,7 @@ import {
 } from "./ui/dialog";
 
 interface ConfirmDialogProps {
-  action: () => void;
+  onSubmit: () => void;
   open: boolean;
   setOpen: (open: boolean) => void;
   title?: string;
@@ -17,7 +17,7 @@ interface ConfirmDialogProps {
 }
 
 export default function ConfirmDialog({
-  action,
+  onSubmit: action,
   open,
   setOpen,
   title = "Are you sure?",
