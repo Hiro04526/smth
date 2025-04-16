@@ -13,6 +13,7 @@ export interface CourseStates {
   moveCourseToGroup: (groupName: string, courseCode: string) => void;
   renameCourseGroup: (oldName: string, newName: string) => void;
   addClassToCourse: (courseCode: string, newClass: Class) => void;
+  editClass: (courseCode: string, classCode: number, newClass: Class) => void;
 }
 
 export const createCourseSlice: Slice<CourseStates> = (set) => ({
@@ -86,6 +87,23 @@ export const createCourseSlice: Slice<CourseStates> = (set) => ({
       const courses = state.courses.map((course) => {
         if (course.courseCode === courseCode) {
           return { ...course, classes: [...course.classes, newClass] };
+        }
+        return course;
+      });
+      return { courses };
+    });
+  },
+  editClass: (courseCode, classCode, newClass) => {
+    set((state) => {
+      const courses = state.courses.map((course) => {
+        if (course.courseCode === courseCode) {
+          const classes = course.classes.map((cls) => {
+            if (cls.code === classCode) {
+              return newClass;
+            }
+            return cls;
+          });
+          return { ...course, classes };
         }
         return course;
       });

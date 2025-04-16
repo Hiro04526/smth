@@ -7,6 +7,7 @@ import { SquareArrowOutUpRight } from "lucide-react";
 import TooltipWrapper from "../common/TooltipWrapper";
 import { Badge } from "../ui/badge";
 import { Checkbox } from "../ui/checkbox";
+import RowSettings from "./RowSettings";
 import { SortableHeader } from "./SortableHeader";
 
 export const columns: ColumnDef<Class>[] = [
@@ -213,5 +214,11 @@ export const columns: ColumnDef<Class>[] = [
     },
     filterFn: "arrIncludesSome",
     enableHiding: false,
+  },
+  {
+    id: "action",
+    cell: ({ row }) => {
+      return <RowSettings data={row.original} />;
+    },
   },
 ];
