@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown, { DropdownItems } from "./common/Dropdown";
 import ConfirmDialog from "./ConfirmDialog";
@@ -23,7 +24,6 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
-import { toast } from "./ui/use-toast";
 
 interface CourseItemProps {
   course: Course;
@@ -136,10 +136,8 @@ export default function CourseList({
 
   const handleUpdate = async () => {
     if (!id) {
-      toast({
-        title: "You haven't set your ID yet!",
+      toast.error("You haven't set your ID yet!", {
         description: "Set your ID on the button at the top right corner.",
-        variant: "destructive",
       });
 
       return;
@@ -153,37 +151,30 @@ export default function CourseList({
       );
 
       if (!data) {
-        toast({
-          title: "Something went wrong while fetching...",
+        toast.error("Something went wrong while fetching...", {
           description:
             "The server is facing some issues right now, try again in a bit.",
-          variant: "destructive",
         });
 
         return;
       }
 
       if (data.some((course) => course.classes.length === 0)) {
-        toast({
-          title: "Oops... Some of the courses don't have any classes.",
+        toast.error("Oops... Some of the courses don't have any classes.", {
           description:
             "MLS may be down right now or something is terribly wrong.",
-          variant: "destructive",
         });
       } else {
         setCourses([...data, ...courses.filter((course) => course.isCustom)]);
 
-        toast({
-          title: "Successfully updated all courses!",
+        toast.success("Successfully updated all courses!", {
           description: "The courses should now display updated data.",
         });
       }
     } catch (error) {
-      toast({
-        title: "Something went wrong while fetching...",
+      toast.error("Something went wrong while fetching...", {
         description:
           "The server is facing some issues right now, try again in a bit.",
-        variant: "destructive",
       });
     } finally {
       setIsFetching(false);

@@ -4,6 +4,7 @@ import { getCardColors } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Check, CheckCheck, Palette } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -19,7 +20,6 @@ import {
 import { Label } from "./ui/label";
 import { ScrollArea } from "./ui/scroll-area";
 import { Switch } from "./ui/switch";
-import { toast } from "./ui/use-toast";
 
 interface CourseColorsDialogProps {
   savedSchedule?: SavedSchedule;
@@ -56,8 +56,7 @@ export default function CourseColorsDialog({
       changeSavedColors(savedSchedule.name, colors);
     }
 
-    toast({
-      title: "Succesfully saved!",
+    toast.success("Colors successfully saved!", {
       description: "Your course colors have been saved.",
     });
     setOpen(false);

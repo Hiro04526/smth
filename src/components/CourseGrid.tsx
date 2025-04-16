@@ -11,6 +11,7 @@ import {
 } from "@dnd-kit/core";
 import { Check, MousePointerClick, SquareMousePointer, X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown from "./common/Dropdown";
 import TooltipWrapper from "./common/TooltipWrapper";
@@ -21,7 +22,6 @@ import { Button, buttonVariants } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
-import { toast } from "./ui/use-toast";
 
 interface CourseItemProps {
   course: Course;
@@ -109,11 +109,9 @@ function CourseGroup({
     const newTitleFormatted = input.trim();
 
     if (!newTitleFormatted) {
-      toast({
-        title: "Group name cannot be empty!",
-        description: "Please enter a valid group name.",
-        variant: "destructive",
-      });
+      toast.error(
+        "Group name cannot be empty! Please enter a valid group name."
+      );
       return;
     }
 
@@ -128,11 +126,7 @@ function CourseGroup({
     const newPick = parseInt(input);
 
     if (isNaN(newPick) || newPick < 0) {
-      toast({
-        title: "Invalid number of courses!",
-        description: "Please enter a valid number.",
-        variant: "destructive",
-      });
+      toast.error("Invalid number of courses! Please enter a valid number.");
       return;
     }
 

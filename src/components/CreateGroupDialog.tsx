@@ -1,6 +1,7 @@
 import { CourseGroup } from "@/lib/definitions";
 import { Plus, PlusSquare } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -10,7 +11,6 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
-import { toast } from "./ui/use-toast";
 
 interface CreateGroupDialogProps {
   onCreateGroup: (groupName: string) => void;
@@ -28,19 +28,15 @@ export default function CreateGroupDialog({
     e.preventDefault();
 
     if (!groupName.trim()) {
-      toast({
-        title: "Group name cannot be empty!",
+      toast.error("Group name cannot be empty!", {
         description: "Please enter a valid group name.",
-        variant: "destructive",
       });
       return;
     }
 
     if (Object.hasOwn(existingGroups, groupName)) {
-      toast({
-        title: "Group already exists!",
+      toast.error("Group already exists!", {
         description: "Please choose a different name.",
-        variant: "destructive",
       });
       return;
     }
