@@ -52,7 +52,6 @@ function CourseItem({
       setActiveCourse(0);
     }
 
-    setSelectedRows(courseCode, {});
     removeCourse(courseCode);
   };
 

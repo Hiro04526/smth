@@ -22,6 +22,7 @@ export interface TableStates {
     columnFilters: ColumnFiltersState
   ) => void;
   getColumnFilters: (courseCode: string) => ColumnFiltersState;
+  deleteColumnFilters: (courseCode: string) => void;
 }
 
 export const createTableSlice: Slice<TableStates> = (set, get) => ({
@@ -67,5 +68,11 @@ export const createTableSlice: Slice<TableStates> = (set, get) => ({
     set((state) => ({
       columnFilters: { ...state.columnFilters, [courseCode]: columnFilters },
     })),
+  deleteColumnFilters: (courseCode) =>
+    set((state) => {
+      const newColumnFilters = { ...state.columnFilters };
+      delete newColumnFilters[courseCode];
+      return { columnFilters: newColumnFilters };
+    }),
   getColumnFilters: (courseCode) => get().columnFilters[courseCode] ?? [],
 });

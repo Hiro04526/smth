@@ -18,17 +18,23 @@ export interface CourseStates {
   deleteClass: (courseCode: string, classCode: number) => void;
 }
 
-export const createCourseSlice: Slice<CourseStates> = (set) => ({
+export const createCourseSlice: Slice<CourseStates> = (set, get) => ({
   courses: [],
   setCourses: (courses) => set({ courses }),
   addCourse: (course) =>
     set((state) => ({
       courses: [...state.courses, course],
     })),
-  removeCourse: (courseCode) =>
-    set((state) => ({
-      courses: state.courses.filter((c) => c.courseCode !== courseCode),
-    })),
+  removeCourse: (courseCode) => {
+    get().setSelectedRows(courseCode, {});
+    get().deleteColumnFilters(courseCode);
+
+    set((state) => {
+      return {
+        courses: state.courses.filter((c) => c.courseCode !== courseCode),
+      };
+    });
+  },
   courseGroups: [],
   addCourseGroup: (groupName) =>
     set((state) => ({
@@ -153,7 +159,13 @@ export const createCourseSlice: Slice<CourseStates> = (set) => ({
         [courseCode]: courseRows,
       };
 
-      return { courses, selectedRows: newSelectedRows };
+      // Reset columnFilters and rowSelections to empty
+      return {
+        courses,
+        selectedRows: newSelectedRows,
+        columnFilters: {},
+        rowSelections: {},
+      };
     });
   },
 });
