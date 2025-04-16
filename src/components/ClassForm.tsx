@@ -107,13 +107,33 @@ export default function ClassForm({
     name: "schedules",
   });
 
+  const handleAppendSchedule = () => {
+    schedules.append({
+      day: "M",
+      start: 730,
+      end: 900,
+      date: "",
+      isOnline: false,
+    });
+
+    form.setValue("rooms", [...form.getValues("rooms"), ""]);
+  };
+
+  const handleDeleteSchedule = (index: number) => {
+    schedules.remove(index);
+    form.setValue(
+      "rooms",
+      form.getValues("rooms").filter((_, i) => i !== index)
+    );
+  };
+
   return (
     <Form {...form}>
       <form
         className="flex flex-col gap-4 min-h-0"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <FormTextField
             form={form}
             label="Code"
@@ -127,12 +147,6 @@ export default function ClassForm({
             formKey="section"
             placeholder="Z32"
             divClassName="w-full"
-          />
-          <FormTextField
-            form={form}
-            label="Room"
-            formKey="rooms.0"
-            placeholder="AG1109"
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -217,12 +231,18 @@ export default function ClassForm({
                     </FormItem>
                   )}
                 />
+                <FormTextField
+                  form={form}
+                  formKey={`rooms.${i}`}
+                  placeholder="AG1109"
+                  className="w-32"
+                />
                 <Button
                   size="icon"
                   variant="outline"
                   className="shrink-0"
                   type="button"
-                  onClick={() => schedules.remove(i)}
+                  onClick={() => handleDeleteSchedule(i)}
                   disabled={form.watch("schedules").length === 1}
                 >
                   <Trash2 className="size-4" />
@@ -234,15 +254,7 @@ export default function ClassForm({
                 size="sm"
                 variant="ghost"
                 type="button"
-                onClick={() =>
-                  schedules.append({
-                    day: "M",
-                    start: 730,
-                    end: 900,
-                    date: "",
-                    isOnline: false,
-                  })
-                }
+                onClick={() => handleAppendSchedule()}
               >
                 <Plus className="size-4 mr-2" />
                 Add Schedule
