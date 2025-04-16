@@ -38,26 +38,21 @@ function CourseItem({
   activeCourse,
   setActiveCourse,
 }: CourseItemProps) {
-  const {
-    courses,
-    setCourses,
-    removeCourse,
-    selectedRows,
-    removeAllSelectedRows,
-  } = useGlobalStore(
-    useShallow((state) => ({
-      courses: state.courses,
-      setCourses: state.setCourses,
-      removeCourse: state.removeCourse,
-      selectedRows: state.selectedRows,
-      removeAllSelectedRows: state.removeAllSelectedRows,
-    }))
-  );
+  const { courses, removeCourse, selectedRows, setSelectedRows } =
+    useGlobalStore(
+      useShallow((state) => ({
+        courses: state.courses,
+        removeCourse: state.removeCourse,
+        selectedRows: state.selectedRows,
+        setSelectedRows: state.setSelectedRows,
+      }))
+    );
   const handleDelete = (courseCode: string) => {
     if (activeCourse >= 0 && courses[activeCourse].courseCode === courseCode) {
       setActiveCourse(0);
     }
 
+    setSelectedRows(courseCode, {});
     removeCourse(courseCode);
   };
 

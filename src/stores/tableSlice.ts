@@ -30,15 +30,6 @@ export const createTableSlice: Slice<TableStates> = (set, get) => ({
     set((state) => {
       const newSelectedRows = { ...state.selectedRows };
 
-      Object.entries(newSelectedRows).forEach(([key, value]) => {
-        // Removes any remaining empty objects in the selectedRows.
-        // This is removable in the future, just here to clean up
-        // any existing bugs.
-        if (Object.entries(value).length === 0) {
-          delete newSelectedRows[key];
-        }
-      });
-
       // Remove the object if it's empty
       if (Object.keys(rowSelection).length === 0) {
         delete newSelectedRows[courseCode];
