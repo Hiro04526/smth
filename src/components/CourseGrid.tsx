@@ -257,8 +257,6 @@ export default function CourseGrid({}: CourseGridProps) {
     }))
   );
 
-  console.log("courseGroups in courseGrid", courseGroups);
-
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const handleDragEnd = (e: DragEndEvent) => {
