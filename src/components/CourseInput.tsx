@@ -83,9 +83,9 @@ const CourseInput = ({ setActiveCourse }: CourseInputProps) => {
       }
 
       if (data.classes.length === 0) {
-        toast.error("Something went wrong while fetching...", {
+        toast.warning("No classes found...", {
           description:
-            "No classes were found for that course. Either MLS is down or no classes exist yet for that course.",
+            "No classes were found for that course, maybe no classes have been scheduled yet.",
         });
 
         return;
@@ -95,10 +95,24 @@ const CourseInput = ({ setActiveCourse }: CourseInputProps) => {
       setActiveCourse(courses.length);
       addCourse(data);
     } catch (error) {
-      toast.warning("Slow down!", {
-        description:
-          "You're doing too many requests too quickly. Please wait a bit before adding more. This is to prevent spamming the server.",
-      });
+      if (error instanceof Error) {
+        if (error.message.includes("unexpected response")) {
+          toast.warning("Slow down!", {
+            description:
+              "You're doing too many requests too quickly. Please wait a bit before adding more. This is to prevent spamming the server.",
+          });
+        } else if (error.message.includes("fetch failed")) {
+          toast.error("Something went wrong while fetching...", {
+            description:
+              "The server may be facing some issues right now, try again in a bit.",
+          });
+        } else {
+          toast.error("Something unexpected happened...", {
+            description:
+              "An unexpected error occurred. Please try again later or contact the developer.",
+          });
+        }
+      }
     }
   };
 
