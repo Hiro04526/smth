@@ -17,6 +17,7 @@ import { useShallow } from "zustand/react/shallow";
 import Calendar from "./Calendar";
 import CourseColorsDialog from "./CourseColorsDialog";
 import DownloadScheduleButton from "./DownloadScheduleButton";
+import ExportButton from "./ExportButton";
 import FilterSettings from "./FilterSettings";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
@@ -93,13 +94,10 @@ const ScheduleTab = () => {
       setColors(newColors);
     } else {
       // Remove any colors that are not in the new colors and keep the old ones
-      const refinedColors = Object.keys(newColors).reduce(
-        (acc, course) => {
-          acc[course] = colors[course] ?? newColors[course];
-          return acc;
-        },
-        {} as typeof colors
-      );
+      const refinedColors = Object.keys(newColors).reduce((acc, course) => {
+        acc[course] = colors[course] ?? newColors[course];
+        return acc;
+      }, {} as typeof colors);
 
       setColors(refinedColors);
     }
@@ -174,6 +172,7 @@ const ScheduleTab = () => {
               <>
                 <SaveButton activeSched={schedules[active]} colors={colors} />
                 <CourseColorsDialog />
+                <ExportButton classes={schedules[active]} />
                 <DownloadScheduleButton
                   classes={schedules[active]}
                   colors={colors}

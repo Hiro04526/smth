@@ -15,6 +15,7 @@ import { useShallow } from "zustand/react/shallow";
 import Calendar from "./Calendar";
 import CourseColorsDialog from "./CourseColorsDialog";
 import DownloadScheduleButton from "./DownloadScheduleButton";
+import ExportButton from "./ExportButton";
 import RenameButton from "./RenameButton";
 import SaveButton from "./SaveButton";
 import ScheduleOverview from "./ScheduleOverview";
@@ -100,6 +101,7 @@ const SavedTab = () => {
                 colors={schedules[active].colors}
               />
               <CourseColorsDialog savedSchedule={schedules[active]} />
+              <ExportButton classes={schedules[active].classes} />
               <DownloadScheduleButton
                 classes={schedules[active].classes}
                 colors={schedules[active].colors}
