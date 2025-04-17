@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface StepCardProps {
   step: number;
@@ -52,6 +53,11 @@ export default function HelpDialog({}: HelpDialogProps) {
         "In each course, click the classes you want to take. This will be used to generate schedules later.",
     },
     {
+      title: "(Optional) Create Groups",
+      description:
+        "Click on 'Group Courses' to create groups of courses. Change the 'picks' to the number of courses you want to appear in your schedule for that group.",
+    },
+    {
       title: "Generate Schedule",
       description:
         "Go to the 'Schedules' tab and click 'Generate Schedules'. This will generate all possible schedules!",
@@ -59,7 +65,12 @@ export default function HelpDialog({}: HelpDialogProps) {
     {
       title: "Save your Schedule",
       description:
-        "Click on the 'Save' button on the schedule you want to save. You can view saved schedules in the 'Saved' tab.",
+        "Click on the heart button to save your schedule. You can also customize the colors of your schedule by clicking on the paint palette button.",
+    },
+    {
+      title: "Download/Export your Schedule",
+      description:
+        "You can also download your schedule as an image or export it to Google Calendar by clicking the respective buttons.",
     },
   ];
   return (
@@ -78,14 +89,18 @@ export default function HelpDialog({}: HelpDialogProps) {
             Here is how to use this website!
           </DialogDescription>
         </DialogHeader>
-        {steps.map(({ description, title }, i) => (
-          <StepCard
-            key={i}
-            step={i + 1}
-            description={description}
-            title={title}
-          />
-        ))}
+        <ScrollArea className="max-h-[500px] w-full">
+          <div className="gap-4 flex flex-col">
+            {steps.map(({ description, title }, i) => (
+              <StepCard
+                key={i}
+                step={i + 1}
+                description={description}
+                title={title}
+              />
+            ))}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

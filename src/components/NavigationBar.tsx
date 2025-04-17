@@ -9,6 +9,7 @@ import HelpDialog from "./HelpDialog";
 import IDInput from "./IDInput";
 import { ModeToggle } from "./ModeToggle";
 import SchedaddleLogo from "./SchedaddleLogo";
+import SocialsDialog from "./SocialsDialog";
 import { buttonVariants } from "./ui/button";
 
 const NavigationBar = () => {
@@ -68,6 +69,7 @@ const NavigationBar = () => {
       </div>
       <div className="flex flex-row gap-2">
         <Announcement />
+        <SocialsDialog />
         <IDInput />
         <ModeToggle />
         <HelpDialog />
