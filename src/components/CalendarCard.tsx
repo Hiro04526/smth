@@ -25,7 +25,7 @@ const CalendarCard = ({
   onMouseLeave,
   isMobile = false,
 }: CalendarCardProps) => {
-  const room = currClass.rooms.filter((r) => r !== "");
+  const room = sched.room;
 
   return (
     <Card

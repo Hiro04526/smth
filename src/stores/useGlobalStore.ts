@@ -1,3 +1,4 @@
+import { Course, Schedule } from "@/lib/definitions";
 import { hasOwnProperty } from "@/lib/utils";
 import { del, get, set } from "idb-keyval"; // can use anything: IndexedDB, Ionic Storage, etc.
 import { create, StateCreator } from "zustand";
@@ -58,13 +59,12 @@ export const useGlobalStore = create<GlobalStates>()(
           state.setHasHydrated(true);
         };
       },
-      version: 1,
+      version: 2,
       migrate: (persistedState, version) => {
         if (!persistedState) return persistedState;
 
         if (
           version === 0 &&
-          typeof persistedState === "object" &&
           hasOwnProperty(persistedState, "courseGroups") &&
           !Array.isArray(persistedState["courseGroups"])
         ) {
@@ -74,6 +74,31 @@ export const useGlobalStore = create<GlobalStates>()(
             name: key,
             pick: value,
           }));
+        }
+
+        if (version < 2 && hasOwnProperty(persistedState, "courses")) {
+          const courses = persistedState["courses"] as Course[];
+
+          const newCourses = courses.map((course) => ({
+            ...course,
+            classes: course.classes.map((classData) => {
+              const schedules: Schedule[] = classData.schedules.map(
+                (schedule, i) => ({
+                  ...schedule,
+                  room: classData?.rooms?.[i] ?? "",
+                })
+              );
+
+              console.log("Schedules", schedules);
+
+              return {
+                ...classData,
+                schedules,
+              };
+            }),
+          }));
+
+          persistedState["courses"] = newCourses;
         }
 
         return persistedState;

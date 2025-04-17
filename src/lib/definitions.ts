@@ -7,6 +7,7 @@ export const scheduleSchema = z.object({
   end: z.number(),
   date: z.string(),
   isOnline: z.boolean(),
+  room: z.string(),
 });
 
 export const classSchema = z.object({
@@ -17,7 +18,7 @@ export const classSchema = z.object({
   schedules: z.array(scheduleSchema),
   enrolled: z.number(),
   enrollCap: z.number(),
-  rooms: z.array(z.string()),
+  rooms: z.array(z.string()).optional(),
   restriction: z.string(),
   modality: ModalityEnumSchema,
   remarks: z.string(),

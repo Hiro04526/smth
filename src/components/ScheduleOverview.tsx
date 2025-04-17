@@ -82,7 +82,7 @@ const ScheduleOverview = ({
                       )} ${schedules.length > 1 ? `(${sched.day})` : ""}`}
                     </div>
                   ))}
-                  {courseClass.rooms.map((room, index) =>
+                  {courseClass.schedules.map(({ room }, index) =>
                     room !== "" ? (
                       <div key={room} className="inline-flex items-center">
                         <DoorOpen

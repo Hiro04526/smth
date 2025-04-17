@@ -62,6 +62,7 @@ export default function ClassForm({
               .max(2400, "Highest is 2400."),
             date: z.string(),
             isOnline: z.boolean(),
+            room: z.string(),
           })
           .refine((schema) => schema.start < schema.end, {
             message: "Start can't be greater than or equal to end time.",
@@ -71,7 +72,6 @@ export default function ClassForm({
       .min(1),
     enrolled: z.number().default(0),
     enrollCap: z.number().default(0),
-    rooms: z.array(z.string()).min(1),
     restriction: z.string(),
     modality: ModalityEnumSchema,
     remarks: z.string(),
@@ -91,11 +91,11 @@ export default function ClassForm({
           end: undefined,
           date: "",
           isOnline: false,
+          room: "",
         },
       ],
       enrolled: 0,
       enrollCap: 0,
-      rooms: [""],
       restriction: "",
       modality: "HYBRID",
       remarks: "",
@@ -114,17 +114,12 @@ export default function ClassForm({
       end: 900,
       date: "",
       isOnline: false,
+      room: "",
     });
-
-    form.setValue("rooms", [...form.getValues("rooms"), ""]);
   };
 
   const handleDeleteSchedule = (index: number) => {
     schedules.remove(index);
-    form.setValue(
-      "rooms",
-      form.getValues("rooms").filter((_, i) => i !== index)
-    );
   };
 
   return (
@@ -233,7 +228,7 @@ export default function ClassForm({
                 />
                 <FormTextField
                   form={form}
-                  formKey={`rooms.${i}`}
+                  formKey={`schedules.${i}.room`}
                   placeholder="AG1109"
                   className="w-32"
                 />
