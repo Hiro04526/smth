@@ -136,7 +136,9 @@ export const columns: ColumnDef<Class>[] = [
   {
     header: "Room",
     accessorFn: (row) => {
-      const filtered = row.schedules.map(({ room }) => room).filter((r) => r);
+      const filtered = [
+        ...new Set(row.schedules.map(({ room }) => room).filter((r) => r)),
+      ];
 
       if (filtered.length === 0) return "-";
 

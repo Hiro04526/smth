@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Class, Schedule } from "@/lib/definitions";
-import { cn, convertTime, toProperCase } from "@/lib/utils";
+import { cn, convertTime, inferRoom, toProperCase } from "@/lib/utils";
 
 interface CalendarCardProps {
   currClass: Class & { color: string; shadow: string };
@@ -25,8 +25,6 @@ const CalendarCard = ({
   onMouseLeave,
   isMobile = false,
 }: CalendarCardProps) => {
-  const room = sched.room;
-
   return (
     <Card
       onMouseEnter={onMouseEnter}
@@ -56,9 +54,7 @@ const CalendarCard = ({
           }`}</div>
         </div>
         <div className="text-xs">
-          <div className="font-medium">
-            {sched.isOnline ? "Online" : !!room?.length ? room : "TBA"}
-          </div>
+          <div className="font-medium">{inferRoom(currClass, sched)}</div>
           <div className="font-medium">
             {convertTime(sched.start)} - {convertTime(sched.end)}
           </div>

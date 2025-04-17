@@ -404,3 +404,16 @@ export function hasOwnProperty<X extends {}, Y extends PropertyKey>(
 ): obj is X & Record<Y, unknown> {
   return obj.hasOwnProperty(prop);
 }
+
+export function inferRoom(classData: Class, sched: Schedule): string {
+  if (sched.room) return sched.room;
+
+  if (
+    classData.modality === "ONLINE" ||
+    classData.modality === "PREDOMINANTLY ONLINE"
+  ) {
+    return "Online";
+  }
+
+  return "TBA";
+}
