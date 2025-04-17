@@ -17,7 +17,7 @@ interface ExportButtonProps {
   classes: Class[];
 }
 
-const SEMESTER_WEEKS = 12; // Number of weeks in a semester
+const SEMESTER_WEEKS = 13; // Number of weeks in a semester
 
 export default function ExportButton({ classes }: ExportButtonProps) {
   const nextSemesterRaw = process.env.NEXT_PUBLIC_NEXT_SEMESTER_DATE;
@@ -28,9 +28,8 @@ export default function ExportButton({ classes }: ExportButtonProps) {
   const cal = ical({
     name: "Class Schedule",
     description: "Class schedule for the semester",
+    timezone: "Asia/Manila",
   });
-
-  cal.timezone("Asia/Manila");
 
   classes.forEach((classData) => {
     const isInvalid = classData.schedules.every((schedule) => {
