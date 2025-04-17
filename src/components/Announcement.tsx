@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { StepCard } from "./HelpDialog";
 import { Button } from "./ui/button";
+import { ScrollArea } from "./ui/scroll-area";
 
 export default function Announcement() {
   const [open, setOpen] = useState(false);
@@ -30,26 +31,40 @@ export default function Announcement() {
     }))
   );
 
-  const title = "Big Update!";
-  const description =
-    "We have added some a couple of new features to the website!";
-  const patchDate = "December 22, 2025";
+  const title = "The Calendar Update!";
+  const description = "I've updated some things in the website!";
+  const patchDate = "April 18, 2025";
 
   const updates = [
     {
-      title: "Grouped Courses",
+      title: "Export to Calendar",
       description:
-        "Courses can now be grouped! Groups allow you to make your schedules more flexible by allowing only a specific amount of courses from a specific group.",
+        "You can now export your schedule as an .ics file! Click the 'Export' button near the download button. Thanks for the suggestion @Ed*****oded!",
     },
     {
-      title: "Custom Courses & Classes",
+      title: "Edit & Delete Classes",
       description:
-        "You can now add custom courses and classes! You can add a custom course by clicking the 'Add Course' button.",
+        "Classes can now be edited and deleted! Check the '...' button at the end of the class in the table.",
     },
     {
-      title: "New QOL Functions",
+      title: "Drag & Drop Classes to create a new group",
       description:
-        "You can now remove all courses with the click of one button. Click the '...' button near Course List to view the functions!",
+        "You can now drag and drop classes to create a new group! Just drag the class to the 'Create New Group' box.",
+    },
+    {
+      title: "Better pop-up notifications",
+      description:
+        "Toasts, or pop-up notifications, are now more consistent and better looking. They also provide more information now.",
+    },
+    {
+      title: "A bunch of bug fixes",
+      description:
+        "Issues such as LASARE3 dates becoming days (e.g. `MAY1 -> M`), selected rows and filters not being removed, and more have been fixed. Hopefully this makes the app better to use!",
+    },
+    {
+      title: "Call for suggestions",
+      description:
+        "If you have any more suggestions, please let me know! You can do so through Reddit DM or on GitHub. I will try to implement them as soon as possible.",
     },
   ];
 
@@ -72,16 +87,18 @@ export default function Announcement() {
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-4 min-h-0 overflow-y-auto">
-          {updates.map(({ title, description }, i) => (
-            <StepCard
-              key={i}
-              step={i + 1}
-              description={description}
-              title={title}
-            />
-          ))}
-        </div>
+        <ScrollArea className="max-h-[500px] w-full">
+          <div className="flex flex-col gap-4 min-h-0 overflow-y-auto">
+            {updates.map(({ title, description }, i) => (
+              <StepCard
+                key={i}
+                step={i + 1}
+                description={description}
+                title={title}
+              />
+            ))}
+          </div>
+        </ScrollArea>
         <DialogFooter className="sm:justify-start">
           <p className="text-sm text-muted-foreground">
             Patch Date: {patchDate}

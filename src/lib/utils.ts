@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { ICalWeekday } from "ical-generator";
 import { twMerge } from "tailwind-merge";
 import { Class, Course, CourseGroup, Filter, Schedule } from "./definitions";
 import { ColorsEnum, ColorsEnumSchema, DaysEnum } from "./enums";
@@ -416,4 +417,39 @@ export function inferRoom(classData: Class, sched: Schedule): string {
   }
 
   return "TBA";
+}
+
+export function convertToIcalDay(day: DaysEnum): ICalWeekday {
+  switch (day) {
+    case "M":
+      return ICalWeekday.MO;
+    case "T":
+      return ICalWeekday.TU;
+    case "W":
+      return ICalWeekday.WE;
+    case "H":
+      return ICalWeekday.TH;
+    case "F":
+      return ICalWeekday.FR;
+    case "S":
+      return ICalWeekday.SA;
+  }
+}
+
+export function addDaysToDate(date: Date, days: number | DaysEnum) {
+  if (typeof days === "string") {
+    const mapping: Record<DaysEnum, number> = {
+      M: 0,
+      T: 1,
+      W: 2,
+      H: 3,
+      F: 4,
+      S: 5,
+    };
+    days = mapping[days as DaysEnum];
+  }
+
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
 }

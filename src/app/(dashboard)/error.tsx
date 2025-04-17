@@ -3,7 +3,6 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Bomb } from "lucide-react";
-import { useEffect } from "react";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -11,11 +10,6 @@ interface ErrorProps {
 }
 export default function ErrorPage({ error, reset }: ErrorProps) {
   const resetAllSlices = useGlobalStore((state) => state.resetAllSlices);
-
-  useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error);
-  }, [error]);
 
   return (
     <div className="w-full h-full flex items-center justify-center flex-col gap-4">

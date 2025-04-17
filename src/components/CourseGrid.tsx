@@ -41,20 +41,21 @@ function CourseItem({ course, removeCourse }: CourseItemProps) {
       className={buttonVariants({
         variant: "outline",
         className: cn(
-          "cursor-grab justify-between",
+          "cursor-grab justify-between animate-out fade-out-0",
           isDragging && "opacity-30"
         ),
       })}
     >
       <span>{course.courseCode}</span>
-      <span
-        className="size-6 rounded-lg cursor-pointer flex items-center justify-center opacity-40 hover:opacity-100 group hover:bg-destructive hover:text-destructive-foreground transition-colors"
-        onMouseUp={() => {
+      <div
+        className="size-6 rounded-lg cursor-pointer flex items-center justify-center opacity-40 hover:opacity-100 group hover:bg-destructive hover:text-destructive-foreground transition-colors select-none"
+        onPointerDown={(e) => {
+          console.log("Removing course:", course.courseCode);
           removeCourse(course.courseCode);
         }}
       >
         <X className="size-3" strokeWidth={3} />
-      </span>
+      </div>
     </div>
   );
 }
@@ -251,6 +252,7 @@ export default function CourseGrid({}: CourseGridProps) {
     }))
   );
 
+  const [openAdd, setOpenAdd] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const handleDragEnd = (e: DragEndEvent) => {
@@ -260,6 +262,11 @@ export default function CourseGrid({}: CourseGridProps) {
 
     const courseName = active.id as string;
     const newGroupName = over.id as string;
+
+    if (newGroupName === "create-group") {
+      setOpenAdd(true);
+      return;
+    }
 
     moveCourseToGroup(newGroupName, courseName);
     setActiveId(null);
@@ -319,26 +326,30 @@ export default function CourseGrid({}: CourseGridProps) {
               />
             ))}
             <DragOverlay dropAnimation={{ duration: 150, easing: "ease-out" }}>
-              {activeId && (
-                <div
-                  className={cn(
-                    buttonVariants({
-                      variant: "outline",
-                      className: "w-full",
-                    }),
-                    "justify-start"
-                  )}
-                >
-                  {activeId}
-                </div>
-              )}
+              {activeId &&
+                courses.find((course) => course.courseCode === activeId) && (
+                  <div
+                    className={cn(
+                      buttonVariants({
+                        variant: "outline",
+                        className: "w-full",
+                      }),
+                      "justify-start"
+                    )}
+                  >
+                    {activeId}
+                  </div>
+                )}
             </DragOverlay>
+            <CreateGroupDialog
+              onCreateGroup={handleCreateGroup}
+              existingGroups={courseGroups}
+              open={openAdd}
+              onOpenChange={setOpenAdd}
+              activeId={activeId}
+              setActiveId={setActiveId}
+            />
           </DndContext>
-
-          <CreateGroupDialog
-            onCreateGroup={handleCreateGroup}
-            existingGroups={courseGroups}
-          />
         </div>
       </ScrollArea>
     </div>

@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { CalendarRange, Heart, TableProperties } from "lucide-react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Announcement from "./Announcement";
@@ -10,11 +9,8 @@ import HelpDialog from "./HelpDialog";
 import IDInput from "./IDInput";
 import { ModeToggle } from "./ModeToggle";
 import SchedaddleLogo from "./SchedaddleLogo";
+import SocialsDialog from "./SocialsDialog";
 import { buttonVariants } from "./ui/button";
-
-const MigrateDataDialog = dynamic(() => import("./MigrateDataDialog"), {
-  ssr: false,
-});
 
 const NavigationBar = () => {
   const pathName = usePathname();
@@ -72,8 +68,8 @@ const NavigationBar = () => {
         </Link>
       </div>
       <div className="flex flex-row gap-2">
-        <MigrateDataDialog />
         <Announcement />
+        <SocialsDialog />
         <IDInput />
         <ModeToggle />
         <HelpDialog />

@@ -18,6 +18,8 @@ export const classSchema = z.object({
   schedules: z.array(scheduleSchema),
   enrolled: z.number(),
   enrollCap: z.number(),
+
+  // Remove this in the future when everyone has migrated to the new schema
   rooms: z.array(z.string()).optional(),
   restriction: z.string(),
   modality: ModalityEnumSchema,
