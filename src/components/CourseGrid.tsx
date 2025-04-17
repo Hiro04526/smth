@@ -251,6 +251,7 @@ export default function CourseGrid({}: CourseGridProps) {
     }))
   );
 
+  const [openAdd, setOpenAdd] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const handleDragEnd = (e: DragEndEvent) => {
@@ -260,6 +261,11 @@ export default function CourseGrid({}: CourseGridProps) {
 
     const courseName = active.id as string;
     const newGroupName = over.id as string;
+
+    if (newGroupName === "create-group") {
+      setOpenAdd(true);
+      return;
+    }
 
     moveCourseToGroup(newGroupName, courseName);
     setActiveId(null);
@@ -333,12 +339,15 @@ export default function CourseGrid({}: CourseGridProps) {
                 </div>
               )}
             </DragOverlay>
+            <CreateGroupDialog
+              onCreateGroup={handleCreateGroup}
+              existingGroups={courseGroups}
+              open={openAdd}
+              onOpenChange={setOpenAdd}
+              activeId={activeId}
+              setActiveId={setActiveId}
+            />
           </DndContext>
-
-          <CreateGroupDialog
-            onCreateGroup={handleCreateGroup}
-            existingGroups={courseGroups}
-          />
         </div>
       </ScrollArea>
     </div>
