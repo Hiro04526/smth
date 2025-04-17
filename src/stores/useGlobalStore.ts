@@ -1,4 +1,4 @@
-import { Course, Schedule } from "@/lib/definitions";
+import { Class, Course, SavedSchedule, Schedule } from "@/lib/definitions";
 import { hasOwnProperty } from "@/lib/utils";
 import { del, get, set } from "idb-keyval"; // can use anything: IndexedDB, Ionic Storage, etc.
 import { create, StateCreator } from "zustand";
@@ -76,8 +76,18 @@ export const useGlobalStore = create<GlobalStates>()(
           }));
         }
 
-        if (version < 2 && hasOwnProperty(persistedState, "courses")) {
+        if (
+          version < 2 &&
+          hasOwnProperty(persistedState, "courses") &&
+          hasOwnProperty(persistedState, "schedules") &&
+          hasOwnProperty(persistedState, "savedSchedules")
+        ) {
           const courses = persistedState["courses"] as Course[];
+
+          const schedules = persistedState["schedules"] as Class[][];
+          const savedSchedules = persistedState[
+            "savedSchedules"
+          ] as SavedSchedule[];
 
           const newCourses = courses.map((course) => ({
             ...course,
@@ -98,6 +108,28 @@ export const useGlobalStore = create<GlobalStates>()(
             }),
           }));
 
+          const newSchedules = schedules.map((classes) =>
+            classes.map((classData) => ({
+              ...classData,
+              schedules: classData.schedules.map((schedule, i) => ({
+                ...schedule,
+                room: classData?.rooms?.[i] ?? "",
+              })),
+            }))
+          );
+
+          const newSavedSchedules = savedSchedules.map(({ classes }) =>
+            classes.map((classData) => ({
+              ...classData,
+              schedules: classData.schedules.map((schedule, i) => ({
+                ...schedule,
+                room: classData?.rooms?.[i] ?? "",
+              })),
+            }))
+          );
+
+          persistedState["schedules"] = newSchedules;
+          persistedState["savedSchedules"] = newSavedSchedules;
           persistedState["courses"] = newCourses;
         }
 

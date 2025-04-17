@@ -82,9 +82,13 @@ const ScheduleOverview = ({
                       )} ${schedules.length > 1 ? `(${sched.day})` : ""}`}
                     </div>
                   ))}
-                  {courseClass.schedules.map(({ room }, index) =>
-                    room !== "" ? (
-                      <div key={room} className="inline-flex items-center">
+                  {courseClass.schedules.map(({ room }, index) => {
+                    console.log(room, index);
+                    return room !== "" ? (
+                      <div
+                        key={`${room}-${index}`}
+                        className="inline-flex items-center"
+                      >
                         <DoorOpen
                           className="gap-2 size-4 mr-2"
                           strokeWidth={3}
@@ -93,8 +97,8 @@ const ScheduleOverview = ({
                       </div>
                     ) : (
                       <React.Fragment key={index}></React.Fragment>
-                    )
-                  )}
+                    );
+                  })}
                   <div className="inline-flex items-center">
                     <FilePen className="gap-2 size-4 mr-2" strokeWidth={3} />
                     {courseClass.remarks}

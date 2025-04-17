@@ -130,9 +130,10 @@ const Calendar = ({
                     return schedules.map((sched, i) => {
                       const start = sched.start;
                       const end = sched.end;
+
                       return (
                         <CalendarCard
-                          key={`${currClass.course + i}`}
+                          key={`${currClass.course}${day}${i}`}
                           currClass={currClass}
                           sched={sched}
                           height={calculateHeight(start, end)}

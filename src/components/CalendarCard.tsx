@@ -57,7 +57,7 @@ const CalendarCard = ({
         </div>
         <div className="text-xs">
           <div className="font-medium">
-            {sched.isOnline ? "Online" : !!room.length ? room : "TBA"}
+            {sched.isOnline ? "Online" : !!room?.length ? room : "TBA"}
           </div>
           <div className="font-medium">
             {convertTime(sched.start)} - {convertTime(sched.end)}
