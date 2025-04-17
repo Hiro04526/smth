@@ -54,7 +54,9 @@ const CalendarCard = ({
           }`}</div>
         </div>
         <div className="text-xs">
-          <div className="font-medium">{inferRoom(currClass, sched)}</div>
+          {height > 64 && (
+            <div className="font-medium">{inferRoom(currClass, sched)}</div>
+          )}
           <div className="font-medium">
             {convertTime(sched.start)} - {convertTime(sched.end)}
           </div>
