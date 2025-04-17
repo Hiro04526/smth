@@ -5,11 +5,19 @@ export interface MiscStates {
   setHasHydrated: (hasHydrated: boolean) => void;
   hasSeenAnnouncement: string | null;
   setHasSeenAnnouncement: (hasSeenAnnouncement: string) => void;
+  resetAllSlices: () => void;
 }
 
-export const createMiscSlice: Slice<MiscStates> = (set) => ({
+export const createMiscSlice: Slice<MiscStates> = (set, get) => ({
   _hasHydrated: false,
   setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
   hasSeenAnnouncement: null,
   setHasSeenAnnouncement: (hasSeenAnnouncement) => set({ hasSeenAnnouncement }),
+  resetAllSlices: () => {
+    get().setCourses([]);
+    get().resetColumnFilters();
+    get().resetSelectedRows();
+    get().setSchedules([]);
+    get().setSavedSchedules([]);
+  },
 });

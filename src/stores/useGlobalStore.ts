@@ -108,7 +108,7 @@ export const useGlobalStore = create<GlobalStates>()(
             }),
           }));
 
-          const newSchedules = schedules.map((classes) =>
+          const newSchedules: Class[][] = schedules.map((classes) =>
             classes.map((classData) => ({
               ...classData,
               schedules: classData.schedules.map((schedule, i) => ({
@@ -118,14 +118,17 @@ export const useGlobalStore = create<GlobalStates>()(
             }))
           );
 
-          const newSavedSchedules = savedSchedules.map(({ classes }) =>
-            classes.map((classData) => ({
-              ...classData,
-              schedules: classData.schedules.map((schedule, i) => ({
-                ...schedule,
-                room: classData?.rooms?.[i] ?? "",
+          const newSavedSchedules: SavedSchedule[] = savedSchedules.map(
+            ({ classes, ...prev }) => ({
+              ...prev,
+              classes: classes.map((classData) => ({
+                ...classData,
+                schedules: classData.schedules.map((schedule, i) => ({
+                  ...schedule,
+                  room: classData?.rooms?.[i] ?? "",
+                })),
               })),
-            }))
+            })
           );
 
           persistedState["schedules"] = newSchedules;

@@ -6,14 +6,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "./ui/dialog";
 
 interface ConfirmDialogProps {
   onSubmit: () => void;
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
   title?: string;
   description?: string;
+  children?: React.ReactNode;
 }
 
 export default function ConfirmDialog({
@@ -22,14 +24,16 @@ export default function ConfirmDialog({
   setOpen,
   title = "Are you sure?",
   description = "This action cannot be undone.",
+  children,
 }: ConfirmDialogProps) {
   const handleClick = () => {
     action();
-    setOpen(false);
+    setOpen?.(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
