@@ -22,9 +22,9 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
       <Bomb className="size-40 text-muted-foreground" />
       <h2 className="font-bold text-3xl">Whoops, something went wrong!</h2>
       <p className="w-[700px] text-center">
-        Looks like an error occurred while trying to access the page. Try again,
+        {`Looks like an error occurred while trying to access the page. Try again,
         if it still doesn't work, please hit "Clear Data" and send a screenshot
-        of this page to the developer.
+        of this page to the developer.`}
       </p>
       <div className="py-2 px-4 rounded-lg bg-destructive/10 text-destructive-foreground border border-destructive/20">
         <code className="">Error: {error.message}</code>
