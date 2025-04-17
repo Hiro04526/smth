@@ -10,14 +10,40 @@ interface OverviewCardProps {
   colors: Record<string, ColorsEnum>;
 }
 
-export default function OverviewCard({ classData, colors }: OverviewCardProps) {
-  const schedules = classData.schedules.reduce<Schedule[]>((acc, curr) => {
-    if (!acc.some((acc) => acc.start === curr.start && acc.end === curr.end))
-      acc.push(curr);
-    return acc;
-  }, []);
+interface ScheduleWithMultipleDays extends Schedule {
+  combinedDays: string;
+}
 
-  const days = classData.schedules.map((sched) => sched.day);
+export default function OverviewCard({ classData, colors }: OverviewCardProps) {
+  const schedules = classData.schedules.reduce<ScheduleWithMultipleDays[]>(
+    (acc, curr) => {
+      if (curr.start === curr.end) return acc;
+
+      const similarSched = acc.findIndex(
+        (sched) =>
+          sched.start === curr.start &&
+          sched.end === curr.end &&
+          sched.date === curr.date
+      );
+
+      if (similarSched === -1) {
+        console.log("Pushing:", { ...curr, combinedDays: curr.day });
+        acc.push({ ...curr, combinedDays: curr.day });
+      } else {
+        acc[similarSched].combinedDays += `/${curr.day}`;
+      }
+      return acc;
+    },
+    []
+  );
+
+  console.log(schedules);
+
+  const days = classData.schedules.map((sched) => {
+    if (sched.day === "U") return sched.date ? sched.date : "TBA";
+
+    return sched.day;
+  });
 
   const rooms = [...new Set(classData.schedules.map((sched) => sched.room))];
 
@@ -48,9 +74,9 @@ export default function OverviewCard({ classData, colors }: OverviewCardProps) {
           >
             <Clock className="gap-2 size-4 mr-2" strokeWidth={3} />
 
-            {`${convertTime(sched.start)} - ${convertTime(sched.end)} ${
-              schedules.length > 1 ? `(${sched.day})` : ""
-            }`}
+            {`${convertTime(sched.start)} - ${convertTime(sched.end)} ${`(${
+              sched.combinedDays === "U" ? sched.date : sched.combinedDays
+            })`}`}
           </div>
         ))}
         {rooms.map((room, index) => {
