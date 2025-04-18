@@ -5,6 +5,7 @@ import { create, StateCreator } from "zustand";
 import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
 import { CourseStates, createCourseSlice } from "./courseSlice";
 import { createIdSlice, IdStates } from "./idSlice";
+import { createManualSlice, ManualStates } from "./manualSlice";
 import { createMiscSlice, MiscStates } from "./miscSlice";
 import { createScheduleSlice, ScheduleStates } from "./scheduleSlice";
 import { createTableSlice, TableStates } from "./tableSlice";
@@ -28,7 +29,8 @@ interface GlobalStates
     IdStates,
     TableStates,
     ScheduleStates,
-    MiscStates {}
+    MiscStates,
+    ManualStates {}
 
 // Abstracted type for creating slices
 export type Slice<T> = StateCreator<
@@ -49,6 +51,7 @@ export const useGlobalStore = create<GlobalStates>()(
       ...createTableSlice(...a),
       ...createScheduleSlice(...a),
       ...createMiscSlice(...a),
+      ...createManualSlice(...a),
     }),
     {
       name: "global-state",

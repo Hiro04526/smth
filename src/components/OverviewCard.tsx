@@ -10,7 +10,7 @@ interface OverviewCardProps {
   colors: Record<string, ColorsEnum>;
 }
 
-interface ScheduleWithMultipleDays extends Schedule {
+export interface ScheduleWithMultipleDays extends Schedule {
   combinedDays: string;
 }
 

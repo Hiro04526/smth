@@ -3,6 +3,8 @@
 import { Card } from "@/components/ui/card";
 import { Class, Schedule } from "@/lib/definitions";
 import { cn, formatTime, inferRoom, toProperCase } from "@/lib/utils";
+import { useGlobalStore } from "@/stores/useGlobalStore";
+import { X } from "lucide-react";
 
 interface CalendarCardProps {
   currClass: Class & { color: string; shadow: string };
@@ -13,6 +15,7 @@ interface CalendarCardProps {
   onMouseLeave: () => void;
   isMobile?: boolean;
   sched: Schedule;
+  isManual?: boolean;
 }
 
 const CalendarCard = ({
@@ -24,7 +27,13 @@ const CalendarCard = ({
   onMouseEnter,
   onMouseLeave,
   isMobile = false,
+  isManual = false,
 }: CalendarCardProps) => {
+  const removeClass = useGlobalStore((state) => state.removeClass);
+  const handleRemoveClass = () => {
+    removeClass(currClass.code);
+  };
+
   return (
     <Card
       onMouseEnter={onMouseEnter}
@@ -45,13 +54,20 @@ const CalendarCard = ({
         <div
           className={cn(
             "text-xs font-bold tracking-tight",
-            isMobile && "text-lg -space-y-1"
+            isMobile && "text-lg -space-y-1",
+            isManual && "flex flex-row"
           )}
         >
           {isMobile && <div>[{currClass.section}]</div>}
           <div>{`${isMobile ? "" : `[${currClass.section}]`} ${
             currClass.course
           }`}</div>
+          {isManual && (
+            <X
+              className="ml-auto size-4 rounded-full hover:bg-destructive/80 hover:text-destructive-foreground transition-colors text-muted-foreground duration-200 cursor-pointer"
+              onClick={handleRemoveClass}
+            />
+          )}
         </div>
         <div className="text-xs">
           {height > 64 && (

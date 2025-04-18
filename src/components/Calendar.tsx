@@ -30,7 +30,8 @@ const Calendar = ({
   isMobile = false,
   manualProps,
 }: CalendarProps) => {
-  const { dragging, selection, setSelection, ...listeners } = manualProps ?? {};
+  const { dragging, selection, setSelection, popoverRef, ...listeners } =
+    manualProps ?? {};
 
   const [hovered, setHovered] = useState<number | false>(false);
 
@@ -145,6 +146,7 @@ const Calendar = ({
                           onMouseEnter={() => setHovered(currClass.code)}
                           onMouseLeave={() => setHovered(false)}
                           isMobile={isMobile}
+                          isManual={!!manualProps}
                         />
                       );
                     });
