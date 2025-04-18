@@ -1,14 +1,26 @@
 "use client";
+import useManualSchedule from "@/hooks/useManualSchedule";
 import { Class } from "@/lib/definitions";
 import { ColorsEnum, DaysEnum } from "@/lib/enums";
-import { cn, formatTime, getCardColors } from "@/lib/utils";
-import { useCallback, useEffect, useState } from "react";
+import { cn, getCardColors } from "@/lib/utils";
+import { useCallback, useState } from "react";
 import CalendarCard from "./CalendarCard";
+import { Card } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
 
 const CELL_SIZE_PX = 64;
 const CELL_HEIGHT = "h-16";
 const TOP_OFFSET = 16; // Based on 16px (1rem) padding in the calendar
+const LEFT_OFFSET = 66; // Based on 50px + 1rem (16px)
+
+interface CalendarProps {
+  courses: Class[];
+  colors: Record<string, ColorsEnum>;
+  cellSizePx?: number;
+  cellHeight?: string;
+  isMobile?: boolean;
+  isManual?: boolean;
+}
 
 const Calendar = ({
   courses,
@@ -16,22 +28,16 @@ const Calendar = ({
   cellSizePx = CELL_SIZE_PX,
   cellHeight = CELL_HEIGHT,
   isMobile = false,
-}: {
-  courses: Class[];
-  colors: Record<string, ColorsEnum>;
-  cellSizePx?: number;
-  cellHeight?: string;
-  isMobile?: boolean;
-}) => {
+  isManual = false,
+}: CalendarProps) => {
   const calculateHeight = useCallback(
     (start: number, end: number, type: "military" | "minutes" = "military") => {
-      if (type === "minutes") {
-        start;
-      }
-      const startHour = Math.floor(start / 100);
-      const endHour = Math.floor(end / 100);
-      const startMinutes = start % 100;
-      const endMinutes = end % 100;
+      const divisor = type === "military" ? 100 : 60;
+
+      const startHour = Math.floor(start / divisor);
+      const endHour = Math.floor(end / divisor);
+      const startMinutes = start % divisor;
+      const endMinutes = end % divisor;
 
       const totalMinutes =
         (endHour - startHour) * 60 + (endMinutes - startMinutes);
@@ -42,13 +48,16 @@ const Calendar = ({
     [cellSizePx]
   );
 
+  const { dragging, selection, setSelection, ...listeners } = useManualSchedule(
+    {
+      leftOffset: LEFT_OFFSET,
+      topOffset: TOP_OFFSET,
+      cellSizePx,
+      calculateHeight,
+    }
+  );
+
   const [hovered, setHovered] = useState<number | false>(false);
-  const [dragging, setDragging] = useState(false);
-  const [selection, setSelection] = useState<{
-    start: number;
-    end: number;
-    day: DaysEnum;
-  } | null>(null);
 
   const sortedClasses = courses.reduce<
     Record<DaysEnum, (Class & { color: string; shadow: string })[]>
@@ -73,77 +82,6 @@ const Calendar = ({
   const headerStyle =
     "relative h-full w-full text-center py-2 px-2 mx-2 font-bold text-muted-foreground";
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    const LEFT_OFFSET = 66; // Based on 50px + 1rem (16px)
-
-    const xPos = e.clientX - e.currentTarget.getBoundingClientRect().left;
-    const yPos = e.clientY - e.currentTarget.getBoundingClientRect().top;
-
-    if (xPos < LEFT_OFFSET || yPos < TOP_OFFSET) return; // Ignore clicks in the time column or extra space
-
-    const sizePerColumn = Math.floor(
-      (e.currentTarget.getBoundingClientRect().width - LEFT_OFFSET) / 6
-    );
-
-    const column = Math.floor((xPos - LEFT_OFFSET) / sizePerColumn);
-    const timeSlot = Math.floor((yPos - TOP_OFFSET) / (cellSizePx / 4));
-
-    const startTime = 7 * 60 + 15 * timeSlot; // 7:00 AM + 15 minutes per slot
-
-    setDragging(true);
-    setSelection({
-      start: startTime,
-      end: startTime,
-      day: ["M", "T", "W", "H", "F", "S"][column] as DaysEnum,
-    });
-
-    console.log(formatTime(startTime, "minutes"));
-  };
-
-  const handleMouseUp = (e: MouseEvent) => {
-    setDragging(false);
-  };
-
-  const handleMove = (e: React.MouseEvent) => {
-    if (!dragging || !selection) return;
-
-    const yPos = e.clientY - e.currentTarget.getBoundingClientRect().top;
-
-    if (yPos < TOP_OFFSET) return; // Ignore clicks in the time column or extra space
-
-    const timeSlot = Math.floor((yPos - TOP_OFFSET) / (cellSizePx / 4));
-
-    const rawEnd = 7 * 60 + 15 * timeSlot; // 7:00 AM + 15 minutes per slot
-
-    // If the card is going down, we need to make it add +15 minutes since that's the minimum time slot
-    const slotOffset = selection.start <= rawEnd ? 15 : 0;
-
-    const endTime = rawEnd + slotOffset;
-
-    setSelection({
-      ...selection,
-      end: endTime,
-    });
-    console.log(
-      formatTime(selection!.start, "minutes"),
-      formatTime(endTime, "minutes")
-    );
-  };
-
-  useEffect(() => {
-    if (window === undefined) return;
-
-    if (dragging) {
-      window.addEventListener("mouseup", handleMouseUp);
-    } else {
-      window.removeEventListener("mouseup", handleMouseUp);
-    }
-
-    return () => {
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [dragging]);
-
   return (
     <div className="flex flex-shrink min-h-0 w-full flex-col border rounded-lg bg-background">
       {/* Day Indicator Row */}
@@ -162,11 +100,7 @@ const Calendar = ({
       {/* Scrollable Container */}
       <ScrollArea>
         {/* Calendar Content */}
-        <div
-          className="flex h-max w-full flex-row"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMove}
-        >
+        <div className="flex h-max w-full flex-row" {...listeners}>
           {/* Time Column */}
           <div className="ml-2 flex w-[50px] shrink-0 flex-col items-end">
             {[...Array(16)].map((_, index) => (
@@ -207,16 +141,22 @@ const Calendar = ({
                   }`}
                   key={day}
                 >
-                  {selection?.day === day && (
-                    <div
+                  {isManual && selection?.day === day && (
+                    <Card
                       style={{
-                        height: calculateHeight(selection.start, selection.end),
-                        top: calculateHeight(700, selection.start) + TOP_OFFSET,
+                        height: calculateHeight(
+                          selection.start,
+                          selection.end,
+                          "minutes"
+                        ),
+                        top:
+                          calculateHeight(420, selection.start, "minutes") +
+                          TOP_OFFSET,
                       }}
-                      className="bg-primary"
+                      className="bg-primary/10 border-primary/50 animate-pulse relative"
                     >
                       Test
-                    </div>
+                    </Card>
                   )}
                   {sortedClasses[day].map((currClass) => {
                     const schedules = currClass.schedules.filter(
