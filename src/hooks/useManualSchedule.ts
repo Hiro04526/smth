@@ -1,26 +1,13 @@
+import { CELL_SIZE_PX, LEFT_OFFSET, TOP_OFFSET } from "@/components/Calendar";
 import { DaysEnum } from "@/lib/enums";
-import { formatTime } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-interface useManualScheduleProps {
-  leftOffset: number;
-  topOffset: number;
-  cellSizePx: number;
-  calculateHeight: (
-    start: number,
-    end: number,
-    type?: "military" | "minutes"
-  ) => number;
-}
-
-export default function useManualSchedule({
-  leftOffset,
-  topOffset,
-  cellSizePx,
-  calculateHeight,
-}: useManualScheduleProps) {
+export default function useManualSchedule() {
+  const days = ["M", "T", "W", "H", "F", "S"] as const;
   const [dragging, setDragging] = useState(false);
   const [selection, setSelection] = useState<{
+    baseStart: number;
+    baseEnd: number;
     start: number;
     end: number;
     day: DaysEnum;
@@ -30,25 +17,40 @@ export default function useManualSchedule({
     const xPos = e.clientX - e.currentTarget.getBoundingClientRect().left;
     const yPos = e.clientY - e.currentTarget.getBoundingClientRect().top;
 
-    if (xPos < leftOffset || yPos < topOffset) return; // Ignore clicks in the time column or extra space
+    if (xPos < LEFT_OFFSET || yPos < TOP_OFFSET) return; // Ignore clicks in the time column or extra space
 
     const sizePerColumn = Math.floor(
-      (e.currentTarget.getBoundingClientRect().width - leftOffset) / 6
+      (e.currentTarget.getBoundingClientRect().width - LEFT_OFFSET) / 6
     );
 
-    const column = Math.floor((xPos - leftOffset) / sizePerColumn);
-    const timeSlot = Math.floor((yPos - topOffset) / (cellSizePx / 4));
+    const column = Math.floor((xPos - LEFT_OFFSET) / sizePerColumn);
+    const timeSlot = Math.floor((yPos - TOP_OFFSET) / (CELL_SIZE_PX / 4));
 
     const startTime = 7 * 60 + 15 * timeSlot; // 7:00 AM + 15 minutes per slot
 
+    if (selection) {
+      const isInsideCard =
+        selection.day === (days[column] as DaysEnum) &&
+        selection.start <= startTime &&
+        selection.end >= startTime + 15;
+
+      console.log(isInsideCard);
+
+      if (!isInsideCard) {
+        setDragging(false);
+        setSelection(null);
+      }
+      return;
+    }
+
     setDragging(true);
     setSelection({
+      baseStart: startTime,
+      baseEnd: startTime + 15,
       start: startTime,
       end: startTime + 15,
-      day: ["M", "T", "W", "H", "F", "S"][column] as DaysEnum,
+      day: days[column] as DaysEnum,
     });
-
-    console.log(formatTime(startTime, "minutes"));
   };
 
   const handleMouseUp = (e: MouseEvent) => {
@@ -60,22 +62,30 @@ export default function useManualSchedule({
 
     const yPos = e.clientY - e.currentTarget.getBoundingClientRect().top;
 
-    if (yPos < topOffset) return; // Ignore clicks in the time column or extra space
+    if (yPos < TOP_OFFSET) return; // Ignore clicks in the time column or extra space
 
-    const timeSlot = Math.floor((yPos - topOffset) / (cellSizePx / 4));
+    const timeSlot = Math.floor((yPos - TOP_OFFSET) / (CELL_SIZE_PX / 4));
 
     const rawEnd = 7 * 60 + 15 * timeSlot; // 7:00 AM + 15 minutes per slot
 
-    // If the card is going down, we need to make it add +15 minutes since that's the minimum time slot
-    const slotOffset = selection.start <= rawEnd ? 15 : 0;
+    const endTime = rawEnd;
 
-    const endTime = rawEnd + slotOffset;
+    if (rawEnd < selection.baseEnd) {
+      setSelection({
+        ...selection,
+        start: endTime,
+        end: selection.baseEnd,
+      });
 
+      return;
+    }
+
+    console.log(selection.baseStart, endTime);
     setSelection({
       ...selection,
-      end: endTime,
+      start: selection.baseStart,
+      end: endTime + 15,
     });
-    console.log(calculateHeight(420, selection.start, "minutes"));
   };
 
   useEffect(() => {

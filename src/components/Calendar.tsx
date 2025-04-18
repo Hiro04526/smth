@@ -2,16 +2,16 @@
 import useManualSchedule from "@/hooks/useManualSchedule";
 import { Class } from "@/lib/definitions";
 import { ColorsEnum, DaysEnum } from "@/lib/enums";
-import { cn, getCardColors } from "@/lib/utils";
-import { useCallback, useState } from "react";
+import { calculateHeight, cn, getCardColors } from "@/lib/utils";
+import { useState } from "react";
 import CalendarCard from "./CalendarCard";
-import { Card } from "./ui/card";
+import ManualScheduleCard from "./ManualScheduleCard";
 import { ScrollArea } from "./ui/scroll-area";
 
-const CELL_SIZE_PX = 64;
-const CELL_HEIGHT = "h-16";
-const TOP_OFFSET = 16; // Based on 16px (1rem) padding in the calendar
-const LEFT_OFFSET = 66; // Based on 50px + 1rem (16px)
+export const CELL_SIZE_PX = 64;
+export const CELL_HEIGHT = "h-16";
+export const TOP_OFFSET = 16; // Based on 16px (1rem) padding in the calendar
+export const LEFT_OFFSET = 66; // Based on 50px + 1rem (16px)
 
 interface CalendarProps {
   classes: Class[];
@@ -19,7 +19,7 @@ interface CalendarProps {
   cellSizePx?: number;
   cellHeight?: string;
   isMobile?: boolean;
-  isManual?: boolean;
+  manualProps?: ReturnType<typeof useManualSchedule>;
 }
 
 const Calendar = ({
@@ -28,34 +28,9 @@ const Calendar = ({
   cellSizePx = CELL_SIZE_PX,
   cellHeight = CELL_HEIGHT,
   isMobile = false,
-  isManual = false,
+  manualProps,
 }: CalendarProps) => {
-  const calculateHeight = useCallback(
-    (start: number, end: number, type: "military" | "minutes" = "military") => {
-      const divisor = type === "military" ? 100 : 60;
-
-      const startHour = Math.floor(start / divisor);
-      const endHour = Math.floor(end / divisor);
-      const startMinutes = start % divisor;
-      const endMinutes = end % divisor;
-
-      const totalMinutes =
-        (endHour - startHour) * 60 + (endMinutes - startMinutes);
-
-      // 16 here is to account for offset
-      return (totalMinutes / 60) * cellSizePx;
-    },
-    [cellSizePx]
-  );
-
-  const { dragging, selection, setSelection, ...listeners } = useManualSchedule(
-    {
-      leftOffset: LEFT_OFFSET,
-      topOffset: TOP_OFFSET,
-      cellSizePx,
-      calculateHeight,
-    }
-  );
+  const { dragging, selection, setSelection, ...listeners } = manualProps ?? {};
 
   const [hovered, setHovered] = useState<number | false>(false);
 
@@ -141,22 +116,8 @@ const Calendar = ({
                   }`}
                   key={day}
                 >
-                  {isManual && selection?.day === day && (
-                    <Card
-                      style={{
-                        height: calculateHeight(
-                          selection.start,
-                          selection.end,
-                          "minutes"
-                        ),
-                        top:
-                          calculateHeight(420, selection.start, "minutes") +
-                          TOP_OFFSET,
-                      }}
-                      className="bg-primary/10 border-primary/50 animate-pulse relative"
-                    >
-                      Test
-                    </Card>
+                  {manualProps && selection?.day === day && (
+                    <ManualScheduleCard manualProps={manualProps} />
                   )}
                   {sortedClasses[day].map((currClass) => {
                     const schedules = currClass.schedules.filter(
@@ -172,8 +133,14 @@ const Calendar = ({
                           key={`${currClass.course}${day}${i}`}
                           currClass={currClass}
                           sched={sched}
-                          height={calculateHeight(start, end)}
-                          top={calculateHeight(700, start) + TOP_OFFSET}
+                          height={calculateHeight({ start, end, cellSizePx })}
+                          top={
+                            calculateHeight({
+                              start: 700,
+                              end: start,
+                              cellSizePx,
+                            }) + TOP_OFFSET
+                          }
                           hovered={hovered}
                           onMouseEnter={() => setHovered(currClass.code)}
                           onMouseLeave={() => setHovered(false)}

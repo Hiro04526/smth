@@ -14,6 +14,12 @@ export function militaryTimeToMinutes(time: number): number {
   return hours * 60 + minutes;
 }
 
+export function minutesToMilitaryTime(minutes: number): number {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return hours * 100 + remainingMinutes;
+}
+
 /**
  * Converts a given time to a formatted string representation.
  *
@@ -35,16 +41,13 @@ export function formatTime(
   time: number,
   inputFormat: "military" | "minutes" = "military"
 ) {
-  if (inputFormat === "military") {
-    const hour = Math.floor(time / 100);
-    const minutes = time % 100;
+  const divisor = inputFormat === "military" ? 100 : 60;
+  const hour = Math.floor(time / divisor);
+  const minutes = time % divisor;
 
-    return `${hour > 12 ? hour - 12 : hour}:${
-      minutes > 10 ? "" : "0"
-    }${minutes} ${hour >= 12 ? "PM" : "AM"}`;
-  }
-
-  return `${Math.floor(time / 60)}:${time % 60}${time % 60 > 10 ? "" : "0"}`;
+  return `${hour > 12 ? hour - 12 : hour}:${
+    minutes > 10 ? "" : "0"
+  }${minutes} ${hour >= 12 ? "PM" : "AM"}`;
 }
 
 export function toProperCase(val: string) {
@@ -191,4 +194,35 @@ export function addDaysToDate(date: Date, days: number | DaysEnum) {
   var result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
+}
+
+/**
+ * Calculates the height for calendar cards based on the given time range and cell size.
+ *
+ * @param params - The parameters for the height calculation.
+ * @param params.start - The start time in either military or minutes format.
+ * @param params.end - The end time in either military or minutes format.
+ * @param params.type - The format of the time values. Defaults to "military".
+ *                      - "military": Time is represented in HHMM format (e.g., 1330 for 1:30 PM).
+ *                      - "minutes": Time is represented in total minutes past midnight.
+ * @param params.cellSizePx - The height of a single hour cell in pixels.
+ * @returns The calculated height in pixels for the given time range.
+ */
+export function calculateHeight(params: {
+  start: number;
+  end: number;
+  type?: "military" | "minutes";
+  cellSizePx: number;
+}): number {
+  const { start, end, type = "military", cellSizePx } = params;
+  const divisor = type === "military" ? 100 : 60;
+
+  const startHour = Math.floor(start / divisor);
+  const endHour = Math.floor(end / divisor);
+  const startMinutes = start % divisor;
+  const endMinutes = end % divisor;
+
+  const totalMinutes = (endHour - startHour) * 60 + (endMinutes - startMinutes);
+
+  return (totalMinutes / 60) * cellSizePx;
 }
