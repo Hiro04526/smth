@@ -1,25 +1,14 @@
 "use client";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { createGroupedSchedules } from "@/lib/schedules";
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { CalendarPlus2, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarPlus2 } from "lucide-react";
 import { useState } from "react";
-import { FixedSizeList } from "react-window";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import Calendar from "./Calendar";
-import CourseColorsDialog from "./CourseColorsDialog";
-import DownloadScheduleButton from "./DownloadScheduleButton";
-import ExportButton from "./ExportButton";
 import FilterSettings from "./FilterSettings";
-import SaveButton from "./SaveButton";
+import ScheduleBar from "./ScheduleBar";
 import ScheduleOverview from "./ScheduleOverview";
 import ScheduleTabSkeleton from "./skeletons/ScheduleTabSkeleton";
 import { Button } from "./ui/button";
@@ -111,76 +100,16 @@ const ScheduleTab = () => {
   return (
     <div className="flex flex-row w-full min-h-0 py-8 px-16 gap-4 h-full">
       <div className="flex flex-col gap-4 grow">
-        <Card className="flex flex-row gap-4 p-4">
-          <div className="flex flex-row gap-2">
-            <Button
-              onClick={() => setActive(active - 1)}
-              disabled={active <= 0}
-              variant="outline"
-              size="icon"
-              suppressHydrationWarning
-            >
-              <ChevronLeft />
-            </Button>
-            <Select
-              value={`${active}`}
-              onValueChange={(val) => setActive(Number(val))}
-              disabled={schedules.length === 0}
-            >
-              <SelectTrigger className="w-64" suppressHydrationWarning>
-                <SelectValue
-                  placeholder={`${
-                    schedules.length !== 0 ? `Schedule ${active + 1}` : "-"
-                  }`}
-                >
-                  Schedule {active + 1}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <FixedSizeList
-                  width={`100%`}
-                  height={Math.min(350, 35 * schedules.length)}
-                  itemCount={schedules.length}
-                  itemSize={35}
-                >
-                  {({ index, style }) => (
-                    <SelectItem
-                      key={index}
-                      value={`${index}`}
-                      style={{ ...style }}
-                    >
-                      Schedule {index + 1}
-                    </SelectItem>
-                  )}
-                </FixedSizeList>
-              </SelectContent>
-            </Select>
-            <Button
-              onClick={() => setActive(active + 1)}
-              disabled={active >= schedules.length - 1}
-              variant="outline"
-              size="icon"
-              suppressHydrationWarning
-            >
-              <ChevronRight />
-            </Button>
-          </div>
-          <Button onClick={() => handleGenerate()}>Generate Schedules</Button>
+        <ScheduleBar
+          active={active}
+          setActive={setActive}
+          schedules={schedules}
+          colors={colors}
+          type="unsaved"
+        >
+          <Button onClick={handleGenerate}>Generate Schedules</Button>
           <FilterSettings />
-          <div className="ml-auto flex gap-2">
-            {schedules[active] && (
-              <>
-                <SaveButton activeSched={schedules[active]} colors={colors} />
-                <CourseColorsDialog />
-                <ExportButton classes={schedules[active]} />
-                <DownloadScheduleButton
-                  classes={schedules[active]}
-                  colors={colors}
-                />
-              </>
-            )}
-          </div>
-        </Card>
+        </ScheduleBar>
         {schedules[active] ? (
           <Calendar classes={schedules[active]} colors={colors} />
         ) : (
