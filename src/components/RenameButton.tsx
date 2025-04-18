@@ -1,4 +1,4 @@
-import { SavedSchedule } from "@/lib/definitions";
+import { UserSchedule } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit } from "lucide-react";
@@ -26,7 +26,7 @@ import {
 import { Input } from "./ui/input";
 
 type RenameButtonProps = {
-  activeSched: SavedSchedule;
+  activeSched: UserSchedule;
 };
 
 const RenameButton = ({ activeSched }: RenameButtonProps) => {
@@ -63,7 +63,7 @@ const RenameButton = ({ activeSched }: RenameButtonProps) => {
       return;
     }
 
-    const newSchedules: SavedSchedule[] = saved.map((schedule) => {
+    const newSchedules: UserSchedule[] = saved.map((schedule) => {
       if (schedule.name === activeSched.name) {
         return {
           ...schedule,

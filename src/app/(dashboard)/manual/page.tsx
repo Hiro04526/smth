@@ -1,26 +1,45 @@
 "use client";
 
 import Calendar from "@/components/Calendar";
+import ScheduleBar from "@/components/ScheduleBar";
 import ScheduleOverview from "@/components/ScheduleOverview";
 import useManualSchedule from "@/hooks/useManualSchedule";
-import { ColorsEnum } from "@/lib/enums";
 import { useGlobalStore } from "@/stores/useGlobalStore";
+import { useState } from "react";
 
 interface Props {}
 export default function ManualPage({}: Props) {
-  const classes = useGlobalStore((state) => state.manualSchedule);
-  const colors = classes.reduce<Record<string, ColorsEnum>>((acc, course) => {
-    acc[course.course] = "EMERALD";
+  const [active, setActive] = useState<number>(0);
 
-    return acc;
-  }, {});
+  const schedules = useGlobalStore((state) => state.manualSchedules);
+  const setSchedules = useGlobalStore((state) => state.setManualSchedules);
+  const activeSched = schedules[active];
+  const manualProps = useManualSchedule(active);
 
-  const manualProps = useManualSchedule();
+  if (!activeSched) {
+    setSchedules([{ name: "New Schedule ", classes: [], colors: {} }]);
+    return null;
+  }
 
   return (
     <div className="flex flex-row w-full min-h-0 py-8 px-16 gap-4 h-full">
-      <Calendar classes={classes} colors={colors} manualProps={manualProps} />
-      <ScheduleOverview activeSchedule={classes} colors={colors} />
+      <ScheduleBar
+        active={active}
+        setActive={setActive}
+        colors={activeSched.colors}
+        schedules={schedules}
+        type="saved"
+      />
+      <Calendar
+        classes={activeSched.classes}
+        colors={activeSched.colors}
+        manualProps={manualProps}
+        activeIndex={active}
+      />
+      <ScheduleOverview
+        activeSchedule={activeSched.classes}
+        colors={activeSched.colors}
+      />
     </div>
   );
 }

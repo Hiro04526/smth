@@ -1,20 +1,49 @@
-import { Class } from "@/lib/definitions";
+import { Class, UserSchedule } from "@/lib/definitions";
+import { toast } from "sonner";
 import { Slice } from "./useGlobalStore";
 
 export interface ManualStates {
-  manualSchedule: Class[];
-  setManualSchedule: (classes: Class[]) => void;
-  addClass: (newClass: Class) => void;
-  removeClass: (code: number) => void;
+  manualSchedules: UserSchedule[];
 }
 
-export const createManualSlice: Slice<ManualStates> = (set) => ({
-  manualSchedule: [],
-  setManualSchedule: (classes) => set({ manualSchedule: classes }),
-  addClass: (newClass) =>
-    set((state) => ({ manualSchedule: [...state.manualSchedule, newClass] })),
-  removeClass: (code) =>
-    set((state) => ({
-      manualSchedule: state.manualSchedule.filter((c) => c.code !== code),
-    })),
+export interface ManualActions {
+  setManualSchedules: (classes: UserSchedule[]) => void;
+  addClassToManualSchedule: (newClass: Class, index: number) => void;
+  removeClass: (code: number, index: number) => void;
+}
+
+export type ManualSlice = ManualStates & ManualActions;
+
+export const createManualSlice: Slice<ManualSlice> = (set) => ({
+  manualSchedules: [],
+  setManualSchedules: (schedules) => set({ manualSchedules: schedules }),
+  addClassToManualSchedule: (newClass, index) =>
+    set((state) => {
+      const updatedSchedule = [...state.manualSchedules];
+      if (index >= updatedSchedule.length) {
+        toast.error(
+          "Invalid index for adding class to manual schedule. Please contact the developer."
+        );
+        return { manualSchedules: updatedSchedule };
+      }
+
+      updatedSchedule[index] = {
+        ...updatedSchedule[index],
+        classes: [...updatedSchedule[index].classes, newClass],
+      };
+      return { manualSchedules: updatedSchedule };
+    }),
+  removeClass: (code, index) =>
+    set((state) => {
+      const updatedSchedule = [...state.manualSchedules];
+      if (index < updatedSchedule.length) {
+        updatedSchedule[index] = {
+          ...updatedSchedule[index],
+          classes: updatedSchedule[index].classes.filter(
+            (cls) => cls.code !== code
+          ),
+        };
+      }
+      return { manualSchedules: updatedSchedule };
+    }),
 });

@@ -13,13 +13,14 @@ export const CELL_HEIGHT = "h-16";
 export const TOP_OFFSET = 16; // Based on 16px (1rem) padding in the calendar
 export const LEFT_OFFSET = 66; // Based on 50px + 1rem (16px)
 
-interface CalendarProps {
+interface BaseCalendarProps {
   classes: Class[];
   colors: Record<string, ColorsEnum>;
   cellSizePx?: number;
   cellHeight?: string;
   isMobile?: boolean;
   manualProps?: ReturnType<typeof useManualSchedule>;
+  activeIndex?: number;
 }
 
 const Calendar = ({
@@ -29,7 +30,8 @@ const Calendar = ({
   cellHeight = CELL_HEIGHT,
   isMobile = false,
   manualProps,
-}: CalendarProps) => {
+  activeIndex = 0,
+}: BaseCalendarProps) => {
   const { dragging, selection, setSelection, popoverRef, ...listeners } =
     manualProps ?? {};
 
@@ -118,7 +120,10 @@ const Calendar = ({
                   key={day}
                 >
                   {manualProps && selection?.day === day && (
-                    <ManualScheduleCard manualProps={manualProps} />
+                    <ManualScheduleCard
+                      manualProps={manualProps}
+                      activeIndex={activeIndex}
+                    />
                   )}
                   {sortedClasses[day].map((currClass) => {
                     const schedules = currClass.schedules.filter(

@@ -18,6 +18,7 @@ const SavedTab = () => {
     }))
   );
   const [active, setActive] = useState<number>(0);
+  const activeSched = schedules[active];
 
   if (!hasHydrated) {
     return <SavedTabSkeleton />;
@@ -26,18 +27,20 @@ const SavedTab = () => {
   return (
     <div className="flex flex-row w-full min-h-0 py-8 px-16 gap-4 h-full">
       <div className="flex flex-col gap-4 grow">
-        <ScheduleBar
-          active={active}
-          setActive={setActive}
-          type="saved"
-          schedules={schedules}
-          colors={schedules[active].colors}
-        />
-        {schedules[active] ? (
-          <Calendar
-            classes={schedules[active].classes}
-            colors={schedules[active].colors}
-          />
+        {activeSched ? (
+          <>
+            <ScheduleBar
+              active={active}
+              setActive={setActive}
+              type="saved"
+              schedules={schedules}
+              colors={activeSched.colors}
+            />
+            <Calendar
+              classes={activeSched.classes}
+              colors={activeSched.colors}
+            />
+          </>
         ) : (
           <Card className="p-6 w-full grow items-center flex flex-col justify-center text-muted-foreground gap-2">
             <HeartCrack size={100} />
@@ -45,10 +48,10 @@ const SavedTab = () => {
           </Card>
         )}
       </div>
-      {schedules[active] ? (
+      {activeSched ? (
         <ScheduleOverview
-          activeSchedule={schedules[active].classes}
-          colors={schedules[active].colors}
+          activeSchedule={activeSched.classes}
+          colors={activeSched.colors}
         />
       ) : (
         <Card className="w-[20%] p-6"></Card>

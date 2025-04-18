@@ -25,14 +25,20 @@ import { Switch } from "./ui/switch";
 
 interface ManualScheduleCardProps {
   manualProps: ReturnType<typeof useManualSchedule>;
+  activeIndex: number;
 }
 export default function ManualScheduleCard({
   manualProps,
+  activeIndex,
 }: ManualScheduleCardProps) {
   const [showOngoing, setShowOngoing] = useState(false);
 
-  const addClass = useGlobalStore((state) => state.addClass);
-  const manualSchedule = useGlobalStore((state) => state.manualSchedule);
+  const addClassToManualSchedule = useGlobalStore(
+    (state) => state.addClassToManualSchedule
+  );
+  const manualSchedule = useGlobalStore((state) => state.manualSchedules)[
+    activeIndex
+  ];
 
   const { dragging, selection, setSelection, popoverRef } = manualProps;
   const cellSizePx = CELL_SIZE_PX;
@@ -51,7 +57,7 @@ export default function ManualScheduleCard({
   const viableData = useMemo(() => {
     if (!startTime || !endTime || !day) return [];
     const usedCourses = new Set([
-      ...manualSchedule.map((course) => course.course),
+      ...manualSchedule.classes.map((course) => course.course),
     ]);
 
     return selectedData
@@ -60,7 +66,7 @@ export default function ManualScheduleCard({
           return { ...course, classes: [] };
 
         const viableClasses = course.classes.filter(({ schedules }) => {
-          const overlapsWithExisting = manualSchedule.some(
+          const overlapsWithExisting = manualSchedule.classes.some(
             ({ schedules: existingSched }) =>
               doClassesOverlap(schedules, existingSched)
           );
@@ -109,7 +115,7 @@ export default function ManualScheduleCard({
   if (!selection) return null;
 
   const handleAddClass = (classData: Class) => {
-    addClass(classData);
+    addClassToManualSchedule(classData, activeIndex);
     setSelection(null);
   };
 

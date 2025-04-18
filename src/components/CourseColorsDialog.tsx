@@ -1,4 +1,4 @@
-import { SavedSchedule } from "@/lib/definitions";
+import { UserSchedule } from "@/lib/definitions";
 import { ColorsEnumSchema } from "@/lib/enums";
 import { getCardColors } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
@@ -22,7 +22,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Switch } from "./ui/switch";
 
 interface CourseColorsDialogProps {
-  savedSchedule?: SavedSchedule;
+  savedSchedule?: UserSchedule;
 }
 
 export default function CourseColorsDialog({

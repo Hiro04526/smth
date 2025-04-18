@@ -31,7 +31,7 @@ const CalendarCard = ({
 }: CalendarCardProps) => {
   const removeClass = useGlobalStore((state) => state.removeClass);
   const handleRemoveClass = () => {
-    removeClass(currClass.code);
+    removeClass(currClass.code, 0);
   };
 
   return (

@@ -4,7 +4,7 @@ import { minutesToMilitaryTime } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export default function useManualSchedule() {
+export default function useManualSched(activeIndex: number) {
   const days = ["M", "T", "W", "H", "F", "S"] as const;
   const [dragging, setDragging] = useState(false);
   const [selection, setSelection] = useState<{
@@ -15,7 +15,8 @@ export default function useManualSchedule() {
     day: DaysEnum;
   } | null>(null);
 
-  const manualSchedule = useGlobalStore((state) => state.manualSchedule);
+  const manualSchedules = useGlobalStore((state) => state.manualSchedules);
+  const activeSchedClasses = manualSchedules[activeIndex].classes;
 
   const popoverRef = useRef<HTMLDivElement>(null);
 
@@ -47,9 +48,9 @@ export default function useManualSchedule() {
       return;
     }
 
-    if (manualSchedule.length > 0) {
+    if (activeSchedClasses.length > 0) {
       const militaryStartTime = minutesToMilitaryTime(startTime);
-      const isInsideCard = manualSchedule.some(({ schedules }) => {
+      const isInsideCard = activeSchedClasses.some(({ schedules }) => {
         return schedules.some(
           (classSched) =>
             classSched.day === (days[column] as DaysEnum) &&
@@ -81,7 +82,7 @@ export default function useManualSchedule() {
       militaryStartTime: number,
       militaryEndTime: number
     ) => {
-      return manualSchedule.some(({ schedules }) => {
+      return activeSchedClasses.some(({ schedules }) => {
         return schedules.some((classSched) => {
           // Case 1: The manual sched is above the class sched
           const condition1 =
@@ -99,7 +100,7 @@ export default function useManualSchedule() {
         });
       });
     },
-    [manualSchedule, selection?.day]
+    [activeSchedClasses, selection?.day]
   );
 
   const onMouseMove = (e: React.MouseEvent) => {
@@ -114,7 +115,7 @@ export default function useManualSchedule() {
 
     const newTime = rawTime;
 
-    if (manualSchedule.length > 0) {
+    if (activeSchedClasses.length > 0) {
       const militaryTime = minutesToMilitaryTime(newTime);
       const militaryEndTime = minutesToMilitaryTime(selection.baseEnd);
       const militaryStartTime = minutesToMilitaryTime(selection.baseStart);

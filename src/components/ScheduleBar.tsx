@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Class, SavedSchedule } from "@/lib/definitions";
+import { Class, UserSchedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FixedSizeList } from "react-window";
@@ -28,7 +28,7 @@ interface BaseScheduleBarProps {
 
 interface SavedSchedulesProps extends BaseScheduleBarProps {
   type: "saved";
-  schedules: SavedSchedule[];
+  schedules: UserSchedule[];
 }
 
 interface UnsavedSchedulesProps extends BaseScheduleBarProps {

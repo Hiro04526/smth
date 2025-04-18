@@ -1,4 +1,4 @@
-import { Class, SavedSchedule } from "@/lib/definitions";
+import { Class, UserSchedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,7 +33,7 @@ type Props = {
 
 // Updated isScheduleSaved to compare only class codes
 const isScheduleSaved = (
-  saved: SavedSchedule[],
+  saved: UserSchedule[],
   sched2: Class[]
 ): string | false => {
   // Iterate through each saved schedule
@@ -89,7 +89,7 @@ const SaveButton = ({ activeSched, colors }: Props) => {
     );
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    const newSchedule: SavedSchedule = {
+    const newSchedule: UserSchedule = {
       name: data.name,
       classes: activeSched,
       colors: colors,

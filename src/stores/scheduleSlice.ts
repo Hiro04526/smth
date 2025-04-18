@@ -2,7 +2,7 @@ import {
   defaultGeneralFilters,
   defaultSpecificFilters,
 } from "@/components/FilterForm";
-import { Class, Filter, SavedSchedule } from "@/lib/definitions";
+import { Class, Filter, UserSchedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
 import { Slice } from "./useGlobalStore";
 
@@ -13,11 +13,11 @@ export interface ScheduleStates {
   setSchedules: (schedules: Class[][]) => void;
   filter: Filter;
   setFilter: (filter: Filter) => void;
-  savedSchedules: SavedSchedule[];
-  addSavedSchedule: (schedule: SavedSchedule) => void;
+  savedSchedules: UserSchedule[];
+  addSavedSchedule: (schedule: UserSchedule) => void;
   deleteSavedSchedule: (name: string) => void;
   changeSavedColors: (name: string, colors: Record<string, ColorsEnum>) => void;
-  setSavedSchedules: (schedules: SavedSchedule[]) => void;
+  setSavedSchedules: (schedules: UserSchedule[]) => void;
   randomizeColors: boolean;
   setRandomizeColors: (randomizeColors: boolean) => void;
 }
