@@ -50,9 +50,15 @@ export default function ManualScheduleCard({
 
   const viableData = useMemo(() => {
     if (!startTime || !endTime || !day) return [];
+    const usedCourses = new Set([
+      ...manualSchedule.map((course) => course.course),
+    ]);
 
     return selectedData
       .map((course) => {
+        if (usedCourses.has(course.courseCode))
+          return { ...course, classes: [] };
+
         const viableClasses = course.classes.filter(({ schedules }) => {
           const overlapsWithExisting = manualSchedule.some(
             ({ schedules: existingSched }) =>
