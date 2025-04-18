@@ -47,7 +47,7 @@ export default function ScheduleBar({
 }: ScheduleBarProps) {
   const isSavedSchedule = type === "saved";
 
-  const activeSchedule = isSavedSchedule
+  const activeScheduleClasses = isSavedSchedule
     ? schedules[active].classes
     : schedules[active];
 
@@ -69,12 +69,10 @@ export default function ScheduleBar({
           disabled={schedules.length === 0}
         >
           <SelectTrigger className="w-64" suppressHydrationWarning>
-            <SelectValue
-              placeholder={`${
-                schedules.length !== 0 ? `Schedule ${active + 1}` : "-"
-              }`}
-            >
-              Schedule {active + 1}
+            <SelectValue>
+              {isSavedSchedule
+                ? schedules[active].name
+                : `Schedule ${active + 1}`}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -86,7 +84,9 @@ export default function ScheduleBar({
             >
               {({ index, style }) => (
                 <SelectItem key={index} value={`${index}`} style={{ ...style }}>
-                  Schedule {index + 1}
+                  {isSavedSchedule
+                    ? schedules[active].name
+                    : `Schedule ${index + 1}`}
                 </SelectItem>
               )}
             </FixedSizeList>
@@ -103,13 +103,16 @@ export default function ScheduleBar({
         </Button>
       </div>
       {children}
-      {activeSchedule && (
+      {activeScheduleClasses && (
         <div className="ml-auto flex gap-2">
           {isSavedSchedule && <RenameButton activeSched={schedules[active]} />}
-          <SaveButton activeSched={activeSchedule} colors={colors} />
+          <SaveButton activeSched={activeScheduleClasses} colors={colors} />
           <CourseColorsDialog />
-          <ExportButton classes={activeSchedule} />
-          <DownloadScheduleButton classes={activeSchedule} colors={colors} />
+          <ExportButton classes={activeScheduleClasses} />
+          <DownloadScheduleButton
+            classes={activeScheduleClasses}
+            colors={colors}
+          />
         </div>
       )}
     </Card>
