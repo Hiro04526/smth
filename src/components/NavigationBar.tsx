@@ -1,7 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { CalendarRange, Heart, TableProperties } from "lucide-react";
+import {
+  CalendarRange,
+  Heart,
+  PencilRuler,
+  TableProperties,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Announcement from "./Announcement";
@@ -65,6 +70,13 @@ const NavigationBar = () => {
         >
           <Heart strokeWidth={1.75} size={22} />
           Saved
+        </Link>
+        <Link
+          href="/manual"
+          className={pathName === "/manual" ? activeButton : normalButton}
+        >
+          <PencilRuler strokeWidth={1.75} size={22} />
+          Manual
         </Link>
       </div>
       <div className="flex flex-row gap-2">

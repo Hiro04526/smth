@@ -14,7 +14,7 @@ const TOP_OFFSET = 16; // Based on 16px (1rem) padding in the calendar
 const LEFT_OFFSET = 66; // Based on 50px + 1rem (16px)
 
 interface CalendarProps {
-  courses: Class[];
+  classes: Class[];
   colors: Record<string, ColorsEnum>;
   cellSizePx?: number;
   cellHeight?: string;
@@ -23,7 +23,7 @@ interface CalendarProps {
 }
 
 const Calendar = ({
-  courses,
+  classes,
   colors,
   cellSizePx = CELL_SIZE_PX,
   cellHeight = CELL_HEIGHT,
@@ -59,7 +59,7 @@ const Calendar = ({
 
   const [hovered, setHovered] = useState<number | false>(false);
 
-  const sortedClasses = courses.reduce<
+  const sortedClasses = classes.reduce<
     Record<DaysEnum, (Class & { color: string; shadow: string })[]>
   >(
     (acc, course) => {

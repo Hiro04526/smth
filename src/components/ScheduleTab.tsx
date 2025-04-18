@@ -182,7 +182,7 @@ const ScheduleTab = () => {
           </div>
         </Card>
         {schedules[active] ? (
-          <Calendar courses={schedules[active]} colors={colors} />
+          <Calendar classes={schedules[active]} colors={colors} />
         ) : (
           <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
             <CalendarPlus2 size={100} strokeWidth={1.25} />

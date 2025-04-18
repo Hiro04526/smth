@@ -74,7 +74,7 @@ export default function DownloadScheduleButton({
           ref={desktopRef}
         >
           <Calendar
-            courses={classes}
+            classes={classes}
             colors={colors}
             cellHeight="h-20"
             cellSizePx={80}
@@ -94,7 +94,7 @@ export default function DownloadScheduleButton({
         >
           <div className="w-full">
             <Calendar
-              courses={classes}
+              classes={classes}
               colors={colors}
               cellHeight="h-28"
               cellSizePx={112}

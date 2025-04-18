@@ -111,7 +111,7 @@ const SavedTab = () => {
         </Card>
         {schedules[active] ? (
           <Calendar
-            courses={schedules[active].classes}
+            classes={schedules[active].classes}
             colors={schedules[active].colors}
           />
         ) : (
