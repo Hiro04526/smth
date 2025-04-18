@@ -99,8 +99,6 @@ export const useGlobalStore = create<GlobalStates>()(
                 })
               );
 
-              console.log("Schedules", schedules);
-
               return {
                 ...classData,
                 schedules,

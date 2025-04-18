@@ -31,8 +31,6 @@ export default function ClassForm({
       .default(0)
       .refine(
         (val) => {
-          console.log(val, defaultValues?.code);
-
           return (
             !courses
               .find((c) => c.courseCode === courseCode)

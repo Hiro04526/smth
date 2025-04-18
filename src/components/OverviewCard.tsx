@@ -27,7 +27,6 @@ export default function OverviewCard({ classData, colors }: OverviewCardProps) {
       );
 
       if (similarSched === -1) {
-        console.log("Pushing:", { ...curr, combinedDays: curr.day });
         acc.push({ ...curr, combinedDays: curr.day });
       } else {
         acc[similarSched].combinedDays += `/${curr.day}`;
@@ -36,8 +35,6 @@ export default function OverviewCard({ classData, colors }: OverviewCardProps) {
     },
     []
   );
-
-  console.log(schedules);
 
   const days = classData.schedules.map((sched) => {
     if (sched.day === "U") return sched.date ? sched.date : "TBA";
