@@ -27,6 +27,7 @@ interface ScheduleBarProps {
   schedules: UserSchedule[];
   onColorChange?: (colors: Record<string, ColorsEnum>) => void;
   isGenerated?: boolean;
+  hasRename?: boolean;
 }
 
 export default function ScheduleBar({
@@ -37,6 +38,7 @@ export default function ScheduleBar({
   colors,
   isGenerated = false,
   onColorChange,
+  hasRename = false,
 }: ScheduleBarProps) {
   const activeSchedule = schedules[active];
   const activeScheduleClasses = activeSchedule?.classes ?? [];
@@ -91,9 +93,12 @@ export default function ScheduleBar({
       {children}
       {activeScheduleClasses && (
         <div className="ml-auto flex gap-2">
-          {!isGenerated && <RenameButton activeSched={schedules[active]} />}
+          {hasRename && <RenameButton activeSched={schedules[active]} />}
           <SaveButton activeSched={activeScheduleClasses} colors={colors} />
-          <CourseColorsDialog changeColors={onColorChange} />
+          <CourseColorsDialog
+            changeColors={onColorChange}
+            activeSched={isGenerated ? undefined : activeSchedule}
+          />
           <ExportButton classes={activeScheduleClasses} />
           <DownloadScheduleButton
             classes={activeScheduleClasses}

@@ -22,12 +22,12 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Switch } from "./ui/switch";
 
 interface CourseColorsDialogProps {
-  savedSchedule?: UserSchedule;
+  activeSched?: UserSchedule;
   changeColors?: (colors: Record<string, ColorsEnum>) => void;
 }
 
 export default function CourseColorsDialog({
-  savedSchedule,
+  activeSched,
   changeColors,
 }: CourseColorsDialogProps) {
   const { courseColors, setCourseColors, randomizeColors, setRandomizeColors } =
@@ -41,12 +41,12 @@ export default function CourseColorsDialog({
     );
 
   const [colors, setColors] = useState(() => ({
-    ...(savedSchedule ? savedSchedule.colors : courseColors),
+    ...(activeSched ? activeSched.colors : courseColors),
   }));
   const [open, setOpen] = useState(false);
 
   const handleSave = () => {
-    if (!savedSchedule) {
+    if (!activeSched) {
       setCourseColors(colors);
     } else {
       changeColors?.(colors);
@@ -59,10 +59,8 @@ export default function CourseColorsDialog({
   };
 
   useEffect(() => {
-    setColors(
-      savedSchedule ? { ...savedSchedule.colors } : { ...courseColors }
-    );
-  }, [savedSchedule, courseColors]);
+    setColors(activeSched ? { ...activeSched.colors } : { ...courseColors });
+  }, [activeSched, courseColors]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

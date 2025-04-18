@@ -41,6 +41,7 @@ const SavedTab = () => {
               schedules={schedules}
               colors={activeSched.colors}
               onColorChange={changeColors}
+              hasRename
             />
             <Calendar
               classes={activeSched.classes}
