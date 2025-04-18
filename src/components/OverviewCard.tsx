@@ -1,6 +1,6 @@
 import { Class, Schedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
-import { convertTime, getCardColors, toProperCase } from "@/lib/utils";
+import { formatTime, getCardColors, toProperCase } from "@/lib/utils";
 import { CalendarClock, Clock, DoorOpen, FilePen, User } from "lucide-react";
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -71,7 +71,7 @@ export default function OverviewCard({ classData, colors }: OverviewCardProps) {
           >
             <Clock className="gap-2 size-4 mr-2" strokeWidth={3} />
 
-            {`${convertTime(sched.start)} - ${convertTime(sched.end)} ${`(${
+            {`${formatTime(sched.start)} - ${formatTime(sched.end)} ${`(${
               sched.combinedDays === "U" ? sched.date : sched.combinedDays
             })`}`}
           </div>

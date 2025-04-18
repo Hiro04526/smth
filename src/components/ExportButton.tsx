@@ -4,8 +4,8 @@ import { Class, Schedule } from "@/lib/definitions";
 import { DaysEnum } from "@/lib/enums";
 import {
   addDaysToDate,
-  convertTime,
   convertToIcalDay,
+  formatTime,
   inferRoom,
   toProperCase,
 } from "@/lib/utils";
@@ -65,8 +65,8 @@ export default function ExportButton({ classes }: ExportButtonProps) {
     // Helper function to create events with the same time
     const createSameTimeEvent = (schedules: Schedule[]) => {
       const firstSchedule = schedules[0];
-      const startOffset = convertTime(firstSchedule.start);
-      const endOffset = convertTime(firstSchedule.end);
+      const startOffset = formatTime(firstSchedule.start);
+      const endOffset = formatTime(firstSchedule.end);
 
       const baseStartDate = new Date(`${nextSemesterRaw} ${startOffset}`);
       const baseEndDate = new Date(`${nextSemesterRaw} ${endOffset}`);
@@ -122,8 +122,8 @@ export default function ExportButton({ classes }: ExportButtonProps) {
       }
 
       // Convert time and create dates
-      const startOffset = convertTime(sched.start);
-      const endOffset = convertTime(sched.end);
+      const startOffset = formatTime(sched.start);
+      const endOffset = formatTime(sched.end);
 
       let startDate: Date, endDate: Date;
 

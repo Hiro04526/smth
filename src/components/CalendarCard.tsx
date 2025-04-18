@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Class, Schedule } from "@/lib/definitions";
-import { cn, convertTime, inferRoom, toProperCase } from "@/lib/utils";
+import { cn, formatTime, inferRoom, toProperCase } from "@/lib/utils";
 
 interface CalendarCardProps {
   currClass: Class & { color: string; shadow: string };
@@ -58,7 +58,7 @@ const CalendarCard = ({
             <div className="font-medium">{inferRoom(currClass, sched)}</div>
           )}
           <div className="font-medium">
-            {convertTime(sched.start)} - {convertTime(sched.end)}
+            {formatTime(sched.start)} - {formatTime(sched.end)}
           </div>
           {currClass.professor && (
             <div className="overflow-hidden text-ellipsis text-nowrap">

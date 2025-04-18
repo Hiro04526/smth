@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createGroupedSchedules } from "@/lib/utils";
+import { createGroupedSchedules } from "@/lib/schedules";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { CalendarPlus2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
@@ -94,13 +94,10 @@ const ScheduleTab = () => {
       setColors(newColors);
     } else {
       // Remove any colors that are not in the new colors and keep the old ones
-      const refinedColors = Object.keys(newColors).reduce(
-        (acc, course) => {
-          acc[course] = colors[course] ?? newColors[course];
-          return acc;
-        },
-        {} as typeof colors
-      );
+      const refinedColors = Object.keys(newColors).reduce((acc, course) => {
+        acc[course] = colors[course] ?? newColors[course];
+        return acc;
+      }, {} as typeof colors);
 
       setColors(refinedColors);
     }
