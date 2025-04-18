@@ -90,7 +90,7 @@ export default function ScheduleBar({
               {({ index, style }) => (
                 <SelectItem key={index} value={`${index}`} style={{ ...style }}>
                   {isSavedSchedule
-                    ? schedules[active].name
+                    ? schedules[index].name
                     : `Schedule ${index + 1}`}
                 </SelectItem>
               )}
