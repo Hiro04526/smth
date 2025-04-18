@@ -152,6 +152,7 @@ const Calendar = ({
                           onMouseLeave={() => setHovered(false)}
                           isMobile={isMobile}
                           isManual={!!manualProps}
+                          activeIndex={activeIndex}
                         />
                       );
                     });

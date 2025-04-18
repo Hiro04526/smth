@@ -2,7 +2,7 @@ import { Class, Course, CourseGroup, Filter, Schedule } from "./definitions";
 import { ColorsEnum, ColorsEnumSchema, DaysEnum } from "./enums";
 import { militaryTimeToMinutes } from "./utils";
 
-function getRandomColors(courses: string[]): Record<string, ColorsEnum> {
+export function getRandomColors(courses: string[]): Record<string, ColorsEnum> {
   const availableColors = [...ColorsEnumSchema.options];
   const courseColors: Record<string, ColorsEnum> = {};
 

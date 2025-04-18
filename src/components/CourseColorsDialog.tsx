@@ -1,5 +1,5 @@
 import { UserSchedule } from "@/lib/definitions";
-import { ColorsEnumSchema } from "@/lib/enums";
+import { ColorsEnum, ColorsEnumSchema } from "@/lib/enums";
 import { getCardColors } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Check, CheckCheck, Palette } from "lucide-react";
@@ -23,10 +23,12 @@ import { Switch } from "./ui/switch";
 
 interface CourseColorsDialogProps {
   savedSchedule?: UserSchedule;
+  changeColors?: (name: string, colors: Record<string, ColorsEnum>) => void;
 }
 
 export default function CourseColorsDialog({
   savedSchedule,
+  changeColors,
 }: CourseColorsDialogProps) {
   const {
     courseColors,

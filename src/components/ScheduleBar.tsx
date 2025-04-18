@@ -29,11 +29,15 @@ interface BaseScheduleBarProps {
 interface SavedSchedulesProps extends BaseScheduleBarProps {
   type: "saved";
   schedules: UserSchedule[];
+  changeColors: (name: string, colors: Record<string, ColorsEnum>) => void;
 }
 
 interface UnsavedSchedulesProps extends BaseScheduleBarProps {
   type: "unsaved";
   schedules: Class[][];
+
+  // Temporary, will transition all schedules to use UserSchedule
+  changeColors?: undefined;
 }
 
 type ScheduleBarProps = SavedSchedulesProps | UnsavedSchedulesProps;
@@ -44,6 +48,7 @@ export default function ScheduleBar({
   children,
   colors,
   type,
+  ...props
 }: ScheduleBarProps) {
   const isSavedSchedule = type === "saved";
 
@@ -107,7 +112,10 @@ export default function ScheduleBar({
         <div className="ml-auto flex gap-2">
           {isSavedSchedule && <RenameButton activeSched={schedules[active]} />}
           <SaveButton activeSched={activeScheduleClasses} colors={colors} />
-          <CourseColorsDialog />
+          <CourseColorsDialog
+            savedSchedule={isSavedSchedule ? schedules[active] : undefined}
+            changeColors={props.changeColors}
+          />
           <ExportButton classes={activeScheduleClasses} />
           <DownloadScheduleButton
             classes={activeScheduleClasses}

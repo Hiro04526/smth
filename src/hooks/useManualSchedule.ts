@@ -2,7 +2,7 @@ import { CELL_SIZE_PX, LEFT_OFFSET, TOP_OFFSET } from "@/components/Calendar";
 import { DaysEnum } from "@/lib/enums";
 import { minutesToMilitaryTime } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export default function useManualSched(activeIndex: number) {
   const days = ["M", "T", "W", "H", "F", "S"] as const;
@@ -16,7 +16,10 @@ export default function useManualSched(activeIndex: number) {
   } | null>(null);
 
   const manualSchedules = useGlobalStore((state) => state.manualSchedules);
-  const activeSchedClasses = manualSchedules[activeIndex].classes;
+  const activeSchedClasses = useMemo(
+    () => manualSchedules[activeIndex]?.classes ?? [],
+    [manualSchedules, activeIndex]
+  );
 
   const popoverRef = useRef<HTMLDivElement>(null);
 

@@ -1,11 +1,12 @@
 import useManualSchedule from "@/hooks/useManualSchedule";
 import { Class, Course, Schedule } from "@/lib/definitions";
 import { DaysEnum } from "@/lib/enums";
-import { doClassesOverlap } from "@/lib/schedules";
+import { doClassesOverlap, getRandomColors } from "@/lib/schedules";
 import {
   calculateHeight,
   cn,
   formatTime,
+  hasOwnProperty,
   minutesToMilitaryTime,
   toProperCase,
 } from "@/lib/utils";
@@ -36,9 +37,8 @@ export default function ManualScheduleCard({
   const addClassToManualSchedule = useGlobalStore(
     (state) => state.addClassToManualSchedule
   );
-  const manualSchedule = useGlobalStore((state) => state.manualSchedules)[
-    activeIndex
-  ];
+  const schedules = useGlobalStore((state) => state.manualSchedules);
+  const activeSchedule = schedules[activeIndex];
 
   const { dragging, selection, setSelection, popoverRef } = manualProps;
   const cellSizePx = CELL_SIZE_PX;
@@ -57,7 +57,7 @@ export default function ManualScheduleCard({
   const viableData = useMemo(() => {
     if (!startTime || !endTime || !day) return [];
     const usedCourses = new Set([
-      ...manualSchedule.classes.map((course) => course.course),
+      ...activeSchedule.classes.map((course) => course.course),
     ]);
 
     return selectedData
@@ -66,7 +66,7 @@ export default function ManualScheduleCard({
           return { ...course, classes: [] };
 
         const viableClasses = course.classes.filter(({ schedules }) => {
-          const overlapsWithExisting = manualSchedule.classes.some(
+          const overlapsWithExisting = activeSchedule.classes.some(
             ({ schedules: existingSched }) =>
               doClassesOverlap(schedules, existingSched)
           );
@@ -105,16 +105,31 @@ export default function ManualScheduleCard({
     startTime,
     endTime,
     day,
-    manualSchedule,
+    activeSchedule,
     showOngoing,
     is15MinSlot,
   ]);
 
   const hasViableData = viableData.length > 0;
 
-  if (!selection) return null;
+  const setManualSchedule = useGlobalStore((state) => state.setManualSchedule);
 
+  if (!selection) return null;
   const handleAddClass = (classData: Class) => {
+    if (!hasOwnProperty(classData, activeIndex)) {
+      const courseColor = getRandomColors([classData.course]);
+      setManualSchedule(activeIndex, {
+        ...activeSchedule,
+        classes: [...activeSchedule.classes, classData],
+        colors: {
+          ...activeSchedule.colors,
+          ...courseColor,
+        },
+      });
+      setSelection(null);
+
+      return;
+    }
     addClassToManualSchedule(classData, activeIndex);
     setSelection(null);
   };

@@ -16,6 +16,7 @@ interface CalendarCardProps {
   isMobile?: boolean;
   sched: Schedule;
   isManual?: boolean;
+  activeIndex?: number;
 }
 
 const CalendarCard = ({
@@ -28,10 +29,11 @@ const CalendarCard = ({
   onMouseLeave,
   isMobile = false,
   isManual = false,
+  activeIndex = 0,
 }: CalendarCardProps) => {
   const removeClass = useGlobalStore((state) => state.removeClass);
   const handleRemoveClass = () => {
-    removeClass(currClass.code, 0);
+    removeClass(currClass.code, activeIndex);
   };
 
   return (
