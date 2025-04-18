@@ -1,5 +1,6 @@
 import useManualSchedule from "@/hooks/useManualSchedule";
-import { Class, Course } from "@/lib/definitions";
+import { Class, Course, Schedule } from "@/lib/definitions";
+import { DaysEnum } from "@/lib/enums";
 import { doClassesOverlap } from "@/lib/schedules";
 import {
   calculateHeight,
@@ -13,7 +14,7 @@ import { UsersRound, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CELL_SIZE_PX, TOP_OFFSET } from "./Calendar";
 import TooltipWrapper from "./common/TooltipWrapper";
-import OverviewCard, { ScheduleWithMultipleDays } from "./OverviewCard";
+import OverviewCard from "./OverviewCard";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -166,7 +167,7 @@ export default function ManualScheduleCard({
           </Label>
         </div>
         {hasViableData && (
-          <ScrollArea className="mt-2">
+          <ScrollArea className="mt-2 [&>[data-radix-scroll-area-viewport]]:max-h-[500px] w-full">
             <div className="flex flex-col gap-2 w-full">
               {viableData.map((course) => (
                 <div key={course.courseCode} className="flex flex-col gap-2">
@@ -177,6 +178,7 @@ export default function ManualScheduleCard({
                         key={classData.code}
                         classData={classData}
                         handleClick={handleAddClass}
+                        givenDay={selection.day}
                       />
                     ))}
                   </div>
@@ -193,32 +195,18 @@ export default function ManualScheduleCard({
 interface AvailableClassButtonProps {
   classData: Class;
   handleClick: (classData: Class) => void;
+  givenDay: DaysEnum;
 }
 
 function AvailableClassButton({
   classData,
   handleClick,
+  givenDay,
 }: AvailableClassButtonProps) {
-  const schedules = classData.schedules.reduce<ScheduleWithMultipleDays[]>(
-    (acc, curr) => {
-      if (curr.start === curr.end) return acc;
-
-      const similarSched = acc.findIndex(
-        (sched) =>
-          sched.start === curr.start &&
-          sched.end === curr.end &&
-          sched.date === curr.date
-      );
-
-      if (similarSched === -1) {
-        acc.push({ ...curr, combinedDays: curr.day });
-      } else {
-        acc[similarSched].combinedDays += `/${curr.day}`;
-      }
-      return acc;
-    },
-    []
-  );
+  // Just assert, since we know the schedule exists
+  const schedule = classData.schedules.find(
+    ({ day }) => day === givenDay
+  ) as Schedule;
 
   return (
     <TooltipWrapper
@@ -229,21 +217,27 @@ function AvailableClassButton({
           colors={{
             [classData.course]: "EMERALD",
           }}
+          className="my-2"
         />
       }
       delayDuration={0}
       side="right"
     >
       <Button
-        className="flex flex-row items-center gap-2 w-full justify-start"
+        className="flex flex-row items-center gap-2 w-full justify-start text-xs"
         variant="outline"
         size="sm"
         onClick={() => handleClick(classData)}
       >
         <Badge variant="secondary">{classData.section}</Badge>
-        {classData.professor ? toProperCase(classData.professor) : "TBA"}
+        <span className="max-w-[20ch] truncate">
+          {classData.professor ? toProperCase(classData.professor) : "TBA"}
+        </span>
+        <Badge className="ml-auto" variant="secondary">
+          {formatTime(schedule.start)} - {formatTime(schedule.end)}
+        </Badge>
         <Badge
-          className="inline-flex gap-2 items-center ml-auto"
+          className="inline-flex gap-2 items-center"
           variant={
             classData.enrollCap === classData.enrolled
               ? "destructive"

@@ -1,20 +1,26 @@
 import { Class, Schedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
-import { formatTime, getCardColors, toProperCase } from "@/lib/utils";
+import { cn, formatTime, getCardColors, toProperCase } from "@/lib/utils";
 import { CalendarClock, Clock, DoorOpen, FilePen, User } from "lucide-react";
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-
-interface OverviewCardProps {
-  classData: Class;
-  colors: Record<string, ColorsEnum>;
-}
 
 export interface ScheduleWithMultipleDays extends Schedule {
   combinedDays: string;
 }
 
-export default function OverviewCard({ classData, colors }: OverviewCardProps) {
+interface OverviewCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  classData: Class;
+  colors: Record<string, ColorsEnum>;
+  className?: string;
+}
+
+export default function OverviewCard({
+  classData,
+  colors,
+  className,
+  ...props
+}: OverviewCardProps) {
   const schedules = classData.schedules.reduce<ScheduleWithMultipleDays[]>(
     (acc, curr) => {
       if (curr.start === curr.end) return acc;
@@ -47,7 +53,7 @@ export default function OverviewCard({ classData, colors }: OverviewCardProps) {
   const { color, border } = getCardColors(colors[classData.course]);
 
   return (
-    <Card key={classData.code} className={`${color}`}>
+    <Card key={classData.code} className={cn(color, className)} {...props}>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 font-bold text-lg">
           {classData.course} [{classData.code}]
