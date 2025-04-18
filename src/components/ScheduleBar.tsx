@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Class, UserSchedule } from "@/lib/definitions";
+import { UserSchedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FixedSizeList } from "react-window";
@@ -19,42 +19,27 @@ import SaveButton from "./SaveButton";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 
-interface BaseScheduleBarProps {
+interface ScheduleBarProps {
   active: number;
   setActive: (val: number) => void;
   children?: React.ReactNode;
   colors: Record<string, ColorsEnum>;
-}
-
-interface SavedSchedulesProps extends BaseScheduleBarProps {
-  type: "saved";
   schedules: UserSchedule[];
-  changeColors: (name: string, colors: Record<string, ColorsEnum>) => void;
+  onColorChange?: (colors: Record<string, ColorsEnum>) => void;
+  isGenerated?: boolean;
 }
 
-interface UnsavedSchedulesProps extends BaseScheduleBarProps {
-  type: "unsaved";
-  schedules: Class[][];
-
-  // Temporary, will transition all schedules to use UserSchedule
-  changeColors?: undefined;
-}
-
-type ScheduleBarProps = SavedSchedulesProps | UnsavedSchedulesProps;
 export default function ScheduleBar({
   schedules,
   active,
   setActive,
   children,
   colors,
-  type,
-  ...props
+  isGenerated = false,
+  onColorChange,
 }: ScheduleBarProps) {
-  const isSavedSchedule = type === "saved";
-
-  const activeScheduleClasses = isSavedSchedule
-    ? schedules[active].classes
-    : schedules[active];
+  const activeSchedule = schedules[active];
+  const activeScheduleClasses = activeSchedule?.classes ?? [];
 
   return (
     <Card className="flex flex-row gap-4 p-4">
@@ -75,9 +60,7 @@ export default function ScheduleBar({
         >
           <SelectTrigger className="w-64" suppressHydrationWarning>
             <SelectValue>
-              {isSavedSchedule
-                ? schedules[active].name
-                : `Schedule ${active + 1}`}
+              {activeSchedule ? schedules[active].name : "No schedules found"}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -89,9 +72,7 @@ export default function ScheduleBar({
             >
               {({ index, style }) => (
                 <SelectItem key={index} value={`${index}`} style={{ ...style }}>
-                  {isSavedSchedule
-                    ? schedules[index].name
-                    : `Schedule ${index + 1}`}
+                  {schedules[index].name}
                 </SelectItem>
               )}
             </FixedSizeList>
@@ -110,12 +91,9 @@ export default function ScheduleBar({
       {children}
       {activeScheduleClasses && (
         <div className="ml-auto flex gap-2">
-          {isSavedSchedule && <RenameButton activeSched={schedules[active]} />}
+          {!isGenerated && <RenameButton activeSched={schedules[active]} />}
           <SaveButton activeSched={activeScheduleClasses} colors={colors} />
-          <CourseColorsDialog
-            savedSchedule={isSavedSchedule ? schedules[active] : undefined}
-            changeColors={props.changeColors}
-          />
+          <CourseColorsDialog changeColors={onColorChange} />
           <ExportButton classes={activeScheduleClasses} />
           <DownloadScheduleButton
             classes={activeScheduleClasses}

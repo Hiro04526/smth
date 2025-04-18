@@ -1,63 +1,76 @@
 import { Class, UserSchedule } from "@/lib/definitions";
+import { ColorsEnum } from "@/lib/enums";
 import { toast } from "sonner";
 import { Slice } from "./useGlobalStore";
 
 export interface ManualStates {
-  manualSchedules: UserSchedule[];
+  manualSchedule: UserSchedule;
 }
 
 export interface ManualActions {
-  setManualSchedules: (classes: UserSchedule[]) => void;
-  setManualSchedule: (index: number, schedule: UserSchedule) => void;
-  addClassToManualSchedule: (newClass: Class, index: number) => void;
-  removeClass: (code: number, index: number) => void;
+  setManualSchedule: (schedule: UserSchedule) => void;
+  addClassToManualSchedule: (newClass: Class) => void;
+  removeClass: (code: number) => void;
+  setManualScheduleColors: (colors: Record<string, ColorsEnum>) => void;
 }
 
 export type ManualSlice = ManualStates & ManualActions;
 
 export const createManualSlice: Slice<ManualSlice> = (set) => ({
-  manualSchedules: [],
-  setManualSchedule: (index, schedule) =>
-    set((state) => {
-      const updatedSchedules = [...state.manualSchedules];
-      if (index >= updatedSchedules.length) {
-        toast.error(
-          "Invalid index for setting manual schedule. Please contact the developer."
-        );
-        return { manualSchedules: updatedSchedules };
-      }
-      updatedSchedules[index] = schedule;
-      return { manualSchedules: updatedSchedules };
-    }),
+  manualSchedule: {
+    name: "Manual",
+    classes: [],
+    colors: {},
+  },
+  setManualSchedule: (schedule) =>
+    set(() => ({
+      manualSchedule: schedule,
+    })),
 
-  setManualSchedules: (schedules) => set({ manualSchedules: schedules }),
-  addClassToManualSchedule: (newClass, index) =>
+  addClassToManualSchedule: (newClass) =>
     set((state) => {
-      const updatedSchedule = [...state.manualSchedules];
-      if (index >= updatedSchedule.length) {
+      if (!state.manualSchedule) {
         toast.error(
-          "Invalid index for adding class to manual schedule. Please contact the developer."
+          "No schedule selected. Please create or select a schedule first."
         );
-        return { manualSchedules: updatedSchedule };
+        return state;
       }
 
-      updatedSchedule[index] = {
-        ...updatedSchedule[index],
-        classes: [...updatedSchedule[index].classes, newClass],
+      return {
+        manualSchedule: {
+          ...state.manualSchedule,
+          classes: [...state.manualSchedule.classes, newClass],
+        },
       };
-      return { manualSchedules: updatedSchedule };
     }),
-  removeClass: (code, index) =>
+
+  removeClass: (code) =>
     set((state) => {
-      const updatedSchedule = [...state.manualSchedules];
-      if (index < updatedSchedule.length) {
-        updatedSchedule[index] = {
-          ...updatedSchedule[index],
-          classes: updatedSchedule[index].classes.filter(
+      if (!state.manualSchedule) {
+        return state;
+      }
+
+      return {
+        manualSchedule: {
+          ...state.manualSchedule,
+          classes: state.manualSchedule.classes.filter(
             (cls) => cls.code !== code
           ),
-        };
+        },
+      };
+    }),
+
+  setManualScheduleColors: (colors) =>
+    set((state) => {
+      if (!state.manualSchedule) {
+        return state;
       }
-      return { manualSchedules: updatedSchedule };
+
+      return {
+        manualSchedule: {
+          ...state.manualSchedule,
+          colors,
+        },
+      };
     }),
 });

@@ -1,5 +1,6 @@
 "use client";
 
+import { ColorsEnum } from "@/lib/enums";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { HeartCrack } from "lucide-react";
 import { useState } from "react";
@@ -11,10 +12,11 @@ import SavedTabSkeleton from "./skeletons/SavedTabSkeleton";
 import { Card } from "./ui/card";
 
 const SavedTab = () => {
-  const { schedules, hasHydrated } = useGlobalStore(
+  const { schedules, hasHydrated, setColors } = useGlobalStore(
     useShallow((state) => ({
       schedules: state.savedSchedules,
       hasHydrated: state._hasHydrated,
+      setColors: state.changeSavedColors,
     }))
   );
   const [active, setActive] = useState<number>(0);
@@ -24,6 +26,10 @@ const SavedTab = () => {
     return <SavedTabSkeleton />;
   }
 
+  const changeColors = (colors: Record<string, ColorsEnum>) => {
+    setColors(activeSched.name, colors);
+  };
+
   return (
     <div className="flex flex-row w-full min-h-0 py-8 px-16 gap-4 h-full">
       <div className="flex flex-col gap-4 grow">
@@ -32,9 +38,9 @@ const SavedTab = () => {
             <ScheduleBar
               active={active}
               setActive={setActive}
-              type="saved"
               schedules={schedules}
               colors={activeSched.colors}
+              onColorChange={changeColors}
             />
             <Calendar
               classes={activeSched.classes}

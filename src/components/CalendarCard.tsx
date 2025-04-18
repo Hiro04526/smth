@@ -29,11 +29,10 @@ const CalendarCard = ({
   onMouseLeave,
   isMobile = false,
   isManual = false,
-  activeIndex = 0,
 }: CalendarCardProps) => {
   const removeClass = useGlobalStore((state) => state.removeClass);
   const handleRemoveClass = () => {
-    removeClass(currClass.code, activeIndex);
+    removeClass(currClass.code);
   };
 
   return (

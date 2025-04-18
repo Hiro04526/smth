@@ -23,28 +23,22 @@ import { Switch } from "./ui/switch";
 
 interface CourseColorsDialogProps {
   savedSchedule?: UserSchedule;
-  changeColors?: (name: string, colors: Record<string, ColorsEnum>) => void;
+  changeColors?: (colors: Record<string, ColorsEnum>) => void;
 }
 
 export default function CourseColorsDialog({
   savedSchedule,
   changeColors,
 }: CourseColorsDialogProps) {
-  const {
-    courseColors,
-    setCourseColors,
-    randomizeColors,
-    setRandomizeColors,
-    changeSavedColors,
-  } = useGlobalStore(
-    useShallow((state) => ({
-      courseColors: state.courseColors,
-      setCourseColors: state.setCourseColors,
-      randomizeColors: state.randomizeColors,
-      setRandomizeColors: state.setRandomizeColors,
-      changeSavedColors: state.changeSavedColors,
-    }))
-  );
+  const { courseColors, setCourseColors, randomizeColors, setRandomizeColors } =
+    useGlobalStore(
+      useShallow((state) => ({
+        courseColors: state.courseColors,
+        setCourseColors: state.setCourseColors,
+        randomizeColors: state.randomizeColors,
+        setRandomizeColors: state.setRandomizeColors,
+      }))
+    );
 
   const [colors, setColors] = useState(() => ({
     ...(savedSchedule ? savedSchedule.colors : courseColors),
@@ -55,7 +49,7 @@ export default function CourseColorsDialog({
     if (!savedSchedule) {
       setCourseColors(colors);
     } else {
-      changeSavedColors(savedSchedule.name, colors);
+      changeColors?.(colors);
     }
 
     toast.success("Colors successfully saved!", {

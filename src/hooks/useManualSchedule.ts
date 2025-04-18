@@ -4,7 +4,7 @@ import { minutesToMilitaryTime } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-export default function useManualSched(activeIndex: number) {
+export default function useManualSched() {
   const days = ["M", "T", "W", "H", "F", "S"] as const;
   const [dragging, setDragging] = useState(false);
   const [selection, setSelection] = useState<{
@@ -15,10 +15,10 @@ export default function useManualSched(activeIndex: number) {
     day: DaysEnum;
   } | null>(null);
 
-  const manualSchedules = useGlobalStore((state) => state.manualSchedules);
+  const manualSchedule = useGlobalStore((state) => state.manualSchedule);
   const activeSchedClasses = useMemo(
-    () => manualSchedules[activeIndex]?.classes ?? [],
-    [manualSchedules, activeIndex]
+    () => manualSchedule?.classes ?? [],
+    [manualSchedule]
   );
 
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -53,8 +53,8 @@ export default function useManualSched(activeIndex: number) {
 
     if (activeSchedClasses.length > 0) {
       const militaryStartTime = minutesToMilitaryTime(startTime);
-      const isInsideCard = activeSchedClasses.some(({ schedules }) => {
-        return schedules.some(
+      const isInsideCard = activeSchedClasses.some((classItem) => {
+        return classItem.schedules.some(
           (classSched) =>
             classSched.day === (days[column] as DaysEnum) &&
             militaryStartTime >= classSched.start &&
@@ -85,8 +85,8 @@ export default function useManualSched(activeIndex: number) {
       militaryStartTime: number,
       militaryEndTime: number
     ) => {
-      return activeSchedClasses.some(({ schedules }) => {
-        return schedules.some((classSched) => {
+      return activeSchedClasses.some((classItem) => {
+        return classItem.schedules.some((classSched) => {
           // Case 1: The manual sched is above the class sched
           const condition1 =
             militaryTime >= classSched.start &&

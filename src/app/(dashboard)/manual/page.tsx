@@ -6,18 +6,25 @@ import ScheduleOverview from "@/components/ScheduleOverview";
 import useManualSchedule from "@/hooks/useManualSchedule";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 interface Props {}
 export default function ManualPage({}: Props) {
   const [active, setActive] = useState<number>(0);
 
-  const schedules = useGlobalStore((state) => state.manualSchedules);
-  const setSchedules = useGlobalStore((state) => state.setManualSchedules);
-  const activeSched = schedules[active];
-  const manualProps = useManualSchedule(active);
+  const { schedule, setSchedules, setManualScheduleColors, hasHydrated } =
+    useGlobalStore(
+      useShallow((state) => ({
+        schedule: state.manualSchedule,
+        setSchedules: state.setManualSchedule,
+        setManualScheduleColors: state.setManualScheduleColors,
+        hasHydrated: state._hasHydrated,
+      }))
+    );
 
-  if (!activeSched) {
-    setSchedules([{ name: "New Schedule ", classes: [], colors: {} }]);
+  const manualProps = useManualSchedule();
+
+  if (!hasHydrated) {
     return null;
   }
 
@@ -27,20 +34,19 @@ export default function ManualPage({}: Props) {
         <ScheduleBar
           active={active}
           setActive={setActive}
-          colors={activeSched.colors}
-          schedules={schedules}
-          type="saved"
+          colors={schedule.colors}
+          schedules={[schedule]}
+          onColorChange={setManualScheduleColors}
         />
         <Calendar
-          classes={activeSched.classes}
-          colors={activeSched.colors}
+          classes={schedule.classes}
+          colors={schedule.colors}
           manualProps={manualProps}
-          activeIndex={active}
         />
       </div>
       <ScheduleOverview
-        activeSchedule={activeSched.classes}
-        colors={activeSched.colors}
+        activeSchedule={schedule.classes}
+        colors={schedule.colors}
       />
     </div>
   );

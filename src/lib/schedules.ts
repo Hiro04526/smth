@@ -1,4 +1,11 @@
-import { Class, Course, CourseGroup, Filter, Schedule } from "./definitions";
+import {
+  Class,
+  Course,
+  CourseGroup,
+  Filter,
+  Schedule,
+  UserSchedule,
+} from "./definitions";
 import { ColorsEnum, ColorsEnumSchema, DaysEnum } from "./enums";
 import { militaryTimeToMinutes } from "./utils";
 
@@ -8,7 +15,8 @@ export function getRandomColors(courses: string[]): Record<string, ColorsEnum> {
 
   courses.forEach((course) => {
     if (availableColors.length === 0) {
-      throw new Error("Not enough unique colors to assign to all courses.");
+      // If we run out of colors, we just reset the available colors.
+      availableColors.push(...ColorsEnumSchema.options);
     }
 
     const randomIndex = Math.floor(Math.random() * availableColors.length);
@@ -164,7 +172,7 @@ export function createGroupedSchedules({
   groups: CourseGroup[];
   courses: Course[];
   filter?: Filter;
-}): [schedules: Class[][], colors: Record<string, ColorsEnum>] {
+}) {
   const ungroupedCourses = courses.filter(
     (course) => !course.group || course.group === "Ungrouped"
   );
@@ -192,7 +200,7 @@ export function createGroupedSchedules({
   // Dimensions: Cartesian -> Groups -> Courses
   const groupsCartesianProduct = getCartesianProduct(...groupedCombinations);
 
-  const generatedSchedules: Class[][] = [];
+  const generatedSchedules: UserSchedule[] = [];
   let generatedColors: Record<string, ColorsEnum> = {};
 
   for (const cartesian of groupsCartesianProduct) {
@@ -202,19 +210,27 @@ export function createGroupedSchedules({
     );
     const [schedules, colors] = createSchedules(combinedCourses, filter);
 
-    if (schedules.length && schedules[0].length > 0) {
+    if (schedules.length && schedules[0].classes.length > 0) {
       generatedSchedules.push(...schedules);
       generatedColors = { ...generatedColors, ...colors };
     }
   }
 
-  return [generatedSchedules, generatedColors];
+  const formattedSchedules = generatedSchedules.map((sched, i) => ({
+    ...sched,
+    name: `Schedule ${i + 1}`,
+  }));
+
+  return {
+    schedules: formattedSchedules,
+    colors: generatedColors,
+  };
 }
 
 function createSchedules(
   courses: Class[][],
   filter?: Filter
-): [schedules: Class[][], colors: Record<string, ColorsEnum>] {
+): [schedules: UserSchedule[], colors: Record<string, ColorsEnum>] {
   // This will store all currently made schedules.
   let createdScheds: Class[][] = [[]];
 
@@ -263,7 +279,13 @@ function createSchedules(
   const courseNames = createdScheds[0].map((courseClass) => courseClass.course);
   const colors = getRandomColors(courseNames);
 
-  return [createdScheds, colors];
+  const formattedSchedules: UserSchedule[] = createdScheds.map((sched, i) => ({
+    name: ``,
+    classes: sched,
+    colors: {},
+  }));
+
+  return [formattedSchedules, colors];
 }
 
 export function doClassesOverlap(sched1: Schedule[], sched2: Schedule[]) {

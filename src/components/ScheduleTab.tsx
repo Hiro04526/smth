@@ -39,6 +39,8 @@ const ScheduleTab = () => {
     }))
   );
   const [active, setActive] = useState<number>(0);
+  const activeSchedule = schedules[active];
+  const activeScheduleClasses = activeSchedule?.classes ?? [];
 
   if (!hasHydrated) {
     return <ScheduleTabSkeleton />;
@@ -55,11 +57,12 @@ const ScheduleTab = () => {
       return;
     }
 
-    const [newSchedules, newColors] = createGroupedSchedules({
-      groups,
-      courses: selectedData,
-      filter,
-    });
+    const { schedules: newSchedules, colors: newColors } =
+      createGroupedSchedules({
+        groups,
+        courses: selectedData,
+        filter,
+      });
 
     if (newSchedules.length === 0) {
       toast.error("Uh oh! No schedules could be generated.", {
@@ -105,13 +108,13 @@ const ScheduleTab = () => {
           setActive={setActive}
           schedules={schedules}
           colors={colors}
-          type="unsaved"
+          isGenerated
         >
           <Button onClick={handleGenerate}>Generate Schedules</Button>
           <FilterSettings />
         </ScheduleBar>
         {schedules[active] ? (
-          <Calendar classes={schedules[active]} colors={colors} />
+          <Calendar classes={activeScheduleClasses} colors={colors} />
         ) : (
           <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
             <CalendarPlus2 size={100} strokeWidth={1.25} />
@@ -124,7 +127,10 @@ const ScheduleTab = () => {
           </Card>
         )}
       </div>
-      <ScheduleOverview activeSchedule={schedules[active]} colors={colors} />
+      <ScheduleOverview
+        activeSchedule={activeScheduleClasses}
+        colors={colors}
+      />
     </div>
   );
 };

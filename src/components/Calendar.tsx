@@ -20,7 +20,6 @@ interface BaseCalendarProps {
   cellHeight?: string;
   isMobile?: boolean;
   manualProps?: ReturnType<typeof useManualSchedule>;
-  activeIndex?: number;
 }
 
 const Calendar = ({
@@ -30,7 +29,6 @@ const Calendar = ({
   cellHeight = CELL_HEIGHT,
   isMobile = false,
   manualProps,
-  activeIndex = 0,
 }: BaseCalendarProps) => {
   const { dragging, selection, setSelection, popoverRef, ...listeners } =
     manualProps ?? {};
@@ -120,10 +118,7 @@ const Calendar = ({
                   key={day}
                 >
                   {manualProps && selection?.day === day && (
-                    <ManualScheduleCard
-                      manualProps={manualProps}
-                      activeIndex={activeIndex}
-                    />
+                    <ManualScheduleCard manualProps={manualProps} />
                   )}
                   {sortedClasses[day].map((currClass) => {
                     const schedules = currClass.schedules.filter(
@@ -152,7 +147,6 @@ const Calendar = ({
                           onMouseLeave={() => setHovered(false)}
                           isMobile={isMobile}
                           isManual={!!manualProps}
-                          activeIndex={activeIndex}
                         />
                       );
                     });

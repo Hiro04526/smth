@@ -6,7 +6,6 @@ import {
   calculateHeight,
   cn,
   formatTime,
-  hasOwnProperty,
   minutesToMilitaryTime,
   toProperCase,
 } from "@/lib/utils";
@@ -26,38 +25,33 @@ import { Switch } from "./ui/switch";
 
 interface ManualScheduleCardProps {
   manualProps: ReturnType<typeof useManualSchedule>;
-  activeIndex: number;
 }
 export default function ManualScheduleCard({
   manualProps,
-  activeIndex,
 }: ManualScheduleCardProps) {
   const [showOngoing, setShowOngoing] = useState(false);
-
   const addClassToManualSchedule = useGlobalStore(
     (state) => state.addClassToManualSchedule
   );
-  const schedules = useGlobalStore((state) => state.manualSchedules);
-  const activeSchedule = schedules[activeIndex];
-
-  const { dragging, selection, setSelection, popoverRef } = manualProps;
-  const cellSizePx = CELL_SIZE_PX;
+  const setManualSchedule = useGlobalStore((state) => state.setManualSchedule);
+  const schedule = useGlobalStore((state) => state.manualSchedule);
   const selectedData: Course[] = useGlobalStore(
     (state) => state.getSelectedData
   )();
-
+  const { dragging, selection, setSelection, popoverRef } = manualProps;
+  const cellSizePx = CELL_SIZE_PX;
   const startTime = selection ? minutesToMilitaryTime(selection.start) : null;
   const endTime = selection ? minutesToMilitaryTime(selection.end) : null;
   const day = selection ? selection.day : null;
-
   const is15MinSlot = selection
     ? selection.end - selection.start === 15
     : false;
 
   const viableData = useMemo(() => {
-    if (!startTime || !endTime || !day) return [];
+    if (!schedule) return [];
+    if (!startTime || !endTime || !day || !schedule) return [];
     const usedCourses = new Set([
-      ...activeSchedule.classes.map((course) => course.course),
+      ...schedule.classes.map((course) => course.course),
     ]);
 
     return selectedData
@@ -66,7 +60,7 @@ export default function ManualScheduleCard({
           return { ...course, classes: [] };
 
         const viableClasses = course.classes.filter(({ schedules }) => {
-          const overlapsWithExisting = activeSchedule.classes.some(
+          const overlapsWithExisting = schedule.classes.some(
             ({ schedules: existingSched }) =>
               doClassesOverlap(schedules, existingSched)
           );
@@ -105,32 +99,24 @@ export default function ManualScheduleCard({
     startTime,
     endTime,
     day,
-    activeSchedule,
+    schedule,
     showOngoing,
     is15MinSlot,
   ]);
 
+  if (!schedule || !selection) return null;
+
   const hasViableData = viableData.length > 0;
-
-  const setManualSchedule = useGlobalStore((state) => state.setManualSchedule);
-
-  if (!selection) return null;
   const handleAddClass = (classData: Class) => {
-    if (!hasOwnProperty(classData, activeIndex)) {
-      const courseColor = getRandomColors([classData.course]);
-      setManualSchedule(activeIndex, {
-        ...activeSchedule,
-        classes: [...activeSchedule.classes, classData],
-        colors: {
-          ...activeSchedule.colors,
-          ...courseColor,
-        },
-      });
-      setSelection(null);
-
-      return;
-    }
-    addClassToManualSchedule(classData, activeIndex);
+    const courseColor = getRandomColors([classData.course]);
+    setManualSchedule({
+      ...schedule,
+      classes: [...schedule.classes, classData],
+      colors: {
+        ...schedule.colors,
+        ...courseColor,
+      },
+    });
     setSelection(null);
   };
 

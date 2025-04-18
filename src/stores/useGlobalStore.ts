@@ -7,7 +7,7 @@ import { CourseStates, createCourseSlice } from "./courseSlice";
 import { createIdSlice, IdStates } from "./idSlice";
 import { createManualSlice, ManualSlice } from "./manualSlice";
 import { createMiscSlice, MiscStates } from "./miscSlice";
-import { createScheduleSlice, ScheduleStates } from "./scheduleSlice";
+import { createScheduleSlice, ScheduleSlice } from "./scheduleSlice";
 import { createTableSlice, TableStates } from "./tableSlice";
 
 // Custom Storage to interface with IndexedDB
@@ -28,7 +28,7 @@ interface GlobalStates
   extends CourseStates,
     IdStates,
     TableStates,
-    ScheduleStates,
+    ScheduleSlice,
     MiscStates,
     ManualSlice {}
 
@@ -62,7 +62,7 @@ export const useGlobalStore = create<GlobalStates>()(
           state.setHasHydrated(true);
         };
       },
-      version: 2,
+      version: 3,
       migrate: (persistedState, version) => {
         if (!persistedState) return persistedState;
 
@@ -135,6 +135,10 @@ export const useGlobalStore = create<GlobalStates>()(
           persistedState["schedules"] = newSchedules;
           persistedState["savedSchedules"] = newSavedSchedules;
           persistedState["courses"] = newCourses;
+        }
+
+        if (version < 3 && hasOwnProperty(persistedState, "schedules")) {
+          persistedState["schedules"] = [];
         }
 
         return persistedState;
