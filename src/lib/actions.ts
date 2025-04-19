@@ -8,9 +8,10 @@ export async function fetchCourse(courseCode: string, id: string) {
   );
 
   if (!res.ok) {
-    return { error: "Something went wrong while fetching." };
+    return { data: undefined, error: "Something went wrong while fetching." };
   }
 
+  const isCached = res.headers.get("data-source") === "cache";
   const parsed = (await res.json())[0];
   const parsedData = classSchema.array().parse(parsed);
 
@@ -21,7 +22,7 @@ export async function fetchCourse(courseCode: string, id: string) {
     isCustom: false,
   };
 
-  return { data: newCourse };
+  return { data: { newCourse, isCached }, error: undefined };
 }
 
 export async function fetchMultipleCourses(courses: Course[], id: string) {

@@ -71,9 +71,9 @@ const CourseInput = ({ setActiveCourse }: CourseInputProps) => {
     }
 
     try {
-      const { data } = await fetchCourse(courseCode, id);
+      const { data, error } = await fetchCourse(courseCode, id);
 
-      if (!data) {
+      if (!data || error) {
         toast.error("Something went wrong while fetching...", {
           description:
             "The server is facing some issues right now, try again in a bit.",
@@ -82,7 +82,9 @@ const CourseInput = ({ setActiveCourse }: CourseInputProps) => {
         return;
       }
 
-      if (data.classes.length === 0) {
+      const { newCourse, isCached } = data;
+
+      if (newCourse.classes.length === 0) {
         toast.warning("No classes found...", {
           description:
             "No classes were found for that course, maybe no classes have been scheduled yet.",
@@ -91,9 +93,17 @@ const CourseInput = ({ setActiveCourse }: CourseInputProps) => {
         return;
       }
 
-      toast.success(`Course ${courseCode} added successfully!`);
+      if (isCached) {
+        toast.warning(`The server is having some issues...`, {
+          description:
+            "But don't worry, your course was still added. It might be an older version though, try updating it later.",
+        });
+      } else {
+        toast.success(`Course ${courseCode} added successfully!`);
+      }
+
       setActiveCourse(courses.length);
-      addCourse(data);
+      addCourse(newCourse);
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes("unexpected response")) {
