@@ -50,6 +50,8 @@ function CourseItem({
   const handleDelete = (courseCode: string) => {
     if (activeCourse >= 0 && courses[activeCourse].courseCode === courseCode) {
       setActiveCourse(0);
+    } else if (activeCourse > index) {
+      setActiveCourse(activeCourse - 1);
     }
 
     removeCourse(courseCode);
