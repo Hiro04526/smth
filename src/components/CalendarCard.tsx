@@ -2,12 +2,18 @@
 
 import { Card } from "@/components/ui/card";
 import { Class, Schedule } from "@/lib/definitions";
-import { cn, formatTime, inferRoom, toProperCase } from "@/lib/utils";
+import {
+  cn,
+  formatTime,
+  getCardColors,
+  inferRoom,
+  toProperCase,
+} from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { X } from "lucide-react";
 
 interface CalendarCardProps {
-  currClass: Class & { color: string; shadow: string };
+  currClass: Class & ReturnType<typeof getCardColors>;
   height: number;
   top: number;
   hovered: number | false;

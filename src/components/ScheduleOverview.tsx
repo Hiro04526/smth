@@ -20,11 +20,14 @@ const ScheduleOverview = ({
 }: ScheduleOverviewProps) => {
   return (
     <ScrollArea
-      className={cn("w-[20%] rounded-lg border bg-background", className)}
+      className={cn(
+        "w-[20%] min-w-[300px] rounded-lg border bg-background",
+        className
+      )}
     >
       <div
         className={cn(
-          "p-4 grid gap-2",
+          "p-4 grid gap-3",
           columns === 1 ? "grid-cols-1" : "grid-cols-2"
         )}
         {...props}

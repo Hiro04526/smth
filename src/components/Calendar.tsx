@@ -38,7 +38,7 @@ const Calendar = ({
   const [hovered, setHovered] = useState<number | false>(false);
 
   const sortedClasses = classes.reduce<
-    Record<DaysEnum, (Class & { color: string; shadow: string })[]>
+    Record<DaysEnum, (Class & ReturnType<typeof getCardColors>)[]>
   >(
     (acc, course) => {
       for (const sched of course.schedules) {

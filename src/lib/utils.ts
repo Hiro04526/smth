@@ -134,7 +134,65 @@ export function getCardColors(color: ColorsEnum) {
     RED: "bg-red-300 shadow-red-300/50 dark:bg-red-800 dark:shadow-red-700/50",
   };
 
+  const cardColorsTransparent = {
+    ROSE: "bg-rose-200/50 dark:bg-rose-900/50 text-rose-950 dark:text-rose-100",
+    PINK: "bg-pink-200/50 dark:bg-pink-900/50 text-pink-950 dark:text-pink-100",
+    FUCHSIA:
+      "bg-fuchsia-200/50 dark:bg-fuchsia-900/50 text-fuchsia-950 dark:text-fuchsia-100",
+    PURPLE:
+      "bg-purple-200/50 dark:bg-purple-900/50 text-purple-950 dark:text-purple-100",
+    VIOLET:
+      "bg-violet-200/50 dark:bg-violet-900/50 text-violet-950 dark:text-violet-100",
+    INDIGO:
+      "bg-indigo-200/50 dark:bg-indigo-900/50 text-indigo-950 dark:text-indigo-100",
+    BLUE: "bg-blue-200/50 dark:bg-blue-900/50 text-blue-950 dark:text-blue-100",
+    SKY: "bg-sky-200/50 dark:bg-sky-900/50 text-sky-950 dark:text-sky-100",
+    CYAN: "bg-cyan-200/50 dark:bg-cyan-900/50 text-cyan-950 dark:text-cyan-100",
+    TEAL: "bg-teal-200/50 dark:bg-teal-900/50 text-teal-950 dark:text-teal-100",
+    EMERALD:
+      "bg-emerald-200/50 dark:bg-emerald-900/50 text-emerald-950 dark:text-emerald-100",
+    GREEN:
+      "bg-green-200/50 dark:bg-green-900/50 text-green-950 dark:text-green-100",
+    LIME: "bg-lime-200/50 dark:bg-lime-900/50 text-lime-950 dark:text-lime-100",
+    YELLOW:
+      "bg-yellow-200/50 dark:bg-yellow-900/50 text-yellow-950 dark:text-yellow-100",
+    AMBER:
+      "bg-amber-200/50 dark:bg-amber-900/50 text-amber-950 dark:text-amber-100",
+    ORANGE:
+      "bg-orange-200/50 dark:bg-orange-900/50 text-orange-950 dark:text-orange-100",
+    RED: "bg-red-200/50 dark:bg-red-900/50 text-red-950 dark:text-red-100",
+  };
+
+  const secondaryColors = {
+    ROSE: "bg-rose-100 dark:bg-rose-950 text-rose-900 dark:text-rose-200",
+    PINK: "bg-pink-100 dark:bg-pink-950 text-pink-900 dark:text-pink-200",
+    FUCHSIA:
+      "bg-fuchsia-100 dark:bg-fuchsia-950 text-fuchsia-900 dark:text-fuchsia-200",
+    PURPLE:
+      "bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-200",
+    VIOLET:
+      "bg-violet-100 dark:bg-violet-950 text-violet-900 dark:text-violet-200",
+    INDIGO:
+      "bg-indigo-100 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-200",
+    BLUE: "bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-200",
+    SKY: "bg-sky-100 dark:bg-sky-950 text-sky-900 dark:text-sky-200",
+    CYAN: "bg-cyan-100 dark:bg-cyan-950 text-cyan-900 dark:text-cyan-200",
+    TEAL: "bg-teal-100 dark:bg-teal-950 text-teal-900 dark:text-teal-200",
+    EMERALD:
+      "bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200",
+    GREEN: "bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-200",
+    LIME: "bg-lime-100 dark:bg-lime-950 text-lime-900 dark:text-lime-200",
+    YELLOW:
+      "bg-yellow-100 dark:bg-yellow-950 text-yellow-900 dark:text-yellow-200",
+    AMBER: "bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200",
+    ORANGE:
+      "bg-orange-100 dark:bg-orange-950 text-orange-900 dark:text-orange-200",
+    RED: "bg-red-100 dark:bg-red-950 text-red-900 dark:text-red-200",
+  };
+
   return {
+    secondaryColor: secondaryColors[color],
+    transparent: cardColorsTransparent[color],
     color: cardColors[color],
     shadow: cardShadows[color],
     border: cardBorders[color],
