@@ -155,6 +155,9 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
       .filter(Boolean)
       .join(",");
 
+    console.log(format(startDate, "yyyy-MM-dd'T'HH:mm:ss"));
+    console.log(format(endDate, "yyyy-MM-dd'T'HH:mm:ss"));
+
     return {
       summary: `[${classData.section}] ${classData.course}`,
       description: classData.professor
