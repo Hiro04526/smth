@@ -45,7 +45,7 @@ export default function ExportButton({ classes, ...props }: ExportButtonProps) {
       <Dropdown items={dropdownItems} align="start" className="w-52">
         <Button onClick={handleDownload} variant="secondary" {...props}>
           <CalendarArrowDownIcon className="size-4 mr-2" />
-          Export to...
+          Export
         </Button>
       </Dropdown>
       <GoogleSyncDialog hookProps={hookProps} />
