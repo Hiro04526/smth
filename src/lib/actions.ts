@@ -1,6 +1,7 @@
 "use server";
 
 import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import { calendar_v3, google } from "googleapis";
 import { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport";
 import { Class, classSchema, Course, Schedule } from "./definitions";
@@ -139,6 +140,7 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
       baseStartDate,
       firstSchedule.day as DaysEnum
     );
+
     const endDate = addDaysToDate(baseEndDate, firstSchedule.day as DaysEnum);
 
     const byDays = schedules
@@ -153,11 +155,19 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
         : "",
       location: inferRoom(classData, firstSchedule),
       start: {
-        dateTime: startDate.toISOString(),
+        dateTime: formatInTimeZone(
+          startDate,
+          "Asia/Manila",
+          "yyyy-MM-dd'T'HH:mm:ss"
+        ),
         timeZone: "Asia/Manila",
       },
       end: {
-        dateTime: endDate.toISOString(),
+        dateTime: formatInTimeZone(
+          endDate,
+          "Asia/Manila",
+          "yyyy-MM-dd'T'HH:mm:ss"
+        ),
         timeZone: "Asia/Manila",
       },
       recurrence: [
@@ -219,11 +229,19 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
     const eventConfig: calendar_v3.Schema$Event = {
       ...eventInfo,
       start: {
-        dateTime: startDate.toISOString(),
+        dateTime: formatInTimeZone(
+          startDate,
+          "Asia/Manila",
+          "yyyy-MM-dd'T'HH:mm:ss"
+        ),
         timeZone: "Asia/Manila",
       },
       end: {
-        dateTime: endDate.toISOString(),
+        dateTime: formatInTimeZone(
+          endDate,
+          "Asia/Manila",
+          "yyyy-MM-dd'T'HH:mm:ss"
+        ),
         timeZone: "Asia/Manila",
       },
     };
