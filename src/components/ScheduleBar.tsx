@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/select";
 import { UserSchedule } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useGlobalStore } from "@/stores/useGlobalStore";
+import { ChevronLeft, ChevronRight, Eraser } from "lucide-react";
 import { FixedSizeList } from "react-window";
+import CopyToManualButton from "./CopyToManualButton";
 import CourseColorsDialog from "./CourseColorsDialog";
 import DownloadScheduleButton from "./DownloadScheduleButton";
 import ExportButton from "./ExportButton";
@@ -40,11 +42,12 @@ export default function ScheduleBar({
   colors,
   isGenerated = false,
   onColorChange,
-  hasRename = false,
+  hasRename: isSaved = false,
   isManual = false,
 }: ScheduleBarProps) {
   const activeSchedule = schedules[active];
   const activeScheduleClasses = activeSchedule?.classes ?? [];
+  const setManualSchedule = useGlobalStore((state) => state.setManualSchedule);
 
   return (
     <Card className="flex flex-row gap-4 p-4 px-6">
@@ -107,7 +110,6 @@ export default function ScheduleBar({
       {children}
       {activeScheduleClasses && (
         <div className="ml-auto flex gap-2">
-          {hasRename && <RenameButton activeSched={schedules[active]} />}
           <SaveButton
             activeSched={activeScheduleClasses}
             colors={colors}
@@ -118,6 +120,24 @@ export default function ScheduleBar({
             activeSched={isGenerated ? undefined : activeSchedule}
             disabled={!activeScheduleClasses.length}
           />
+          {isSaved && (
+            <>
+              <RenameButton activeSched={schedules[active]} />
+              <CopyToManualButton activeSchedule={schedules[active]} />
+            </>
+          )}
+          {isManual && (
+            <Button
+              onClick={() =>
+                setManualSchedule({ name: "Manual", classes: [], colors: {} })
+              }
+              variant="outline"
+              disabled={!activeScheduleClasses.length}
+            >
+              <Eraser className="size-4 mr-2" />
+              Clear
+            </Button>
+          )}
           <ExportButton
             classes={activeScheduleClasses}
             disabled={!activeScheduleClasses.length}
