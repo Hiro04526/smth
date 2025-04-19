@@ -141,9 +141,6 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
       new Date()
     );
 
-    console.log(nextSemesterDate);
-    console.log(startOffset, endOffset);
-
     // TODO: In the future, DaysEnum should contain "U" as a valid value
     // and the logic should be changed to handle it properly
     const startDate = addDaysToDate(
@@ -157,8 +154,6 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
       .map((sched) => convertToIcalDay(sched.day as DaysEnum))
       .filter(Boolean)
       .join(",");
-
-    console.log(startDate, endDate);
 
     return {
       summary: `[${classData.section}] ${classData.course}`,
