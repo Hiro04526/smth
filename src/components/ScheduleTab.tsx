@@ -67,8 +67,29 @@ const ScheduleTab = () => {
       filter,
     });
 
-    if (error) {
-      toast.error(...error);
+    if (error === "overflow") {
+      toast.error("Uh oh! You hit the max schedules limit.", {
+        description:
+          "Try selecting fewer classes, making more groups, or adjusting the filters.",
+      });
+      return;
+    } else if (error) {
+      toast.error("Uh oh! No schedules could be generated.", {
+        description: (
+          <div>
+            <div className="mb-1">
+              The most likely culprits are the following:
+            </div>
+            <div className="flex flex-col gap-1 p-2 bg-red-200 text-red-900 rounded-lg dark:bg-red-950 dark:text-red-100">
+              {error.map((err, index) => (
+                <p key={index}>
+                  {index + 1}. {err}
+                </p>
+              ))}
+            </div>
+          </div>
+        ),
+      });
       return;
     }
 

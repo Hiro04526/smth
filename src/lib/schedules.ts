@@ -37,7 +37,8 @@ function filterInitialData(courses: Class[][], filter: Filter): Class[][] {
         if (sched.day === "U") return false;
 
         // If the day is F2F and the user doesn't want F2F on that day, remove it.
-        if (!sched.isOnline && !filter.general.daysInPerson.includes(sched.day))
+        const isF2F = !sched.isOnline || courseClass.modality === "F2F";
+        if (isF2F && !filter.general.daysInPerson.includes(sched.day))
           return true;
 
         const { start, end, modalities } = filter.specific[sched.day];
@@ -205,13 +206,20 @@ export function createGroupedSchedules({
 
   const generatedSchedules: UserSchedule[] = [];
   let generatedColors: Record<string, ColorsEnum> = {};
+  let errorTally: Record<string, number> = {};
 
   for (const cartesian of groupsCartesianProduct) {
     const flattenedCombination = cartesian.flat();
     const combinedCourses = [...ungroupedCourses, ...flattenedCombination].map(
       (course) => course.classes
     );
-    const [schedules, colors] = createSchedules(combinedCourses, filter);
+    const { schedules, colors, error } = createSchedules(
+      combinedCourses,
+      filter
+    );
+
+    if (error) errorTally[error] = (errorTally[error] || 0) + 1;
+
     const newLength = generatedSchedules.length + schedules.length;
     if (newLength > MAX_SCHEDULES) {
       overflow = true;
@@ -228,24 +236,16 @@ export function createGroupedSchedules({
     name: `Schedule ${i + 1}`,
   }));
 
-  let error: [error: string, options: { description: string }] | undefined;
-
+  let error: "overflow" | string[] | undefined = undefined;
   if (overflow) {
-    error = [
-      "Uh oh! You hit the max schedules limit.",
-      {
-        description:
-          "Try selecting fewer classes, making more groups, or adjusting the filters.",
-      },
-    ];
+    error = "overflow";
   } else if (formattedSchedules.length === 0) {
-    error = [
-      "Uh oh! No schedules could be generated.",
-      {
-        description:
-          "Try selecting more classes that don't conflict with each other.",
-      },
-    ];
+    const topErrors = Object.entries(errorTally)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map((entry) => entry[0]);
+
+    error = topErrors;
   }
 
   return {
@@ -258,12 +258,28 @@ export function createGroupedSchedules({
 function createSchedules(
   courses: Class[][],
   filter?: Filter
-): [schedules: UserSchedule[], colors: Record<string, ColorsEnum>] {
+): {
+  schedules: UserSchedule[];
+  colors: Record<string, ColorsEnum>;
+  error?: string;
+} {
+  // This will let us know what caused 0 schedules.
+  // Key = cause, Value = number of times it happened.
+  let errorTally: Record<string, number> = {};
+
   // This will store all currently made schedules.
   let createdScheds: Class[][] = [[]];
 
   if (filter) {
     courses = filterInitialData(courses, filter);
+  }
+
+  if (courses.some((course) => course.length === 0)) {
+    return {
+      schedules: [],
+      colors: {},
+      error: "Filter: Start/End Time or Modalities",
+    };
   }
 
   // First, iterate throughout all of the courses
@@ -281,9 +297,20 @@ function createSchedules(
       // Check if overlap between any of the classes inside the
       // combinations and the current course class.
       for (const courseClass of course) {
-        const overlap = currentSched.some((schedClass) =>
-          doClassesOverlap(courseClass.schedules, schedClass.schedules)
-        );
+        const overlap = currentSched.some((schedClass) => {
+          const isOverlapping = doClassesOverlap(
+            courseClass.schedules,
+            schedClass.schedules
+          );
+
+          if (isOverlapping) {
+            errorTally[`${courseClass.course}-${schedClass.course}`] =
+              (errorTally[`${courseClass.course}-${schedClass.course}`] || 0) +
+              1;
+          }
+
+          return isOverlapping;
+        });
 
         // If there's an overlap, we can't add it to the schedule.
         if (overlap) continue;
@@ -301,8 +328,28 @@ function createSchedules(
     createdScheds = newCombinations;
   }
 
-  if (filter) createdScheds = filterGeneratedSchedules(createdScheds, filter);
-  if (createdScheds.length === 0) return [[], {}];
+  if (filter && createdScheds.length > 0) {
+    createdScheds = filterGeneratedSchedules(createdScheds, filter);
+    if (createdScheds.length === 0)
+      return {
+        schedules: [],
+        colors: {},
+        error: "Filter: Consecutive or Max Courses",
+      };
+  }
+
+  if (createdScheds.length === 0) {
+    const highestErrorEntry = Object.entries(errorTally).reduce(
+      (max, entry) => (entry[1] > max[1] ? entry : max),
+      ["", 0]
+    );
+
+    return {
+      schedules: [],
+      colors: {},
+      error: `Conflict: ${highestErrorEntry[0]}`,
+    };
+  }
 
   const courseNames = createdScheds[0].map((courseClass) => courseClass.course);
   const colors = getRandomColors(courseNames);
@@ -313,7 +360,7 @@ function createSchedules(
     colors: {},
   }));
 
-  return [formattedSchedules, colors];
+  return { schedules: formattedSchedules, colors };
 }
 
 export function doClassesOverlap(sched1: Schedule[], sched2: Schedule[]) {
