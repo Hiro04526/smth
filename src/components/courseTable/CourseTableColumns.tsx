@@ -214,7 +214,11 @@ export const columns: ColumnDef<Class>[] = [
 
       return sectionType;
     },
-    filterFn: "arrIncludesSome",
+    filterFn: (row, columnId, filterValue) => {
+      const sectionType = row.getValue(columnId) as string;
+
+      return filterValue.some((val: string) => sectionType === val);
+    },
     enableHiding: false,
   },
   {
