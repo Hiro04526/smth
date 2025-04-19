@@ -13,13 +13,14 @@ export const CELL_HEIGHT = "h-16";
 export const TOP_OFFSET = 16; // Based on 16px (1rem) padding in the calendar
 export const LEFT_OFFSET = 66; // Based on 50px + 1rem (16px)
 
-interface BaseCalendarProps {
+interface CalendarProps {
   classes: Class[];
   colors: Record<string, ColorsEnum>;
   cellSizePx?: number;
   cellHeight?: string;
   isMobile?: boolean;
   manualProps?: ReturnType<typeof useManualSchedule>;
+  className?: string;
 }
 
 const Calendar = ({
@@ -29,7 +30,8 @@ const Calendar = ({
   cellHeight = CELL_HEIGHT,
   isMobile = false,
   manualProps,
-}: BaseCalendarProps) => {
+  className,
+}: CalendarProps) => {
   const { dragging, selection, setSelection, popoverRef, ...listeners } =
     manualProps ?? {};
 
@@ -59,7 +61,12 @@ const Calendar = ({
     "relative h-full w-full text-center py-2 px-2 mx-2 font-bold ";
 
   return (
-    <div className="flex flex-shrink min-h-0 w-full flex-col border rounded-lg bg-background overflow-clip">
+    <div
+      className={cn(
+        "flex flex-shrink min-h-0 w-full flex-col border border-border rounded-lg bg-background overflow-clip",
+        className
+      )}
+    >
       {/* Day Indicator Row */}
       <div className="flex w-full flex-row border-b bg-primary/90 text-primary-foreground dark:text-muted-foreground dark:bg-background dark:border-muted py-1">
         <div className="w-[50px] shrink-0" />

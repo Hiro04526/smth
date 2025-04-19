@@ -2,6 +2,8 @@ import { Class } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
 import { useToPng } from "@hugocxl/react-to-image";
 import { Download, Monitor, Smartphone } from "lucide-react";
+import { useRef } from "react";
+import { toast } from "sonner";
 import Calendar from "./Calendar";
 import Dropdown, { DropdownItems } from "./common/Dropdown";
 import ScheduleOverview from "./ScheduleOverview";
@@ -29,23 +31,38 @@ export default function DownloadScheduleButton({
   colors,
   ...props
 }: DownloadScheduleButtonProps) {
+  const toastId = useRef<string | null | number>(null);
   const [_, convertDesktop, desktopRef] = useToPng<HTMLDivElement>({
     quality: 1,
+    pixelRatio: 2,
+    onLoading: () => {
+      toastId.current = toast.loading("Generating image...");
+    },
     onSuccess: (data) => {
       const link = document.createElement("a");
       link.download = "Schedaddle.png";
       link.href = data;
       link.click();
+
+      toast.dismiss(toastId.current as string | number);
+      toast.success("Image generated successfully!");
     },
   });
 
   const [__, convertPhone, mobileRef] = useToPng<HTMLDivElement>({
     quality: 1,
+    pixelRatio: 2,
+    onLoading: () => {
+      toastId.current = toast.loading("Generating image...");
+    },
     onSuccess: (data) => {
       const link = document.createElement("a");
       link.download = "Schedaddle-Mobile.png";
       link.href = data;
       link.click();
+
+      toast.dismiss(toastId.current as string | number);
+      toast.success("Image generated successfully!");
     },
   });
 
@@ -69,9 +86,9 @@ export default function DownloadScheduleButton({
           <Download className="mr-2 size-4" /> Download
         </Button>
       </Dropdown>
-      <div className="w-[2560px] h-[1440px] absolute -left-[9999px] -top-[9999px]">
+      <div className="w-[2560px] h-[1440px] absolute -left-[9999px] -top-[9999px] ">
         <div
-          className="flex flex-row gap-8 min-h-0 h-full w-full bg-primary dark:bg-accent p-8"
+          className="flex flex-row gap-8 min-h-0 h-full w-full bg-[url(/SchedaddleBG.Desktop.png)] p-8"
           ref={desktopRef}
         >
           <Calendar
@@ -79,6 +96,7 @@ export default function DownloadScheduleButton({
             colors={colors}
             cellHeight="h-20"
             cellSizePx={80}
+            className="drop-shadow-xl border-none"
           />
           <ScheduleOverview
             activeSchedule={classes}
@@ -90,7 +108,7 @@ export default function DownloadScheduleButton({
       </div>
       <div className="w-[1080px] h-[2160px] absolute -top-[9999px] -left-[9999px]">
         <div
-          className="flex flex-row gap-8 min-h-0 h-full items-center w-full bg-primary dark:bg-accent p-8"
+          className="flex flex-row gap-8 min-h-0 h-full items-center w-full bg-[url(/SchedaddleBG.Mobile.png)] p-8"
           ref={mobileRef}
         >
           <div className="w-full">
@@ -99,6 +117,7 @@ export default function DownloadScheduleButton({
               colors={colors}
               cellHeight="h-28"
               cellSizePx={112}
+              className="drop-shadow-xl border-none"
               isMobile
             />
           </div>
