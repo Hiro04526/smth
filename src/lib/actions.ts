@@ -1,5 +1,6 @@
 "use server";
 
+import { format } from "date-fns";
 import { calendar_v3, google } from "googleapis";
 import { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport";
 import { Class, classSchema, Course, Schedule } from "./definitions";
@@ -17,6 +18,7 @@ const nextSemesterRaw = process.env.NEXT_PUBLIC_NEXT_SEMESTER_DATE;
 const nextSemesterDate = nextSemesterRaw
   ? new Date(nextSemesterRaw)
   : new Date();
+const nextSemesterYear = nextSemesterDate.getFullYear();
 
 export async function fetchCourse(courseCode: string, id: string) {
   const res = await fetch(
@@ -131,6 +133,8 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
     const baseStartDate = new Date(`${nextSemesterRaw} ${startOffset}`);
     const baseEndDate = new Date(`${nextSemesterRaw} ${endOffset}`);
 
+    // TODO: In the future, DaysEnum should contain "U" as a valid value
+    // and the logic should be changed to handle it properly
     const startDate = addDaysToDate(
       baseStartDate,
       firstSchedule.day as DaysEnum
@@ -175,13 +179,19 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
 
     // Handle all-day events
     if (sched.date && sched.start === sched.end && sched.date) {
+      const formattedDate = format(
+        new Date(`${sched.date}, ${nextSemesterYear}`),
+        "yyyy-MM-dd"
+      );
+      console.log("Formatted Date:", formattedDate);
+
       return {
         ...eventInfo,
         start: {
-          date: `${sched.date}`,
+          date: formattedDate,
         },
         end: {
-          date: `${sched.date}`,
+          date: formattedDate,
         },
       };
     }
@@ -194,12 +204,8 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
 
     // Handles one time events that have a time interval
     if (sched.date) {
-      startDate = new Date(
-        `${sched.date}, ${nextSemesterDate.getFullYear()} ${startOffset}`
-      );
-      endDate = new Date(
-        `${sched.date}, ${nextSemesterDate.getFullYear()} ${endOffset}`
-      );
+      startDate = new Date(`${sched.date}, ${nextSemesterYear} ${startOffset}`);
+      endDate = new Date(`${sched.date}, ${nextSemesterYear} ${endOffset}`);
     } else {
       startDate = addDaysToDate(
         new Date(`${nextSemesterRaw} ${startOffset}`),

@@ -236,6 +236,14 @@ export function convertToIcalDay(day: DaysEnum): ICalWeekday {
   }
 }
 
+/**
+ * Adds a specified number of days to a given date.
+ *
+ * @param date - The date to which days will be added.
+ * @param days - The number of days to add. Can be a number or a string representing a day of the week.
+ *              - If it's a string, it should be one of the following: "M", "T", "W", "H", "F", "S".
+ * @returns A new Date object with the specified number of days added.
+ */
 export function addDaysToDate(date: Date, days: number | DaysEnum) {
   if (typeof days === "string") {
     const mapping: Record<DaysEnum, number> = {
