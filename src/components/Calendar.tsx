@@ -155,6 +155,7 @@ const Calendar = ({
                           onMouseLeave={() => setHovered(false)}
                           isMobile={isMobile}
                           isManual={!!manualProps}
+                          cellSizePx={cellSizePx}
                         />
                       );
                     });

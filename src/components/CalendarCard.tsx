@@ -11,7 +11,6 @@ import {
 } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { X } from "lucide-react";
-import { CELL_SIZE_PX } from "./Calendar";
 import { Badge } from "./ui/badge";
 
 interface CalendarCardProps {
@@ -25,6 +24,7 @@ interface CalendarCardProps {
   sched: Schedule;
   isManual?: boolean;
   activeIndex?: number;
+  cellSizePx: number;
 }
 
 const CalendarCard = ({
@@ -37,6 +37,7 @@ const CalendarCard = ({
   onMouseLeave,
   isMobile = false,
   isManual = false,
+  cellSizePx,
 }: CalendarCardProps) => {
   const removeClass = useGlobalStore((state) => state.removeClass);
   const removeColor = useGlobalStore(
@@ -69,7 +70,7 @@ const CalendarCard = ({
           "text-xs font-bold tracking-tight px-3 py-2",
           isMobile && "text-lg",
           isManual && "flex flex-row",
-          height <= CELL_SIZE_PX && "py-0.5"
+          height <= cellSizePx && "py-0.5"
         )}
       >
         {isMobile && (
@@ -96,7 +97,7 @@ const CalendarCard = ({
           currClass.secondaryColor
         )}
       >
-        {height > 64 && (
+        {height > cellSizePx && (
           <div className="font-medium">{inferRoom(currClass, sched)}</div>
         )}
         <div className="font-medium">

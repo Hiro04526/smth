@@ -105,17 +105,15 @@ export default function OverviewCard({
     },
   ];
 
-  const { color, transparent, secondaryColor } = getCardColors(
-    colors[classData.course]
-  );
+  const { color, secondaryColor } = getCardColors(colors[classData.course]);
 
   return (
     <Card
       key={classData.code}
       className={cn(
-        "bg-background border-border border overflow-hidden",
+        "bg-background border-none overflow-hidden",
         className,
-        transparent
+        secondaryColor
       )}
       {...props}
     >
