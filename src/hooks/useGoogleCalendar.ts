@@ -13,16 +13,17 @@ export default function useGoogleCalendar(scheduleClasses: Class[]) {
   const [open, setOpen] = useState(false);
   const [importing, setImporting] = useState(false);
 
+  const fetchNewCalendars = async (token: string) => {
+    const toastId = toast.loading("Fetching calendars...");
+    const newCalendars = await getCalendars(token);
+    toast.dismiss(toastId);
+    setCalendars(newCalendars);
+  };
+
   const handleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      toast.success("Login successful!");
-
-      const toastId = toast.loading("Fetching calendars...");
-      const newCalendars = await getCalendars(tokenResponse.access_token);
-      toast.dismiss(toastId);
-
+      await fetchNewCalendars(tokenResponse.access_token);
       setToken(tokenResponse.access_token);
-      setCalendars(newCalendars);
       setOpen(true);
     },
     onError: (error) => {
@@ -33,10 +34,11 @@ export default function useGoogleCalendar(scheduleClasses: Class[]) {
     scope: "https://www.googleapis.com/auth/calendar",
   });
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!token) {
       handleLogin();
     } else {
+      await fetchNewCalendars(token);
       setOpen(true);
     }
   };
@@ -67,9 +69,9 @@ export default function useGoogleCalendar(scheduleClasses: Class[]) {
       (calendar) => calendar.id === selectedCalendar
     );
 
-    if (data) {
+    if (data && calendar) {
       toast.success("Events created successfully!", {
-        description: `You can now see your schedule in your ${calendar} calendar!`,
+        description: `You can now see your schedule in your ${calendar?.summary} calendar!`,
       });
     }
 
