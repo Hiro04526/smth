@@ -1,25 +1,14 @@
 "use client";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { createGroupedSchedules } from "@/lib/utils";
+import { createGroupedSchedules } from "@/lib/schedules";
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { CalendarPlus2, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarPlus2 } from "lucide-react";
 import { useState } from "react";
-import { FixedSizeList } from "react-window";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import Calendar from "./Calendar";
-import CourseColorsDialog from "./CourseColorsDialog";
-import DownloadScheduleButton from "./DownloadScheduleButton";
-import ExportButton from "./ExportButton";
 import FilterSettings from "./FilterSettings";
-import SaveButton from "./SaveButton";
+import ScheduleBar from "./ScheduleBar";
 import ScheduleOverview from "./ScheduleOverview";
 import ScheduleTabSkeleton from "./skeletons/ScheduleTabSkeleton";
 import { Button } from "./ui/button";
@@ -50,6 +39,8 @@ const ScheduleTab = () => {
     }))
   );
   const [active, setActive] = useState<number>(0);
+  const activeSchedule = schedules[active];
+  const activeScheduleClasses = activeSchedule?.classes ?? [];
 
   if (!hasHydrated) {
     return <ScheduleTabSkeleton />;
@@ -66,11 +57,12 @@ const ScheduleTab = () => {
       return;
     }
 
-    const [newSchedules, newColors] = createGroupedSchedules({
-      groups,
-      courses: selectedData,
-      filter,
-    });
+    const { schedules: newSchedules, colors: newColors } =
+      createGroupedSchedules({
+        groups,
+        courses: selectedData,
+        filter,
+      });
 
     if (newSchedules.length === 0) {
       toast.error("Uh oh! No schedules could be generated.", {
@@ -94,13 +86,10 @@ const ScheduleTab = () => {
       setColors(newColors);
     } else {
       // Remove any colors that are not in the new colors and keep the old ones
-      const refinedColors = Object.keys(newColors).reduce(
-        (acc, course) => {
-          acc[course] = colors[course] ?? newColors[course];
-          return acc;
-        },
-        {} as typeof colors
-      );
+      const refinedColors = Object.keys(newColors).reduce((acc, course) => {
+        acc[course] = colors[course] ?? newColors[course];
+        return acc;
+      }, {} as typeof colors);
 
       setColors(refinedColors);
     }
@@ -114,78 +103,18 @@ const ScheduleTab = () => {
   return (
     <div className="flex flex-row w-full min-h-0 py-8 px-16 gap-4 h-full">
       <div className="flex flex-col gap-4 grow">
-        <Card className="flex flex-row gap-4 p-4">
-          <div className="flex flex-row gap-2">
-            <Button
-              onClick={() => setActive(active - 1)}
-              disabled={active <= 0}
-              variant="outline"
-              size="icon"
-              suppressHydrationWarning
-            >
-              <ChevronLeft />
-            </Button>
-            <Select
-              value={`${active}`}
-              onValueChange={(val) => setActive(Number(val))}
-              disabled={schedules.length === 0}
-            >
-              <SelectTrigger className="w-64" suppressHydrationWarning>
-                <SelectValue
-                  placeholder={`${
-                    schedules.length !== 0 ? `Schedule ${active + 1}` : "-"
-                  }`}
-                >
-                  Schedule {active + 1}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <FixedSizeList
-                  width={`100%`}
-                  height={Math.min(350, 35 * schedules.length)}
-                  itemCount={schedules.length}
-                  itemSize={35}
-                >
-                  {({ index, style }) => (
-                    <SelectItem
-                      key={index}
-                      value={`${index}`}
-                      style={{ ...style }}
-                    >
-                      Schedule {index + 1}
-                    </SelectItem>
-                  )}
-                </FixedSizeList>
-              </SelectContent>
-            </Select>
-            <Button
-              onClick={() => setActive(active + 1)}
-              disabled={active >= schedules.length - 1}
-              variant="outline"
-              size="icon"
-              suppressHydrationWarning
-            >
-              <ChevronRight />
-            </Button>
-          </div>
-          <Button onClick={() => handleGenerate()}>Generate Schedules</Button>
+        <ScheduleBar
+          active={active}
+          setActive={setActive}
+          schedules={schedules}
+          colors={colors}
+          isGenerated
+        >
+          <Button onClick={handleGenerate}>Generate Schedules</Button>
           <FilterSettings />
-          <div className="ml-auto flex gap-2">
-            {schedules[active] && (
-              <>
-                <SaveButton activeSched={schedules[active]} colors={colors} />
-                <CourseColorsDialog />
-                <ExportButton classes={schedules[active]} />
-                <DownloadScheduleButton
-                  classes={schedules[active]}
-                  colors={colors}
-                />
-              </>
-            )}
-          </div>
-        </Card>
+        </ScheduleBar>
         {schedules[active] ? (
-          <Calendar courses={schedules[active]} colors={colors} />
+          <Calendar classes={activeScheduleClasses} colors={colors} />
         ) : (
           <Card className="p-6 w-full grow items-center flex flex-row justify-center text-muted-foreground gap-2">
             <CalendarPlus2 size={100} strokeWidth={1.25} />
@@ -198,7 +127,10 @@ const ScheduleTab = () => {
           </Card>
         )}
       </div>
-      <ScheduleOverview activeSchedule={schedules[active]} colors={colors} />
+      <ScheduleOverview
+        activeSchedule={activeScheduleClasses}
+        colors={colors}
+      />
     </div>
   );
 };

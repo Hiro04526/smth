@@ -17,7 +17,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 
@@ -40,19 +39,19 @@ export function FacetedFilter<TData, TValue>({
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant={selectedValues?.size > 0 ? "secondary" : "outline"}
           size="sm"
           className={`h-8 ${!selectedValues?.size && "text-muted-foreground"}`}
         >
           <Icon className="mr-2 size-4" />
           {title}
           {selectedValues?.size > 0 && (
-            <>
-              <Separator orientation="vertical" className="mx-2 h-4" />
-              <Badge variant="secondary" className="rounded-sm px-1">
-                {selectedValues.size}
-              </Badge>
-            </>
+            <Badge
+              variant="default"
+              className="rounded-sm px-1 ml-2 size-5 items-center justify-center"
+            >
+              {selectedValues.size}
+            </Badge>
           )}
         </Button>
       </PopoverTrigger>

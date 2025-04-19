@@ -1,47 +1,44 @@
 "use client";
+import useManualSchedule from "@/hooks/useManualSchedule";
 import { Class } from "@/lib/definitions";
 import { ColorsEnum, DaysEnum } from "@/lib/enums";
-import { cn, getCardColors } from "@/lib/utils";
-import { useCallback, useState } from "react";
+import { calculateHeight, cn, getCardColors } from "@/lib/utils";
+import { useState } from "react";
 import CalendarCard from "./CalendarCard";
+import ManualScheduleCard from "./ManualScheduleCard";
 import { ScrollArea } from "./ui/scroll-area";
 
-const CELL_SIZE_PX = 64;
-const CELL_HEIGHT = "h-16";
+export const CELL_SIZE_PX = 68;
+export const CELL_HEIGHT = "h-[4.25rem]";
+export const TOP_OFFSET = 16; // Based on 16px (1rem) padding in the calendar
+export const LEFT_OFFSET = 66; // Based on 50px + 4rem (16px)
 
-const Calendar = ({
-  courses,
-  colors,
-  cellSizePx = CELL_SIZE_PX,
-  cellHeight = CELL_HEIGHT,
-  isMobile = false,
-}: {
-  courses: Class[];
+interface CalendarProps {
+  classes: Class[];
   colors: Record<string, ColorsEnum>;
   cellSizePx?: number;
   cellHeight?: string;
   isMobile?: boolean;
-}) => {
-  const calculateHeight = useCallback(
-    (start: number, end: number) => {
-      const startHour = Math.floor(start / 100);
-      const endHour = Math.floor(end / 100);
-      const startMinutes = start % 100;
-      const endMinutes = end % 100;
+  manualProps?: ReturnType<typeof useManualSchedule>;
+  className?: string;
+}
 
-      const totalMinutes =
-        (endHour - startHour) * 60 + (endMinutes - startMinutes);
-
-      // 16 here is to account for offset
-      return (totalMinutes / 60) * cellSizePx;
-    },
-    [cellSizePx]
-  );
+const Calendar = ({
+  classes,
+  colors,
+  cellSizePx = CELL_SIZE_PX,
+  cellHeight = CELL_HEIGHT,
+  isMobile = false,
+  manualProps,
+  className,
+}: CalendarProps) => {
+  const { dragging, selection, setSelection, popoverRef, ...listeners } =
+    manualProps ?? {};
 
   const [hovered, setHovered] = useState<number | false>(false);
 
-  const sortedClasses = courses.reduce<
-    Record<DaysEnum, (Class & { color: string; shadow: string })[]>
+  const sortedClasses = classes.reduce<
+    Record<DaysEnum, (Class & ReturnType<typeof getCardColors>)[]>
   >(
     (acc, course) => {
       for (const sched of course.schedules) {
@@ -61,12 +58,17 @@ const Calendar = ({
   );
 
   const headerStyle =
-    "relative h-full w-full text-center py-2 px-2 mx-2 font-bold text-muted-foreground";
+    "relative h-full w-full text-center py-2 px-2 mx-2 font-bold ";
 
   return (
-    <div className="flex flex-shrink min-h-0 w-full flex-col border rounded-lg bg-background">
+    <div
+      className={cn(
+        "flex flex-shrink min-h-0 w-full flex-col border border-border rounded-lg bg-background overflow-clip",
+        className
+      )}
+    >
       {/* Day Indicator Row */}
-      <div className="flex w-full flex-row border-b dark:border-muted py-1">
+      <div className="flex w-full flex-row border-b bg-primary/90 text-primary-foreground dark:text-secondary-foreground dark:bg-secondary/40 dark:border-muted py-1">
         <div className="w-[50px] shrink-0" />
         <div className="w-2 shrink-0" />
 
@@ -81,7 +83,7 @@ const Calendar = ({
       {/* Scrollable Container */}
       <ScrollArea>
         {/* Calendar Content */}
-        <div className="flex h-max w-full flex-row">
+        <div className="flex h-max w-full flex-row" {...listeners}>
           {/* Time Column */}
           <div className="ml-2 flex w-[50px] shrink-0 flex-col items-end">
             {[...Array(16)].map((_, index) => (
@@ -106,7 +108,7 @@ const Calendar = ({
                   className={cn(
                     `${
                       index === 15 ? "h-0" : cellHeight
-                    } after:absolute after:h-[1px] after:w-full after:bg-muted/50 after:content-['']`
+                    } after:absolute after:h-[1px] after:w-full after:dark:bg-muted/50 after:bg-muted after:content-['']`
                   )}
                   key={index}
                 />
@@ -117,11 +119,17 @@ const Calendar = ({
             {(Object.keys(sortedClasses) as Array<DaysEnum>).map((day) => {
               return (
                 <div
-                  className={`relative flex h-full w-full flex-col border-l border-muted/50 pr-2 ${
-                    ["M", "W", "F"].includes(day) && "bg-muted/10"
-                  }`}
+                  className={cn(
+                    `relative flex h-full w-full flex-col border-l border-muted/50 pr-2`,
+                    ["M", "W", "F"].includes(day) &&
+                      "dark:bg-muted/10 bg-muted/30",
+                    "animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
+                  )}
                   key={day}
                 >
+                  {manualProps && selection?.day === day && (
+                    <ManualScheduleCard manualProps={manualProps} />
+                  )}
                   {sortedClasses[day].map((currClass) => {
                     const schedules = currClass.schedules.filter(
                       (sched) => sched.day === day
@@ -136,12 +144,20 @@ const Calendar = ({
                           key={`${currClass.course}${day}${i}`}
                           currClass={currClass}
                           sched={sched}
-                          height={calculateHeight(start, end)}
-                          top={calculateHeight(700, start) + 16}
+                          height={calculateHeight({ start, end, cellSizePx })}
+                          top={
+                            calculateHeight({
+                              start: 700,
+                              end: start,
+                              cellSizePx,
+                            }) + TOP_OFFSET
+                          }
                           hovered={hovered}
                           onMouseEnter={() => setHovered(currClass.code)}
                           onMouseLeave={() => setHovered(false)}
                           isMobile={isMobile}
+                          isManual={!!manualProps}
+                          cellSizePx={cellSizePx}
                         />
                       );
                     });

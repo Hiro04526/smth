@@ -1,12 +1,13 @@
-import { Class, Course, SavedSchedule, Schedule } from "@/lib/definitions";
+import { Class, Course, Schedule, UserSchedule } from "@/lib/definitions";
 import { hasOwnProperty } from "@/lib/utils";
 import { del, get, set } from "idb-keyval"; // can use anything: IndexedDB, Ionic Storage, etc.
 import { create, StateCreator } from "zustand";
 import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
 import { CourseStates, createCourseSlice } from "./courseSlice";
 import { createIdSlice, IdStates } from "./idSlice";
+import { createManualSlice, ManualSlice } from "./manualSlice";
 import { createMiscSlice, MiscStates } from "./miscSlice";
-import { createScheduleSlice, ScheduleStates } from "./scheduleSlice";
+import { createScheduleSlice, ScheduleSlice } from "./scheduleSlice";
 import { createTableSlice, TableStates } from "./tableSlice";
 
 // Custom Storage to interface with IndexedDB
@@ -27,8 +28,9 @@ interface GlobalStates
   extends CourseStates,
     IdStates,
     TableStates,
-    ScheduleStates,
-    MiscStates {}
+    ScheduleSlice,
+    MiscStates,
+    ManualSlice {}
 
 // Abstracted type for creating slices
 export type Slice<T> = StateCreator<
@@ -49,6 +51,7 @@ export const useGlobalStore = create<GlobalStates>()(
       ...createTableSlice(...a),
       ...createScheduleSlice(...a),
       ...createMiscSlice(...a),
+      ...createManualSlice(...a),
     }),
     {
       name: "global-state",
@@ -59,7 +62,7 @@ export const useGlobalStore = create<GlobalStates>()(
           state.setHasHydrated(true);
         };
       },
-      version: 2,
+      version: 3,
       migrate: (persistedState, version) => {
         if (!persistedState) return persistedState;
 
@@ -87,7 +90,7 @@ export const useGlobalStore = create<GlobalStates>()(
           const schedules = persistedState["schedules"] as Class[][];
           const savedSchedules = persistedState[
             "savedSchedules"
-          ] as SavedSchedule[];
+          ] as UserSchedule[];
 
           const newCourses = courses.map((course) => ({
             ...course,
@@ -116,7 +119,7 @@ export const useGlobalStore = create<GlobalStates>()(
             }))
           );
 
-          const newSavedSchedules: SavedSchedule[] = savedSchedules.map(
+          const newSavedSchedules: UserSchedule[] = savedSchedules.map(
             ({ classes, ...prev }) => ({
               ...prev,
               classes: classes.map((classData) => ({
@@ -132,6 +135,10 @@ export const useGlobalStore = create<GlobalStates>()(
           persistedState["schedules"] = newSchedules;
           persistedState["savedSchedules"] = newSavedSchedules;
           persistedState["courses"] = newCourses;
+        }
+
+        if (version < 3 && hasOwnProperty(persistedState, "schedules")) {
+          persistedState["schedules"] = [];
         }
 
         return persistedState;

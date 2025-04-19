@@ -1,12 +1,12 @@
-import { SavedSchedule } from "@/lib/definitions";
-import { ColorsEnumSchema } from "@/lib/enums";
+import { UserSchedule } from "@/lib/definitions";
+import { ColorsEnum, ColorsEnumSchema } from "@/lib/enums";
 import { getCardColors } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Check, CheckCheck, Palette } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
-import { Button } from "./ui/button";
+import { Button, ButtonProps } from "./ui/button";
 import { Card } from "./ui/card";
 import {
   Dialog,
@@ -21,39 +21,36 @@ import { Label } from "./ui/label";
 import { ScrollArea } from "./ui/scroll-area";
 import { Switch } from "./ui/switch";
 
-interface CourseColorsDialogProps {
-  savedSchedule?: SavedSchedule;
+interface CourseColorsDialogProps extends ButtonProps {
+  activeSched?: UserSchedule;
+  changeColors?: (colors: Record<string, ColorsEnum>) => void;
 }
 
 export default function CourseColorsDialog({
-  savedSchedule,
+  activeSched,
+  changeColors,
+  ...props
 }: CourseColorsDialogProps) {
-  const {
-    courseColors,
-    setCourseColors,
-    randomizeColors,
-    setRandomizeColors,
-    changeSavedColors,
-  } = useGlobalStore(
-    useShallow((state) => ({
-      courseColors: state.courseColors,
-      setCourseColors: state.setCourseColors,
-      randomizeColors: state.randomizeColors,
-      setRandomizeColors: state.setRandomizeColors,
-      changeSavedColors: state.changeSavedColors,
-    }))
-  );
+  const { courseColors, setCourseColors, randomizeColors, setRandomizeColors } =
+    useGlobalStore(
+      useShallow((state) => ({
+        courseColors: state.courseColors,
+        setCourseColors: state.setCourseColors,
+        randomizeColors: state.randomizeColors,
+        setRandomizeColors: state.setRandomizeColors,
+      }))
+    );
 
   const [colors, setColors] = useState(() => ({
-    ...(savedSchedule ? savedSchedule.colors : courseColors),
+    ...(activeSched ? activeSched.colors : courseColors),
   }));
   const [open, setOpen] = useState(false);
 
   const handleSave = () => {
-    if (!savedSchedule) {
+    if (!activeSched) {
       setCourseColors(colors);
     } else {
-      changeSavedColors(savedSchedule.name, colors);
+      changeColors?.(colors);
     }
 
     toast.success("Colors successfully saved!", {
@@ -63,15 +60,13 @@ export default function CourseColorsDialog({
   };
 
   useEffect(() => {
-    setColors(
-      savedSchedule ? { ...savedSchedule.colors } : { ...courseColors }
-    );
-  }, [savedSchedule, courseColors]);
+    setColors(activeSched ? { ...activeSched.colors } : { ...courseColors });
+  }, [activeSched, courseColors]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" {...props}>
           <Palette className="size-4" />
         </Button>
       </DialogTrigger>

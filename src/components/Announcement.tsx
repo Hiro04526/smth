@@ -31,35 +31,30 @@ export default function Announcement() {
     }))
   );
 
-  const title = "The Calendar Update!";
-  const description = "I've updated some things in the website!";
-  const patchDate = "April 18, 2025";
+  const title = "The Calendar & Manual Update!";
+  const description = "I've added a lot of things! Check them out!";
+  const patchDate = "April 19, 2025";
 
   const updates = [
     {
-      title: "Export to Calendar",
+      title: "New Smart Manual Mode",
+      description:
+        "A new mode has been added! Check it out in the Smart Manual tab. tl;dr: Google Calendar, but for your classes.",
+    },
+    {
+      title: "Better UI and Image Design",
+      description:
+        "UI has been improved, along with the design of the Image Downloads. Check it out in Schedules & Saved!",
+    },
+    {
+      title: "New Export to Calendar",
       description:
         "You can now export your schedule as an .ics file! Click the 'Export' button near the download button. Thanks for the suggestion @Ed*****oded!",
     },
     {
-      title: "Edit & Delete Classes",
-      description:
-        "Classes can now be edited and deleted! Check the '...' button at the end of the class in the table.",
-    },
-    {
-      title: "Drag & Drop Classes to create a new group",
-      description:
-        "You can now drag and drop classes to create a new group! Just drag the class to the 'Create New Group' box.",
-    },
-    {
-      title: "Better pop-up notifications",
-      description:
-        "Toasts, or pop-up notifications, are now more consistent and better looking. They also provide more information now.",
-    },
-    {
       title: "A bunch of bug fixes",
       description:
-        "Issues such as LASARE3 dates becoming days (e.g. `MAY1 -> M`), selected rows and filters not being removed, and more have been fixed. Hopefully this makes the app better to use!",
+        "A lot of bugs have been fixed! Not gonna list them all here, but everything should be working much better now.",
     },
     {
       title: "Call for suggestions",

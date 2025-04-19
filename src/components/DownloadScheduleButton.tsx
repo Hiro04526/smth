@@ -2,12 +2,15 @@ import { Class } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
 import { useToPng } from "@hugocxl/react-to-image";
 import { Download, Monitor, Smartphone } from "lucide-react";
+import { useRef } from "react";
+import { toast } from "sonner";
 import Calendar from "./Calendar";
 import Dropdown, { DropdownItems } from "./common/Dropdown";
+import SchedaddleLogo from "./SchedaddleLogo";
 import ScheduleOverview from "./ScheduleOverview";
-import { Button } from "./ui/button";
+import { Button, ButtonProps } from "./ui/button";
 
-interface DownloadScheduleButtonProps {
+interface DownloadScheduleButtonProps extends ButtonProps {
   classes: Class[];
   colors: Record<string, ColorsEnum>;
 }
@@ -27,24 +30,40 @@ interface DownloadScheduleButtonProps {
 export default function DownloadScheduleButton({
   classes,
   colors,
+  ...props
 }: DownloadScheduleButtonProps) {
+  const toastId = useRef<string | null | number>(null);
   const [_, convertDesktop, desktopRef] = useToPng<HTMLDivElement>({
     quality: 1,
+    pixelRatio: 2,
+    onLoading: () => {
+      toastId.current = toast.loading("Generating image...");
+    },
     onSuccess: (data) => {
       const link = document.createElement("a");
       link.download = "Schedaddle.png";
       link.href = data;
       link.click();
+
+      toast.dismiss(toastId.current as string | number);
+      toast.success("Image generated successfully!");
     },
   });
 
   const [__, convertPhone, mobileRef] = useToPng<HTMLDivElement>({
     quality: 1,
+    pixelRatio: 2,
+    onLoading: () => {
+      toastId.current = toast.loading("Generating image...");
+    },
     onSuccess: (data) => {
       const link = document.createElement("a");
       link.download = "Schedaddle-Mobile.png";
       link.href = data;
       link.click();
+
+      toast.dismiss(toastId.current as string | number);
+      toast.success("Image generated successfully!");
     },
   });
 
@@ -64,40 +83,49 @@ export default function DownloadScheduleButton({
   return (
     <div className="relative">
       <Dropdown items={dropdownItems} className="dropdown-content-width-full">
-        <Button variant="default" className="w-full px-5">
+        <Button variant="default" className="w-full px-5" {...props}>
           <Download className="mr-2 size-4" /> Download
         </Button>
       </Dropdown>
       <div className="w-[2560px] h-[1440px] absolute -left-[9999px] -top-[9999px]">
         <div
-          className="flex flex-row gap-8 min-h-0 h-full w-full bg-primary dark:bg-accent p-8"
+          className="flex flex-row gap-8 min-h-0 h-full w-full bg-[url(/SchedaddleBG.Desktop.png)] p-8 bg-cover"
           ref={desktopRef}
         >
           <Calendar
-            courses={classes}
+            classes={classes}
             colors={colors}
             cellHeight="h-20"
             cellSizePx={80}
+            className="shadow-[0_0_30px_20px_rgba(0,0,0,0.2)] border-none"
           />
           <ScheduleOverview
             activeSchedule={classes}
             colors={colors}
             columns={2}
-            className="w-[35%]"
+            className="w-[35%] bg-background/30 dark:bg-background/40 border-none backdrop-blur-lg shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
           />
+          <div className="p-2 bg-accent rounded-lg flex justify-center pl-3 absolute right-12 bottom-12">
+            <SchedaddleLogo
+              width={32}
+              height={32}
+              className="text-accent-foreground"
+            />
+          </div>
         </div>
       </div>
       <div className="w-[1080px] h-[2160px] absolute -top-[9999px] -left-[9999px]">
         <div
-          className="flex flex-row gap-8 min-h-0 h-full items-center w-full bg-primary dark:bg-accent p-8"
+          className="flex flex-row gap-8 min-h-0 h-full items-center w-full bg-[url(/SchedaddleBG.Mobile.png)] p-8"
           ref={mobileRef}
         >
           <div className="w-full">
             <Calendar
-              courses={classes}
+              classes={classes}
               colors={colors}
               cellHeight="h-28"
               cellSizePx={112}
+              className="drop-shadow-xl border-none"
               isMobile
             />
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Class, Schedule } from "@/lib/definitions";
-import { convertTime, toProperCase } from "@/lib/utils";
+import { formatTime, toProperCase } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { SquareArrowOutUpRight } from "lucide-react";
 import TooltipWrapper from "../common/TooltipWrapper";
@@ -125,7 +125,7 @@ export const columns: ColumnDef<Class>[] = [
               >
                 {sched.start === sched.end
                   ? "N/A"
-                  : `${convertTime(sched.start)} - ${convertTime(sched.end)}`}
+                  : `${formatTime(sched.start)} - ${formatTime(sched.end)}`}
               </Badge>
             );
           })}
@@ -214,7 +214,11 @@ export const columns: ColumnDef<Class>[] = [
 
       return sectionType;
     },
-    filterFn: "arrIncludesSome",
+    filterFn: (row, columnId, filterValue) => {
+      const sectionType = row.getValue(columnId) as string;
+
+      return filterValue.some((val: string) => sectionType === val);
+    },
     enableHiding: false,
   },
   {

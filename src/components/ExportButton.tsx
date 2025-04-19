@@ -4,22 +4,22 @@ import { Class, Schedule } from "@/lib/definitions";
 import { DaysEnum } from "@/lib/enums";
 import {
   addDaysToDate,
-  convertTime,
   convertToIcalDay,
+  formatTime,
   inferRoom,
   toProperCase,
 } from "@/lib/utils";
 import ical, { ICalEventData, ICalEventRepeatingFreq } from "ical-generator";
 import { CalendarArrowDownIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button, ButtonProps } from "./ui/button";
 
-interface ExportButtonProps {
+interface ExportButtonProps extends ButtonProps {
   classes: Class[];
 }
 
 const SEMESTER_WEEKS = 13; // Number of weeks in a semester
 
-export default function ExportButton({ classes }: ExportButtonProps) {
+export default function ExportButton({ classes, ...props }: ExportButtonProps) {
   const nextSemesterRaw = process.env.NEXT_PUBLIC_NEXT_SEMESTER_DATE;
   const nextSemesterDate = nextSemesterRaw
     ? new Date(nextSemesterRaw)
@@ -65,8 +65,8 @@ export default function ExportButton({ classes }: ExportButtonProps) {
     // Helper function to create events with the same time
     const createSameTimeEvent = (schedules: Schedule[]) => {
       const firstSchedule = schedules[0];
-      const startOffset = convertTime(firstSchedule.start);
-      const endOffset = convertTime(firstSchedule.end);
+      const startOffset = formatTime(firstSchedule.start);
+      const endOffset = formatTime(firstSchedule.end);
 
       const baseStartDate = new Date(`${nextSemesterRaw} ${startOffset}`);
       const baseEndDate = new Date(`${nextSemesterRaw} ${endOffset}`);
@@ -122,8 +122,8 @@ export default function ExportButton({ classes }: ExportButtonProps) {
       }
 
       // Convert time and create dates
-      const startOffset = convertTime(sched.start);
-      const endOffset = convertTime(sched.end);
+      const startOffset = formatTime(sched.start);
+      const endOffset = formatTime(sched.end);
 
       let startDate: Date, endDate: Date;
 
@@ -187,7 +187,7 @@ export default function ExportButton({ classes }: ExportButtonProps) {
   };
 
   return (
-    <Button onClick={handleDownload} variant="secondary">
+    <Button onClick={handleDownload} variant="secondary" {...props}>
       <CalendarArrowDownIcon className="size-4 mr-2" />
       Export
     </Button>

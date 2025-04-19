@@ -1,58 +1,11 @@
 import { type ClassValue, clsx } from "clsx";
 import { ICalWeekday } from "ical-generator";
 import { twMerge } from "tailwind-merge";
-import { Class, Course, CourseGroup, Filter, Schedule } from "./definitions";
-import { ColorsEnum, ColorsEnumSchema, DaysEnum } from "./enums";
+import { Class, Schedule } from "./definitions";
+import { ColorsEnum, DaysEnum } from "./enums";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
-
-function doClassesOverlap(sched1: Schedule[], sched2: Schedule[]) {
-  const doSchedsOverlap = (sched1: Schedule, sched2: Schedule) => {
-    // 915 - 1045 vs 730 - 930
-    return sched1.start <= sched2.end && sched2.start <= sched1.end;
-  };
-
-  for (const currSched1 of sched1) {
-    for (const currSched2 of sched2) {
-      if (currSched1.day !== currSched2.day) continue;
-
-      const overlap = doSchedsOverlap(currSched1, currSched2);
-      if (overlap) return true;
-    }
-  }
-
-  return false;
-}
-
-export function filterInitialData(
-  courses: Class[][],
-  filter: Filter
-): Class[][] {
-  return courses.map((course) =>
-    course.filter((courseClass) => {
-      const isSchedInvalid = courseClass.schedules.some((sched) => {
-        // If it's an unknown day, then we just let it pass through.
-        if (sched.day === "U") return false;
-
-        // If the day is F2F and the user doesn't want F2F on that day, remove it.
-        if (!sched.isOnline && !filter.general.daysInPerson.includes(sched.day))
-          return true;
-
-        const { start, end, modalities } = filter.specific[sched.day];
-
-        return (
-          sched.start < start ||
-          sched.end > end ||
-          !modalities.includes(courseClass.modality)
-        );
-      });
-
-      // Keep the class if it passes both the schedule and modality filters
-      return !isSchedInvalid;
-    })
-  );
 }
 
 export function militaryTimeToMinutes(time: number): number {
@@ -61,230 +14,36 @@ export function militaryTimeToMinutes(time: number): number {
   return hours * 60 + minutes;
 }
 
-export function filterGeneratedSchedules(schedules: Class[][], filter: Filter) {
-  return schedules.filter((sched) => {
-    // 1. We reduce the scheds into a per day basis to do this easier.
-    const deconstructed = sched.reduce<Record<DaysEnum, Schedule[]>>(
-      (acc, curr) => {
-        for (const classSched of curr.schedules) {
-          if (classSched.day === "U") continue;
-          acc[classSched.day].push(classSched);
-        }
-        return acc;
-      },
-      { M: [], T: [], W: [], H: [], F: [], S: [] }
-    );
-
-    // 2. We check each of the days one by one to see if any of them violate the
-    // given filters.
-    const isInvalid = Object.entries(deconstructed).some(([day, classes]) => {
-      if (classes.length === 0) return false;
-
-      const { maxPerDay, maxConsecutive } = filter.specific[day as DaysEnum];
-      if (classes.length > maxPerDay) return true;
-      if (classes.length < maxConsecutive) return false;
-
-      let consecutive = 1;
-      classes.sort((a, b) => a.start - b.start);
-
-      for (let i = 1; i < classes.length; i++) {
-        const remaining = classes.length - (i + 1);
-
-        const previousEnd = militaryTimeToMinutes(classes[i - 1].end);
-        const currentStart = militaryTimeToMinutes(classes[i].start);
-        const timeDifference = currentStart - previousEnd;
-
-        // If the time difference is LTE to 15, they're consecutive.
-        // But if it's not, we reset back to 1 class.
-        if (timeDifference <= 15) {
-          consecutive += 1;
-        } else {
-          consecutive = 1;
-        }
-
-        if (consecutive > maxConsecutive) {
-          return true;
-        }
-
-        // Early exit when there's not enough classes left to go over the maximum
-        if (remaining + consecutive < maxConsecutive) return false;
-      }
-
-      return false;
-    });
-
-    return !isInvalid;
-  });
+export function minutesToMilitaryTime(minutes: number): number {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return hours * 100 + remainingMinutes;
 }
 
 /**
- * Generates all possible combinations of a given number of courses from a list.
+ * Converts a given time to a formatted string representation.
  *
- * @param courses - The list of courses to choose from.
- * @param pick - The number of courses to pick for each combination.
- * @returns An array of course combinations, where each combination is an array of courses.
- */
-function generateCombinations(courses: Course[], pick: number) {
-  const combinations: Course[][] = [];
-
-  if (courses.length < pick) return [courses];
-
-  const stack: { index: number; current: Course[] }[] = [
-    { index: 0, current: [] },
-  ];
-
-  while (stack.length > 0) {
-    const { index, current } = stack.pop()!;
-
-    if (current.length === pick) {
-      // We've reached the pick amount, so we add it to the combinations.
-      combinations.push([...current]);
-    } else if (index < courses.length) {
-      // Choose to keep current course.
-      stack.push({ index: index + 1, current: [...current, courses[index]] });
-
-      // Choose to skip current course.
-      stack.push({ index: index + 1, current });
-    }
-  }
-  return combinations;
-}
-
-/**
- * Computes the Cartesian product of multiple arrays.
- *
- * @template T - The type of elements in the input arrays.
- * @param  a - The arrays for which to compute the Cartesian product.
- * @returns The Cartesian product of the input arrays.
+ * @param time - The time to format. This can be in military format (e.g., 1300 for 1:00 PM)
+ *               or in minutes (e.g., 780 for 1:00 PM).
+ * @param inputFormat - The format of the input time. Defaults to "military".
+ *                      - "military": Time is provided in military format (e.g., 1300).
+ *                      - "minutes": Time is provided in total minutes since midnight.
+ * @returns A string representation of the time in a human-readable format.
  *
  * @example
  * ```typescript
- * const result = getCartesianProduct([1, 2], ['a', 'b']);
- * // result is [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
+ * formatTime(1300); // "1:00 PM"
+ * formatTime(780, "minutes"); // "13:00"
  * ```
  */
-function getCartesianProduct<T extends unknown[]>(
-  ...a: { [K in keyof T]: T[K][] }
+
+export function formatTime(
+  time: number,
+  inputFormat: "military" | "minutes" = "military"
 ) {
-  return a.reduce<T[]>(
-    (b, c) => b.flatMap((d) => c.map((e) => [...d, e] as T)),
-    [[]] as unknown as T[]
-  );
-}
-
-export function createGroupedSchedules({
-  groups,
-  courses,
-  filter,
-}: {
-  groups: CourseGroup[];
-  courses: Course[];
-  filter?: Filter;
-}): [schedules: Class[][], colors: Record<string, ColorsEnum>] {
-  const ungroupedCourses = courses.filter(
-    (course) => !course.group || course.group === "Ungrouped"
-  );
-
-  // Generates possible combinations per group
-  // Example: [SUBJ1, SUBJ2, SUBJ3] with pick 2 and [SUBJ4, SUBJ5] with pick 1
-  // will generate: [[[SUBJ1, SUBJ2], [SUBJ1, SUBJ3], [SUBJ2, SUBJ3]], [[SUBJ4], [SUBJ5]]]
-  // Dimensions: Groups -> Combinations -> Courses
-  const groupedCombinations = groups
-    .map((group) => {
-      const groupCourses = courses.filter(
-        (course) => course.group === group.name
-      );
-
-      if (groupCourses.length === 0) return [];
-
-      const combinations = generateCombinations(groupCourses, group.pick);
-      return combinations;
-    })
-    .filter((group) => group.length > 0);
-
-  // Gets the Cartesian product of the combinations
-  // Example: [[[SUBJ1, SUBJ2]], [[SUBJ4], [SUBJ5]]]
-  // will generate: [[[SUBJ1, SUBJ2], [SUBJ4]], [[SUBJ1, SUBJ2], [SUBJ5]]]
-  // Dimensions: Cartesian -> Groups -> Courses
-  const groupsCartesianProduct = getCartesianProduct(...groupedCombinations);
-
-  const generatedSchedules: Class[][] = [];
-  let generatedColors: Record<string, ColorsEnum> = {};
-
-  for (const cartesian of groupsCartesianProduct) {
-    const flattenedCombination = cartesian.flat();
-    const combinedCourses = [...ungroupedCourses, ...flattenedCombination].map(
-      (course) => course.classes
-    );
-    const [schedules, colors] = createSchedules(combinedCourses, filter);
-
-    if (schedules.length && schedules[0].length > 0) {
-      generatedSchedules.push(...schedules);
-      generatedColors = { ...generatedColors, ...colors };
-    }
-  }
-
-  return [generatedSchedules, generatedColors];
-}
-
-export function createSchedules(
-  courses: Class[][],
-  filter?: Filter
-): [schedules: Class[][], colors: Record<string, ColorsEnum>] {
-  // This will store all currently made schedules.
-  let createdScheds: Class[][] = [[]];
-
-  if (filter) {
-    courses = filterInitialData(courses, filter);
-  }
-
-  // First, iterate throughout all of the courses
-  for (const course of courses) {
-    // This will store the current combinations given the course and
-    // currently created schedules.
-    const newCombinations: Class[][] = [];
-
-    // Iterate throughout all the created scheds so far.
-    for (let i = createdScheds.length - 1; i >= 0; i--) {
-      const currentSched = createdScheds[i];
-      // This flag is to indicate that at least 1 combination exists.
-      let schedExists = false;
-
-      // Check if overlap between any of the classes inside the
-      // combinations and the current course class.
-      for (const courseClass of course) {
-        const overlap = currentSched.some((schedClass) =>
-          doClassesOverlap(courseClass.schedules, schedClass.schedules)
-        );
-
-        // If there's an overlap, we can't add it to the schedule.
-        if (overlap) continue;
-
-        // If there's no overlap, this schedule can continue as is.
-        schedExists = true;
-        newCombinations.push([...currentSched, courseClass]);
-      }
-
-      if (!schedExists) {
-        createdScheds.splice(i, 1);
-      }
-    }
-
-    createdScheds = newCombinations;
-  }
-
-  if (filter) createdScheds = filterGeneratedSchedules(createdScheds, filter);
-  if (createdScheds.length === 0) return [[], {}];
-
-  const courseNames = createdScheds[0].map((courseClass) => courseClass.course);
-  const colors = getRandomColors(courseNames);
-
-  return [createdScheds, colors];
-}
-
-export function convertTime(time: number) {
-  const hour = Math.floor(time / 100);
-  const minutes = time % 100;
+  const divisor = inputFormat === "military" ? 100 : 60;
+  const hour = Math.floor(time / divisor);
+  const minutes = time % divisor;
 
   return `${hour > 12 ? hour - 12 : hour}:${
     minutes > 10 ? "" : "0"
@@ -347,56 +106,97 @@ export function getCardColors(color: ColorsEnum) {
   };
 
   const cardShadows = {
-    ROSE: "bg-rose-300 shadow-rose-300/50 dark:bg-rose-800 dark:shadow-rose-700/50",
-    PINK: "bg-pink-300 shadow-pink-300/50 dark:bg-pink-800 dark:shadow-pink-700/50",
+    ROSE: "bg-rose-300 shadow-rose-300/50 dark:bg-rose-800 dark:shadow-rose-700/40",
+    PINK: "bg-pink-300 shadow-pink-300/50 dark:bg-pink-800 dark:shadow-pink-700/40",
     FUCHSIA:
-      "bg-fuchsia-300 shadow-fuchsia-300/50 dark:bg-fuchsia-800 dark:shadow-fuchsia-700/50",
+      "bg-fuchsia-300 shadow-fuchsia-300/50 dark:bg-fuchsia-800 dark:shadow-fuchsia-700/40",
     PURPLE:
-      "bg-purple-300 shadow-purple-300/50 dark:bg-purple-800 dark:shadow-purple-700/50",
+      "bg-purple-300 shadow-purple-300/50 dark:bg-purple-800 dark:shadow-purple-700/40",
     VIOLET:
-      "bg-violet-300 shadow-violet-300/50 dark:bg-violet-800 dark:shadow-violet-700/50",
+      "bg-violet-300 shadow-violet-300/50 dark:bg-violet-800 dark:shadow-violet-700/40",
     INDIGO:
-      "bg-indigo-300 shadow-indigo-300/50 dark:bg-indigo-800 dark:shadow-indigo-700/50",
-    BLUE: "bg-blue-300 shadow-blue-300/50 dark:bg-blue-800 dark:shadow-blue-700/50",
-    SKY: "bg-sky-300 shadow-sky-300/50 dark:bg-sky-800 dark:shadow-sky-700/50",
-    CYAN: "bg-cyan-300 shadow-cyan-300/50 dark:bg-cyan-800 dark:shadow-cyan-700/50",
-    TEAL: "bg-teal-300 shadow-teal-300/50 dark:bg-teal-800 dark:shadow-teal-700/50",
+      "bg-indigo-300 shadow-indigo-300/50 dark:bg-indigo-800 dark:shadow-indigo-700/40",
+    BLUE: "bg-blue-300 shadow-blue-300/50 dark:bg-blue-800 dark:shadow-blue-700/40",
+    SKY: "bg-sky-300 shadow-sky-300/50 dark:bg-sky-800 dark:shadow-sky-700/40",
+    CYAN: "bg-cyan-300 shadow-cyan-300/50 dark:bg-cyan-800 dark:shadow-cyan-700/40",
+    TEAL: "bg-teal-300 shadow-teal-300/50 dark:bg-teal-800 dark:shadow-teal-700/40",
     EMERALD:
-      "bg-emerald-300 shadow-emerald-300/50 dark:bg-emerald-800 dark:shadow-emerald-700/50",
+      "bg-emerald-300 shadow-emerald-300/50 dark:bg-emerald-800 dark:shadow-emerald-700/40",
     GREEN:
-      "bg-green-300 shadow-green-300/50 dark:bg-green-800 dark:shadow-green-700/50",
-    LIME: "bg-lime-300 shadow-lime-300/50 dark:bg-lime-800 dark:shadow-lime-700/50",
+      "bg-green-300 shadow-green-300/50 dark:bg-green-800 dark:shadow-green-700/40",
+    LIME: "bg-lime-300 shadow-lime-300/50 dark:bg-lime-800 dark:shadow-lime-700/40",
     YELLOW:
-      "bg-yellow-300 shadow-yellow-300/50 dark:bg-yellow-800 dark:shadow-yellow-700/50",
+      "bg-yellow-300 shadow-yellow-300/50 dark:bg-yellow-800 dark:shadow-yellow-700/40",
     AMBER:
-      "bg-amber-300 shadow-amber-300/50 dark:bg-amber-800 dark:shadow-amber-700/50",
+      "bg-amber-300 shadow-amber-300/50 dark:bg-amber-800 dark:shadow-amber-700/40",
     ORANGE:
-      "bg-orange-300 shadow-orange-300/50 dark:bg-orange-800 dark:shadow-orange-700/50",
-    RED: "bg-red-300 shadow-red-300/50 dark:bg-red-800 dark:shadow-red-700/50",
+      "bg-orange-300 shadow-orange-300/50 dark:bg-orange-800 dark:shadow-orange-700/40",
+    RED: "bg-red-300 shadow-red-300/50 dark:bg-red-800 dark:shadow-red-700/40",
+  };
+
+  const cardColorsTransparent = {
+    ROSE: "bg-rose-200/50 dark:bg-rose-900/50 text-rose-950 dark:text-rose-100",
+    PINK: "bg-pink-200/50 dark:bg-pink-900/50 text-pink-950 dark:text-pink-100",
+    FUCHSIA:
+      "bg-fuchsia-200/50 dark:bg-fuchsia-900/50 text-fuchsia-950 dark:text-fuchsia-100",
+    PURPLE:
+      "bg-purple-200/50 dark:bg-purple-900/50 text-purple-950 dark:text-purple-100",
+    VIOLET:
+      "bg-violet-200/50 dark:bg-violet-900/50 text-violet-950 dark:text-violet-100",
+    INDIGO:
+      "bg-indigo-200/50 dark:bg-indigo-900/50 text-indigo-950 dark:text-indigo-100",
+    BLUE: "bg-blue-200/50 dark:bg-blue-900/50 text-blue-950 dark:text-blue-100",
+    SKY: "bg-sky-200/50 dark:bg-sky-900/50 text-sky-950 dark:text-sky-100",
+    CYAN: "bg-cyan-200/50 dark:bg-cyan-900/50 text-cyan-950 dark:text-cyan-100",
+    TEAL: "bg-teal-200/50 dark:bg-teal-900/50 text-teal-950 dark:text-teal-100",
+    EMERALD:
+      "bg-emerald-200/50 dark:bg-emerald-900/50 text-emerald-950 dark:text-emerald-100",
+    GREEN:
+      "bg-green-200/50 dark:bg-green-900/50 text-green-950 dark:text-green-100",
+    LIME: "bg-lime-200/50 dark:bg-lime-900/50 text-lime-950 dark:text-lime-100",
+    YELLOW:
+      "bg-yellow-200/50 dark:bg-yellow-900/50 text-yellow-950 dark:text-yellow-100",
+    AMBER:
+      "bg-amber-200/50 dark:bg-amber-900/50 text-amber-950 dark:text-amber-100",
+    ORANGE:
+      "bg-orange-200/50 dark:bg-orange-900/50 text-orange-950 dark:text-orange-100",
+    RED: "bg-red-200/50 dark:bg-red-900/50 text-red-950 dark:text-red-100",
+  };
+
+  const secondaryColors = {
+    ROSE: "bg-rose-100 dark:bg-rose-950 text-rose-900 dark:text-rose-200",
+    PINK: "bg-pink-100 dark:bg-pink-950 text-pink-900 dark:text-pink-200",
+    FUCHSIA:
+      "bg-fuchsia-100 dark:bg-fuchsia-950 text-fuchsia-900 dark:text-fuchsia-200",
+    PURPLE:
+      "bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-200",
+    VIOLET:
+      "bg-violet-100 dark:bg-violet-950 text-violet-900 dark:text-violet-200",
+    INDIGO:
+      "bg-indigo-100 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-200",
+    BLUE: "bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-200",
+    SKY: "bg-sky-100 dark:bg-sky-950 text-sky-900 dark:text-sky-200",
+    CYAN: "bg-cyan-100 dark:bg-cyan-950 text-cyan-900 dark:text-cyan-200",
+    TEAL: "bg-teal-100 dark:bg-teal-950 text-teal-900 dark:text-teal-200",
+    EMERALD:
+      "bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200",
+    GREEN: "bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-200",
+    LIME: "bg-lime-100 dark:bg-lime-950 text-lime-900 dark:text-lime-200",
+    YELLOW:
+      "bg-yellow-100 dark:bg-yellow-950 text-yellow-900 dark:text-yellow-200",
+    AMBER: "bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200",
+    ORANGE:
+      "bg-orange-100 dark:bg-orange-950 text-orange-900 dark:text-orange-200",
+    RED: "bg-red-100 dark:bg-red-950 text-red-900 dark:text-red-200",
   };
 
   return {
+    secondaryColor: secondaryColors[color],
+    transparent: cardColorsTransparent[color],
     color: cardColors[color],
     shadow: cardShadows[color],
     border: cardBorders[color],
   };
-}
-
-export function getRandomColors(courses: string[]): Record<string, ColorsEnum> {
-  const availableColors = [...ColorsEnumSchema.options];
-  const courseColors: Record<string, ColorsEnum> = {};
-
-  courses.forEach((course) => {
-    if (availableColors.length === 0) {
-      throw new Error("Not enough unique colors to assign to all courses.");
-    }
-
-    const randomIndex = Math.floor(Math.random() * availableColors.length);
-    const color = availableColors.splice(randomIndex, 1)[0];
-    courseColors[course] = color;
-  });
-
-  return courseColors;
 }
 
 export function hasOwnProperty<X extends {}, Y extends PropertyKey>(
@@ -452,4 +252,35 @@ export function addDaysToDate(date: Date, days: number | DaysEnum) {
   var result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
+}
+
+/**
+ * Calculates the height for calendar cards based on the given time range and cell size.
+ *
+ * @param params - The parameters for the height calculation.
+ * @param params.start - The start time in either military or minutes format.
+ * @param params.end - The end time in either military or minutes format.
+ * @param params.type - The format of the time values. Defaults to "military".
+ *                      - "military": Time is represented in HHMM format (e.g., 1330 for 1:30 PM).
+ *                      - "minutes": Time is represented in total minutes past midnight.
+ * @param params.cellSizePx - The height of a single hour cell in pixels.
+ * @returns The calculated height in pixels for the given time range.
+ */
+export function calculateHeight(params: {
+  start: number;
+  end: number;
+  type?: "military" | "minutes";
+  cellSizePx: number;
+}): number {
+  const { start, end, type = "military", cellSizePx } = params;
+  const divisor = type === "military" ? 100 : 60;
+
+  const startHour = Math.floor(start / divisor);
+  const endHour = Math.floor(end / divisor);
+  const startMinutes = start % divisor;
+  const endMinutes = end % divisor;
+
+  const totalMinutes = (endHour - startHour) * 60 + (endMinutes - startMinutes);
+
+  return (totalMinutes / 60) * cellSizePx;
 }
