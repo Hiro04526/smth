@@ -33,6 +33,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Analytics />
           <Toaster
             richColors
             toastOptions={{
@@ -43,7 +44,6 @@ export default function RootLayout({
             }}
           />
         </ThemeProvider>
-        <Analytics />
       </body>
     </html>
   );
