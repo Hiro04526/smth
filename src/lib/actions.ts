@@ -1,7 +1,6 @@
 "use server";
 
 import { format, parse } from "date-fns";
-import { formatInTimeZone } from "date-fns-tz";
 import { calendar_v3, google } from "googleapis";
 import { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport";
 import { Class, classSchema, Course, Schedule } from "./definitions";
@@ -155,9 +154,6 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
       .filter(Boolean)
       .join(",");
 
-    console.log(format(startDate, "yyyy-MM-dd'T'HH:mm:ss"));
-    console.log(format(endDate, "yyyy-MM-dd'T'HH:mm:ss"));
-
     return {
       summary: `[${classData.section}] ${classData.course}`,
       description: classData.professor
@@ -231,19 +227,11 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
     const eventConfig: calendar_v3.Schema$Event = {
       ...eventInfo,
       start: {
-        dateTime: formatInTimeZone(
-          startDate,
-          "Asia/Manila",
-          "yyyy-MM-dd'T'HH:mm:ss"
-        ),
+        dateTime: format(startDate, "yyyy-MM-dd'T'HH:mm:ss"),
         timeZone: "Asia/Manila",
       },
       end: {
-        dateTime: formatInTimeZone(
-          endDate,
-          "Asia/Manila",
-          "yyyy-MM-dd'T'HH:mm:ss"
-        ),
+        dateTime: format(endDate, "yyyy-MM-dd'T'HH:mm:ss"),
         timeZone: "Asia/Manila",
       },
     };
