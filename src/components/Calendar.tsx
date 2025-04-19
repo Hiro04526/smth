@@ -101,7 +101,7 @@ const Calendar = ({
                   className={cn(
                     `${
                       index === 15 ? "h-0" : cellHeight
-                    } after:absolute after:h-[1px] after:w-full after:bg-muted/50 after:content-['']`
+                    } after:absolute after:h-[1px] after:w-full after:dark:bg-muted/50 after:bg-muted after:content-['']`
                   )}
                   key={index}
                 />
