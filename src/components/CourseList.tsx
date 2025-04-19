@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchMultipleCourses } from "@/lib/actions";
+import { fetchMultipleCourses } from "@/actions/course";
 import { Course } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Reorder, useDragControls } from "framer-motion";

@@ -1,4 +1,5 @@
 "use client";
+import { fetchCourse } from "@/actions/course";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -9,7 +10,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { fetchCourse } from "@/lib/actions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

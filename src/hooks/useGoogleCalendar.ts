@@ -1,4 +1,4 @@
-import { createBatchEvents, getCalendars } from "@/lib/actions";
+import { createBatchEvents, getCalendars } from "@/actions/google-calendar";
 import { Class } from "@/lib/definitions";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
