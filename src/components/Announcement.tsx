@@ -33,7 +33,7 @@ export default function Announcement() {
 
   const title = "The Calendar & Manual Update!";
   const description = "I've added a lot of things! Check them out!";
-  const patchDate = "April 19, 2025 (Part 2)";
+  const patchDate = "April 19, 2025 (Part 3)";
 
   const updates = [
     {
