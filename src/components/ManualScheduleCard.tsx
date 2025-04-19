@@ -45,8 +45,9 @@ export default function ManualScheduleCard({
     : false;
 
   const viableData = useMemo(() => {
-    if (!schedule) return [];
-    if (!startTime || !endTime || !day || !schedule) return [];
+    if (!schedule || dragging || !startTime || !endTime || !day || !schedule)
+      return [];
+
     const usedCourses = new Set([
       ...schedule.classes.map((course) => course.course),
     ]);
@@ -99,6 +100,7 @@ export default function ManualScheduleCard({
     schedule,
     showOngoing,
     is15MinSlot,
+    dragging,
   ]);
 
   if (!schedule || !selection) return null;
