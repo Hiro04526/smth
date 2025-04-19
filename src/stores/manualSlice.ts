@@ -12,6 +12,7 @@ export interface ManualActions {
   addClassToManualSchedule: (newClass: Class) => void;
   removeClass: (code: number) => void;
   setManualScheduleColors: (colors: Record<string, ColorsEnum>) => void;
+  removeManualScheduleColor: (course: string) => void;
 }
 
 export type ManualSlice = ManualStates & ManualActions;
@@ -70,6 +71,19 @@ export const createManualSlice: Slice<ManualSlice> = (set) => ({
         manualSchedule: {
           ...state.manualSchedule,
           colors,
+        },
+      };
+    }),
+
+  removeManualScheduleColor: (course) =>
+    set((state) => {
+      const newColors = { ...state.manualSchedule.colors };
+      delete newColors[course];
+
+      return {
+        manualSchedule: {
+          ...state.manualSchedule,
+          colors: newColors,
         },
       };
     }),

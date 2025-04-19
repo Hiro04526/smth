@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { Button } from "./ui/button";
+import { Button, ButtonProps } from "./ui/button";
 import {
   Dialog,
   DialogContent,
@@ -26,10 +26,10 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 
-type Props = {
+interface SaveButtonProps extends ButtonProps {
   activeSched: Class[];
   colors: Record<string, ColorsEnum>;
-};
+}
 
 // Updated isScheduleSaved to compare only class codes
 const isScheduleSaved = (
@@ -59,7 +59,7 @@ const isScheduleSaved = (
   return false;
 };
 
-const SaveButton = ({ activeSched, colors }: Props) => {
+const SaveButton = ({ activeSched, colors, ...props }: SaveButtonProps) => {
   const [open, setOpen] = useState<boolean>(false);
 
   const { saved, addSaved, deleteSaved } = useGlobalStore(
@@ -122,7 +122,7 @@ const SaveButton = ({ activeSched, colors }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" {...props}>
           <Heart className="size-4" />
         </Button>
       </DialogTrigger>

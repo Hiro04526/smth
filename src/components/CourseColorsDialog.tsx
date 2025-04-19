@@ -6,7 +6,7 @@ import { Check, CheckCheck, Palette } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
-import { Button } from "./ui/button";
+import { Button, ButtonProps } from "./ui/button";
 import { Card } from "./ui/card";
 import {
   Dialog,
@@ -21,7 +21,7 @@ import { Label } from "./ui/label";
 import { ScrollArea } from "./ui/scroll-area";
 import { Switch } from "./ui/switch";
 
-interface CourseColorsDialogProps {
+interface CourseColorsDialogProps extends ButtonProps {
   activeSched?: UserSchedule;
   changeColors?: (colors: Record<string, ColorsEnum>) => void;
 }
@@ -29,6 +29,7 @@ interface CourseColorsDialogProps {
 export default function CourseColorsDialog({
   activeSched,
   changeColors,
+  ...props
 }: CourseColorsDialogProps) {
   const { courseColors, setCourseColors, randomizeColors, setRandomizeColors } =
     useGlobalStore(
@@ -65,7 +66,7 @@ export default function CourseColorsDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" {...props}>
           <Palette className="size-4" />
         </Button>
       </DialogTrigger>

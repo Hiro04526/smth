@@ -11,15 +11,15 @@ import {
 } from "@/lib/utils";
 import ical, { ICalEventData, ICalEventRepeatingFreq } from "ical-generator";
 import { CalendarArrowDownIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button, ButtonProps } from "./ui/button";
 
-interface ExportButtonProps {
+interface ExportButtonProps extends ButtonProps {
   classes: Class[];
 }
 
 const SEMESTER_WEEKS = 13; // Number of weeks in a semester
 
-export default function ExportButton({ classes }: ExportButtonProps) {
+export default function ExportButton({ classes, ...props }: ExportButtonProps) {
   const nextSemesterRaw = process.env.NEXT_PUBLIC_NEXT_SEMESTER_DATE;
   const nextSemesterDate = nextSemesterRaw
     ? new Date(nextSemesterRaw)
@@ -187,7 +187,7 @@ export default function ExportButton({ classes }: ExportButtonProps) {
   };
 
   return (
-    <Button onClick={handleDownload} variant="secondary">
+    <Button onClick={handleDownload} variant="secondary" {...props}>
       <CalendarArrowDownIcon className="size-4 mr-2" />
       Export
     </Button>

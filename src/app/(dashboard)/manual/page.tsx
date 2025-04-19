@@ -37,6 +37,7 @@ export default function ManualPage({}: Props) {
           colors={schedule.colors}
           schedules={[schedule]}
           onColorChange={setManualScheduleColors}
+          isManual
         />
         <Calendar
           classes={schedule.classes}

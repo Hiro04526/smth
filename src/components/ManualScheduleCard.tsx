@@ -30,9 +30,6 @@ export default function ManualScheduleCard({
   manualProps,
 }: ManualScheduleCardProps) {
   const [showOngoing, setShowOngoing] = useState(false);
-  const addClassToManualSchedule = useGlobalStore(
-    (state) => state.addClassToManualSchedule
-  );
   const setManualSchedule = useGlobalStore((state) => state.setManualSchedule);
   const schedule = useGlobalStore((state) => state.manualSchedule);
   const selectedData: Course[] = useGlobalStore(
@@ -160,7 +157,7 @@ export default function ManualScheduleCard({
       </PopoverAnchor>
       <PopoverContent
         side="right"
-        className="max-w-[600px] w-max"
+        className="max-w-[700px] w-max"
         ref={popoverRef}
       >
         <div className="flex flex-row gap-2 items-center w-[500px]">

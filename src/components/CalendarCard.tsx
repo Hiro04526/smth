@@ -31,8 +31,12 @@ const CalendarCard = ({
   isManual = false,
 }: CalendarCardProps) => {
   const removeClass = useGlobalStore((state) => state.removeClass);
+  const removeColor = useGlobalStore(
+    (state) => state.removeManualScheduleColor
+  );
   const handleRemoveClass = () => {
     removeClass(currClass.code);
+    removeColor(currClass.course);
   };
 
   return (

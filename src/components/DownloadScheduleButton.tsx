@@ -5,9 +5,9 @@ import { Download, Monitor, Smartphone } from "lucide-react";
 import Calendar from "./Calendar";
 import Dropdown, { DropdownItems } from "./common/Dropdown";
 import ScheduleOverview from "./ScheduleOverview";
-import { Button } from "./ui/button";
+import { Button, ButtonProps } from "./ui/button";
 
-interface DownloadScheduleButtonProps {
+interface DownloadScheduleButtonProps extends ButtonProps {
   classes: Class[];
   colors: Record<string, ColorsEnum>;
 }
@@ -27,6 +27,7 @@ interface DownloadScheduleButtonProps {
 export default function DownloadScheduleButton({
   classes,
   colors,
+  ...props
 }: DownloadScheduleButtonProps) {
   const [_, convertDesktop, desktopRef] = useToPng<HTMLDivElement>({
     quality: 1,
@@ -64,7 +65,7 @@ export default function DownloadScheduleButton({
   return (
     <div className="relative">
       <Dropdown items={dropdownItems} className="dropdown-content-width-full">
-        <Button variant="default" className="w-full px-5">
+        <Button variant="default" className="w-full px-5" {...props}>
           <Download className="mr-2 size-4" /> Download
         </Button>
       </Dropdown>
