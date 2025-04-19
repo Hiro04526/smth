@@ -57,7 +57,7 @@ const CalendarCard = ({
           `scale-105 shadow-[0_0px_10px_3px_rgba(0,0,0,0.3)] -translate-y-2 ` +
             currClass.shadow,
         `absolute w-[95%] transition-all ${currClass.color} duration-200 ease-out`,
-        "flex h-full flex-col justify-center overflow-hidden animate-in fade-in-0",
+        "flex h-full flex-col justify-center overflow-hidden",
         currClass.border
       )}
       style={{

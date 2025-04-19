@@ -119,10 +119,12 @@ const Calendar = ({
             {(Object.keys(sortedClasses) as Array<DaysEnum>).map((day) => {
               return (
                 <div
-                  className={`relative flex h-full w-full flex-col border-l border-muted/50 pr-2 ${
+                  className={cn(
+                    `relative flex h-full w-full flex-col border-l border-muted/50 pr-2`,
                     ["M", "W", "F"].includes(day) &&
-                    "dark:bg-muted/10 bg-muted/30"
-                  }`}
+                      "dark:bg-muted/10 bg-muted/30",
+                    "animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
+                  )}
                   key={day}
                 >
                   {manualProps && selection?.day === day && (
