@@ -33,7 +33,7 @@ export default function Announcement() {
 
   const title = "The Calendar & Manual Update!";
   const description = "I've added a lot of things! Check them out!";
-  const patchDate = "April 19, 2025";
+  const patchDate = "April 19, 2025 (Part 2)";
 
   const updates = [
     {
@@ -47,9 +47,9 @@ export default function Announcement() {
         "UI has been improved, along with the design of the Image Downloads. Check it out in Schedules & Saved!",
     },
     {
-      title: "New Export to Calendar",
+      title: "New Export to Calendar (Google Calendar & .ics file)",
       description:
-        "You can now export your schedule as an .ics file! Click the 'Export' button near the download button. Thanks for the suggestion @Ed*****oded!",
+        "You can now export your schedule to Google Calendar or as an .ics file! Click the 'Export' button near the download button. Thanks for the suggestion @Ed*****oded!",
     },
     {
       title: "A bunch of bug fixes",
