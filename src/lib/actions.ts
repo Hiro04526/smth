@@ -132,14 +132,17 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
 
     const baseStartDate = parse(
       `${nextSemesterRaw} ${startOffset}`,
-      "MMM d, yyyy h:mma",
+      "MMM d, yyyy h:mm a",
       new Date()
     );
     const baseEndDate = parse(
       `${nextSemesterRaw} ${endOffset}`,
-      "MMM d, yyyy h:mma",
+      "MMM d, yyyy h:mm a",
       new Date()
     );
+
+    console.log(nextSemesterDate);
+    console.log(startOffset, endOffset);
 
     // TODO: In the future, DaysEnum should contain "U" as a valid value
     // and the logic should be changed to handle it properly
@@ -155,6 +158,8 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
       .filter(Boolean)
       .join(",");
 
+    console.log(startDate, endDate);
+
     return {
       summary: `[${classData.section}] ${classData.course}`,
       description: classData.professor
@@ -162,18 +167,12 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
         : "",
       location: inferRoom(classData, firstSchedule),
       start: {
-        dateTime: formatInTimeZone(
-          startDate,
-          "Asia/Manila",
-          "yyyy-MM-dd'T'HH:mm:ss"
-        ),
+        dateTime: format(startDate, "yyyy-MM-dd'T'HH:mm:ss"),
+        timeZone: "Asia/Manila",
       },
       end: {
-        dateTime: formatInTimeZone(
-          endDate,
-          "Asia/Manila",
-          "yyyy-MM-dd'T'HH:mm:ss"
-        ),
+        dateTime: format(endDate, "yyyy-MM-dd'T'HH:mm:ss"),
+        timeZone: "Asia/Manila",
       },
       recurrence: [
         `RRULE:FREQ=WEEKLY;COUNT=${
