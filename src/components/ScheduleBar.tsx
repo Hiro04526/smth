@@ -100,7 +100,7 @@ export default function ScheduleBar({
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          <span className="font-bold">How to Use Manual Mode?</span>{" "}
+          <span className="font-bold">How to Use Smart Manual Mode?</span>{" "}
           <ManualHelp />
         </div>
       )}

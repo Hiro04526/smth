@@ -10,7 +10,7 @@ import {
   toProperCase,
 } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
-import { UsersRound, X } from "lucide-react";
+import { SearchSlash, UsersRound, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CELL_SIZE_PX, TOP_OFFSET } from "./Calendar";
 import TooltipWrapper from "./common/TooltipWrapper";
@@ -160,25 +160,23 @@ export default function ManualScheduleCard({
         className="max-w-[700px] w-max"
         ref={popoverRef}
       >
-        <div className="flex flex-row gap-2 items-center w-[500px]">
-          {hasViableData ? (
-            <h2 className="font-bold text-xl">Select a class</h2>
-          ) : (
-            <h2>No classes found.</h2>
-          )}
-          <Switch
-            id="between-switch"
-            className="ml-auto"
-            checked={showOngoing}
-            onCheckedChange={setShowOngoing}
-          />{" "}
-          <Label className="text-nowrap" htmlFor="between-switch">
-            Include classes happening during this time?
-          </Label>
+        <div className="flex flex-col gap-2 w-[500px]">
+          <h2 className="font-bold text-xl">Select a Class</h2>
+          <div className="inline-flex items-center gap-2 w-full">
+            <Switch
+              id="between-switch"
+              checked={showOngoing}
+              onCheckedChange={setShowOngoing}
+              className="h-5 [&>*]:h-4"
+            />
+            <Label className="text-nowrap" htmlFor="between-switch">
+              Include classes happening during this time?
+            </Label>
+          </div>
         </div>
-        {hasViableData && (
-          <ScrollArea className="mt-2 [&>[data-radix-scroll-area-viewport]]:max-h-[500px] w-full">
-            <div className="flex flex-col gap-2 w-full">
+        {hasViableData ? (
+          <ScrollArea className="mt-4 [&>[data-radix-scroll-area-viewport]]:max-h-[500px] w-full">
+            <div className="flex flex-col gap-4 w-full">
               {viableData.map((course) => (
                 <div key={course.courseCode} className="flex flex-col gap-2">
                   <h3 className="font-semibold text-sm">{course.courseCode}</h3>
@@ -196,6 +194,11 @@ export default function ManualScheduleCard({
               ))}
             </div>
           </ScrollArea>
+        ) : (
+          <div className="mt-4 rounded-lg py-8 border-dashed border-border border inline-flex items-center justify-center gap-2 text-muted-foreground w-full">
+            <SearchSlash className="size-5" />
+            No classes found...
+          </div>
         )}
       </PopoverContent>
     </Popover>

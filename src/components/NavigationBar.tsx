@@ -4,8 +4,9 @@ import { cn } from "@/lib/utils";
 import {
   CalendarRange,
   Heart,
+  LayoutList,
+  LucideIcon,
   PencilRuler,
-  TableProperties,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,6 +17,35 @@ import { ModeToggle } from "./ModeToggle";
 import SchedaddleLogo from "./SchedaddleLogo";
 import SocialsDialog from "./SocialsDialog";
 import { buttonVariants } from "./ui/button";
+
+interface NavItem {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+}
+
+const navigationItems: NavItem[] = [
+  {
+    href: "/",
+    icon: LayoutList,
+    label: "Courses",
+  },
+  {
+    href: "/schedules",
+    icon: CalendarRange,
+    label: "Schedules",
+  },
+  {
+    href: "/saved",
+    icon: Heart,
+    label: "Saved",
+  },
+  {
+    href: "/manual",
+    icon: PencilRuler,
+    label: "Smart Manual",
+  },
+];
 
 const NavigationBar = () => {
   const pathName = usePathname();
@@ -50,34 +80,19 @@ const NavigationBar = () => {
         Schedaddle
       </Link>
       <div className="flex gap-2">
-        <Link
-          href="/"
-          className={pathName === "/" ? activeButton : normalButton}
-        >
-          <TableProperties strokeWidth={1.75} size={22} />
-          Courses
-        </Link>
-        <Link
-          href="/schedules"
-          className={pathName === "/schedules" ? activeButton : normalButton}
-        >
-          <CalendarRange strokeWidth={1.75} size={22} />
-          Schedules
-        </Link>
-        <Link
-          href="/saved"
-          className={pathName === "/saved" ? activeButton : normalButton}
-        >
-          <Heart strokeWidth={1.75} size={22} />
-          Saved
-        </Link>
-        <Link
-          href="/manual"
-          className={pathName === "/manual" ? activeButton : normalButton}
-        >
-          <PencilRuler strokeWidth={1.75} size={22} />
-          Manual
-        </Link>
+        {navigationItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={pathName === item.href ? activeButton : normalButton}
+          >
+            <item.icon
+              strokeWidth={pathName === item.href ? 2 : 1.75}
+              size={22}
+            />
+            {item.label}
+          </Link>
+        ))}
       </div>
       <div className="flex flex-row gap-2">
         <Announcement />

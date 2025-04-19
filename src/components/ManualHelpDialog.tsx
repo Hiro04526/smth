@@ -16,7 +16,7 @@ export default function ManualHelp() {
     {
       title: "Select Courses",
       description:
-        "Before using manual mode, make sure to select the classes you want to appear first in the Courses Tab.",
+        "Before using smart manual mode, make sure to select the classes you want to appear first in the Courses Tab.",
     },
     {
       title: "Click & Drag",
@@ -50,12 +50,11 @@ export default function ManualHelp() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="inline-flex items-center">
-            <CircleHelp className="mr-2 size-4" /> What is Manual Mode?
+            <CircleHelp className="mr-2 size-4" /> What is Smart Manual Mode?
           </DialogTitle>
           <DialogDescription>
-            Manual Mode allows you to curate your schedule by giving you the
-            possible classes for a given time range! Here are the steps to do
-            so.
+            Smart Manual Mode allows you to curate your schedule by giving you
+            fine control using time ranges!
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[500px] w-full">
