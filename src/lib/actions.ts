@@ -1,6 +1,6 @@
 "use server";
 
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { calendar_v3, google } from "googleapis";
 import { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport";
@@ -15,10 +15,9 @@ import {
 } from "./utils";
 
 const SEMESTER_WEEKS = 13;
-const nextSemesterRaw = process.env.NEXT_PUBLIC_NEXT_SEMESTER_DATE;
-const nextSemesterDate = nextSemesterRaw
-  ? new Date(nextSemesterRaw)
-  : new Date();
+const nextSemesterRaw =
+  process.env.NEXT_PUBLIC_NEXT_SEMESTER_DATE ?? "MAY 5, 2025";
+const nextSemesterDate = parse(nextSemesterRaw, "MMM d, yyyy", new Date());
 const nextSemesterYear = nextSemesterDate.getFullYear();
 
 export async function fetchCourse(courseCode: string, id: string) {
@@ -131,8 +130,16 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
     const startOffset = formatTime(firstSchedule.start);
     const endOffset = formatTime(firstSchedule.end);
 
-    const baseStartDate = new Date(`${nextSemesterRaw} ${startOffset}`);
-    const baseEndDate = new Date(`${nextSemesterRaw} ${endOffset}`);
+    const baseStartDate = parse(
+      `${nextSemesterRaw} ${startOffset}`,
+      "MMM d, yyyy h:mma",
+      new Date()
+    );
+    const baseEndDate = parse(
+      `${nextSemesterRaw} ${endOffset}`,
+      "MMM d, yyyy h:mma",
+      new Date()
+    );
 
     // TODO: In the future, DaysEnum should contain "U" as a valid value
     // and the logic should be changed to handle it properly
@@ -160,7 +167,6 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
           "Asia/Manila",
           "yyyy-MM-dd'T'HH:mm:ss"
         ),
-        timeZone: "Asia/Manila",
       },
       end: {
         dateTime: formatInTimeZone(
@@ -168,7 +174,6 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
           "Asia/Manila",
           "yyyy-MM-dd'T'HH:mm:ss"
         ),
-        timeZone: "Asia/Manila",
       },
       recurrence: [
         `RRULE:FREQ=WEEKLY;COUNT=${
