@@ -11,6 +11,8 @@ import {
 } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { X } from "lucide-react";
+import { CELL_SIZE_PX } from "./Calendar";
+import { Badge } from "./ui/badge";
 
 interface CalendarCardProps {
   currClass: Class & ReturnType<typeof getCardColors>;
@@ -50,49 +52,61 @@ const CalendarCard = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={cn(
-        `border-0 p-3 ${
-          hovered === currClass.code &&
-          `scale-105 shadow-[0_0px_10px_3px_rgba(0,0,0,0.3)]`
-        } absolute w-[95%] transition-all ${currClass.color}`,
-        hovered === currClass.code && currClass.shadow
+        hovered === currClass.code &&
+          `scale-105 shadow-[0_0px_10px_3px_rgba(0,0,0,0.3)] -translate-y-2 ` +
+            currClass.shadow,
+        `absolute w-[95%] transition-all ${currClass.color} duration-200 ease-out`,
+        "flex h-full flex-col justify-center overflow-hidden animate-in fade-in-0",
+        currClass.border
       )}
       style={{
         height,
         top,
       }}
     >
-      <div className="flex h-full flex-col justify-center gap-1">
-        <div
-          className={cn(
-            "text-xs font-bold tracking-tight",
-            isMobile && "text-lg -space-y-1",
-            isManual && "flex flex-row"
-          )}
-        >
-          {isMobile && <div>[{currClass.section}]</div>}
-          <div>{`${isMobile ? "" : `[${currClass.section}]`} ${
-            currClass.course
-          }`}</div>
-          {isManual && (
-            <X
-              className="ml-auto size-4 rounded-full hover:bg-destructive/80 hover:text-destructive-foreground transition-colors text-muted-foreground duration-200 cursor-pointer"
-              onClick={handleRemoveClass}
-            />
-          )}
+      <div
+        className={cn(
+          "text-xs font-bold tracking-tight px-3 py-2",
+          isMobile && "text-lg",
+          isManual && "flex flex-row",
+          height <= CELL_SIZE_PX && "py-0.5"
+        )}
+      >
+        {isMobile && (
+          <Badge className={currClass.secondaryColor}>
+            {currClass.section}
+          </Badge>
+        )}
+        <div>{`${isMobile ? "" : `[${currClass.section}]`} ${
+          currClass.course
+        }`}</div>
+        {isManual && (
+          <X
+            className={cn(
+              "ml-auto size-4 rounded-full hover:bg-black/50 hover:dark:bg-black/50 cursor-pointer opacity-50 transition-all",
+              currClass.color
+            )}
+            onClick={handleRemoveClass}
+          />
+        )}
+      </div>
+      <div
+        className={cn(
+          "text-xs bg-background px-3 h-full rounded-t-md py-2 flex flex-col justify-center",
+          currClass.secondaryColor
+        )}
+      >
+        {height > 64 && (
+          <div className="font-medium">{inferRoom(currClass, sched)}</div>
+        )}
+        <div className="font-medium">
+          {formatTime(sched.start)} - {formatTime(sched.end)}
         </div>
-        <div className="text-xs">
-          {height > 64 && (
-            <div className="font-medium">{inferRoom(currClass, sched)}</div>
-          )}
-          <div className="font-medium">
-            {formatTime(sched.start)} - {formatTime(sched.end)}
+        {currClass.professor && (
+          <div className="overflow-hidden text-ellipsis text-nowrap">
+            {`${toProperCase(currClass.professor)}`}
           </div>
-          {currClass.professor && (
-            <div className="overflow-hidden text-ellipsis text-nowrap">
-              {`${toProperCase(currClass.professor)}`}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </Card>
   );

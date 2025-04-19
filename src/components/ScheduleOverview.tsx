@@ -28,7 +28,8 @@ const ScheduleOverview = ({
       <div
         className={cn(
           "p-4 grid gap-3",
-          columns === 1 ? "grid-cols-1" : "grid-cols-2"
+          columns === 1 ? "grid-cols-1" : "grid-cols-2",
+          "animate-in fade-in-0 slide-in-from-bottom-4 duration-1000"
         )}
         {...props}
       >

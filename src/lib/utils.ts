@@ -106,32 +106,32 @@ export function getCardColors(color: ColorsEnum) {
   };
 
   const cardShadows = {
-    ROSE: "bg-rose-300 shadow-rose-300/50 dark:bg-rose-800 dark:shadow-rose-700/50",
-    PINK: "bg-pink-300 shadow-pink-300/50 dark:bg-pink-800 dark:shadow-pink-700/50",
+    ROSE: "bg-rose-300 shadow-rose-300/50 dark:bg-rose-800 dark:shadow-rose-700/40",
+    PINK: "bg-pink-300 shadow-pink-300/50 dark:bg-pink-800 dark:shadow-pink-700/40",
     FUCHSIA:
-      "bg-fuchsia-300 shadow-fuchsia-300/50 dark:bg-fuchsia-800 dark:shadow-fuchsia-700/50",
+      "bg-fuchsia-300 shadow-fuchsia-300/50 dark:bg-fuchsia-800 dark:shadow-fuchsia-700/40",
     PURPLE:
-      "bg-purple-300 shadow-purple-300/50 dark:bg-purple-800 dark:shadow-purple-700/50",
+      "bg-purple-300 shadow-purple-300/50 dark:bg-purple-800 dark:shadow-purple-700/40",
     VIOLET:
-      "bg-violet-300 shadow-violet-300/50 dark:bg-violet-800 dark:shadow-violet-700/50",
+      "bg-violet-300 shadow-violet-300/50 dark:bg-violet-800 dark:shadow-violet-700/40",
     INDIGO:
-      "bg-indigo-300 shadow-indigo-300/50 dark:bg-indigo-800 dark:shadow-indigo-700/50",
-    BLUE: "bg-blue-300 shadow-blue-300/50 dark:bg-blue-800 dark:shadow-blue-700/50",
-    SKY: "bg-sky-300 shadow-sky-300/50 dark:bg-sky-800 dark:shadow-sky-700/50",
-    CYAN: "bg-cyan-300 shadow-cyan-300/50 dark:bg-cyan-800 dark:shadow-cyan-700/50",
-    TEAL: "bg-teal-300 shadow-teal-300/50 dark:bg-teal-800 dark:shadow-teal-700/50",
+      "bg-indigo-300 shadow-indigo-300/50 dark:bg-indigo-800 dark:shadow-indigo-700/40",
+    BLUE: "bg-blue-300 shadow-blue-300/50 dark:bg-blue-800 dark:shadow-blue-700/40",
+    SKY: "bg-sky-300 shadow-sky-300/50 dark:bg-sky-800 dark:shadow-sky-700/40",
+    CYAN: "bg-cyan-300 shadow-cyan-300/50 dark:bg-cyan-800 dark:shadow-cyan-700/40",
+    TEAL: "bg-teal-300 shadow-teal-300/50 dark:bg-teal-800 dark:shadow-teal-700/40",
     EMERALD:
-      "bg-emerald-300 shadow-emerald-300/50 dark:bg-emerald-800 dark:shadow-emerald-700/50",
+      "bg-emerald-300 shadow-emerald-300/50 dark:bg-emerald-800 dark:shadow-emerald-700/40",
     GREEN:
-      "bg-green-300 shadow-green-300/50 dark:bg-green-800 dark:shadow-green-700/50",
-    LIME: "bg-lime-300 shadow-lime-300/50 dark:bg-lime-800 dark:shadow-lime-700/50",
+      "bg-green-300 shadow-green-300/50 dark:bg-green-800 dark:shadow-green-700/40",
+    LIME: "bg-lime-300 shadow-lime-300/50 dark:bg-lime-800 dark:shadow-lime-700/40",
     YELLOW:
-      "bg-yellow-300 shadow-yellow-300/50 dark:bg-yellow-800 dark:shadow-yellow-700/50",
+      "bg-yellow-300 shadow-yellow-300/50 dark:bg-yellow-800 dark:shadow-yellow-700/40",
     AMBER:
-      "bg-amber-300 shadow-amber-300/50 dark:bg-amber-800 dark:shadow-amber-700/50",
+      "bg-amber-300 shadow-amber-300/50 dark:bg-amber-800 dark:shadow-amber-700/40",
     ORANGE:
-      "bg-orange-300 shadow-orange-300/50 dark:bg-orange-800 dark:shadow-orange-700/50",
-    RED: "bg-red-300 shadow-red-300/50 dark:bg-red-800 dark:shadow-red-700/50",
+      "bg-orange-300 shadow-orange-300/50 dark:bg-orange-800 dark:shadow-orange-700/40",
+    RED: "bg-red-300 shadow-red-300/50 dark:bg-red-800 dark:shadow-red-700/40",
   };
 
   const cardColorsTransparent = {
