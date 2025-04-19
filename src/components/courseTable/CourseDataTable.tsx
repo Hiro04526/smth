@@ -21,9 +21,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGlobalStore } from "@/stores/useGlobalStore";
+import { Eraser } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import AddCustomClass from "../AddCustomClass";
+import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { FilterBar } from "./FilterBar";
@@ -129,6 +131,15 @@ export function CourseDataTable<TData, TValue>({
         />
         <div className="inline-flex gap-2">
           {isCustom && <AddCustomClass courseCode={activeCourse} />}
+          {!!table.getSelectedRowModel().rows.length && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => table.toggleAllRowsSelected(false)}
+            >
+              <Eraser className="size-4 mr-2" /> Deselect All
+            </Button>
+          )}
           <ViewColumnsDropdown table={table} />
         </div>
       </div>
