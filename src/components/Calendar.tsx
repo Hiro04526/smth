@@ -56,12 +56,12 @@ const Calendar = ({
   );
 
   const headerStyle =
-    "relative h-full w-full text-center py-2 px-2 mx-2 font-bold text-muted-foreground";
+    "relative h-full w-full text-center py-2 px-2 mx-2 font-bold ";
 
   return (
-    <div className="flex flex-shrink min-h-0 w-full flex-col border rounded-lg bg-background">
+    <div className="flex flex-shrink min-h-0 w-full flex-col border rounded-lg bg-background overflow-clip">
       {/* Day Indicator Row */}
-      <div className="flex w-full flex-row border-b dark:border-muted py-1">
+      <div className="flex w-full flex-row border-b bg-primary/90 text-primary-foreground dark:text-muted-foreground dark:bg-background dark:border-muted py-1">
         <div className="w-[50px] shrink-0" />
         <div className="w-2 shrink-0" />
 
@@ -113,7 +113,8 @@ const Calendar = ({
               return (
                 <div
                   className={`relative flex h-full w-full flex-col border-l border-muted/50 pr-2 ${
-                    ["M", "W", "F"].includes(day) && "bg-muted/10"
+                    ["M", "W", "F"].includes(day) &&
+                    "dark:bg-muted/10 bg-muted/30"
                   }`}
                   key={day}
                 >
