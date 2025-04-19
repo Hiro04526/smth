@@ -183,7 +183,6 @@ function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
         new Date(`${sched.date}, ${nextSemesterYear}`),
         "yyyy-MM-dd"
       );
-      console.log("Formatted Date:", formattedDate);
 
       return {
         ...eventInfo,
@@ -283,16 +282,12 @@ export async function createBatchEvents(
     auth: process.env.GOOGLE_API_KEY,
   });
 
-  console.log("Creating events for calendar:", calendarId);
-
   const promises: GaxiosPromise<calendar_v3.Schema$Event>[] = [];
 
   try {
     // Process each class and create its events
     for (const classData of classes) {
-      console.log("Processing class:", classData.course);
       const events = convertClassToEvent(classData);
-      console.log("Processed Events:", events.length);
 
       // Create each event for the class
       for (const event of events) {
@@ -309,8 +304,7 @@ export async function createBatchEvents(
       }
     }
 
-    console.log("Creating events:", promises.length);
-    const results = await Promise.all(promises);
+    await Promise.all(promises);
 
     return { data: "Success!", error: undefined };
   } catch (error: unknown) {
