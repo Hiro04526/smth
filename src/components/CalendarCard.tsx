@@ -48,6 +48,8 @@ const CalendarCard = ({
     removeColor(currClass.course);
   };
 
+  const isSmall = height <= cellSizePx;
+
   return (
     <Card
       onMouseEnter={onMouseEnter}
@@ -70,7 +72,7 @@ const CalendarCard = ({
           "text-xs font-bold tracking-tight px-3 py-2",
           isMobile && "text-lg",
           isManual && "flex flex-row",
-          height <= cellSizePx && "py-0.5"
+          isSmall && "py-1"
         )}
       >
         {isMobile && (
@@ -93,8 +95,9 @@ const CalendarCard = ({
       </div>
       <div
         className={cn(
-          "text-xs bg-background px-3 h-full rounded-t-md py-2 flex flex-col justify-center",
-          currClass.secondaryColor
+          "text-xs bg-background px-3 h-full rounded-t-md py-2 flex flex-col justify-center overflow-hidden",
+          currClass.secondaryColor,
+          isSmall && !isMobile && "py-0.5 text-xs"
         )}
       >
         {height > cellSizePx && (

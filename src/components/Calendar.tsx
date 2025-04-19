@@ -8,10 +8,10 @@ import CalendarCard from "./CalendarCard";
 import ManualScheduleCard from "./ManualScheduleCard";
 import { ScrollArea } from "./ui/scroll-area";
 
-export const CELL_SIZE_PX = 64;
-export const CELL_HEIGHT = "h-16";
+export const CELL_SIZE_PX = 68;
+export const CELL_HEIGHT = "h-[4.25rem]";
 export const TOP_OFFSET = 16; // Based on 16px (1rem) padding in the calendar
-export const LEFT_OFFSET = 66; // Based on 50px + 1rem (16px)
+export const LEFT_OFFSET = 66; // Based on 50px + 4rem (16px)
 
 interface CalendarProps {
   classes: Class[];
