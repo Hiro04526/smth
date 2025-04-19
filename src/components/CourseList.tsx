@@ -18,7 +18,7 @@ import {
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
-import Dropdown, { DropdownItems } from "./common/Dropdown";
+import Dropdown, { DropdownItem } from "./common/Dropdown";
 import ConfirmDialog from "./ConfirmDialog";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -179,7 +179,7 @@ export default function CourseList({
     }
   };
 
-  const courseSettingsItems: DropdownItems[] = [
+  const courseSettingsItems: DropdownItem[] = [
     {
       name: "Update Courses",
       onClick: handleUpdate,

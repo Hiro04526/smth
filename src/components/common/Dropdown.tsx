@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-export interface DropdownItems {
+export interface DropdownItem {
   Icon?: LucideIcon;
   name: string;
   onClick?: () => void;
@@ -20,7 +20,7 @@ export interface DropdownItems {
 interface DropdownProps extends DropdownMenuContentProps {
   title?: string;
   children?: ReactNode;
-  items: DropdownItems[];
+  items: DropdownItem[];
 }
 
 export default function Dropdown({

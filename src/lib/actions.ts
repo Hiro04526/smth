@@ -1,6 +1,22 @@
 "use server";
 
-import { classSchema, Course } from "./definitions";
+import { calendar_v3, google } from "googleapis";
+import { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport";
+import { Class, classSchema, Course, Schedule } from "./definitions";
+import { DaysEnum } from "./enums";
+import {
+  addDaysToDate,
+  convertToIcalDay,
+  formatTime,
+  inferRoom,
+  toProperCase,
+} from "./utils";
+
+const SEMESTER_WEEKS = 13;
+const nextSemesterRaw = process.env.NEXT_PUBLIC_NEXT_SEMESTER_DATE;
+const nextSemesterDate = nextSemesterRaw
+  ? new Date(nextSemesterRaw)
+  : new Date();
 
 export async function fetchCourse(courseCode: string, id: string) {
   const res = await fetch(
@@ -51,4 +67,250 @@ export async function fetchMultipleCourses(courses: Course[], id: string) {
   });
 
   return { data: updatedCourses };
+}
+
+export async function getCalendars(accessToken: string) {
+  const calendarsRaw = await google.calendar("v3").calendarList.list({
+    auth: process.env.GOOGLE_API_KEY,
+    oauth_token: accessToken,
+  });
+
+  const calendars =
+    calendarsRaw.data.items
+      ?.filter((item) => item.accessRole === "owner" && item.id && item.summary)
+      .map((item) => {
+        return {
+          id: item.id as string,
+          summary: item.summary as string,
+        };
+      }) ?? [];
+
+  return calendars;
+}
+
+function convertClassToEvent(classData: Class): calendar_v3.Schema$Event[] {
+  const events: calendar_v3.Schema$Event[] = [];
+
+  const isInvalid = classData.schedules.every((schedule) => {
+    const isUnknownDay = schedule.day === "U";
+    const hasNoDate = !schedule.date;
+    const hasValidTime = schedule.start > 0 && schedule.end > 0;
+    return isUnknownDay && hasNoDate && hasValidTime;
+  });
+
+  if (isInvalid) return events;
+
+  // Group schedules with the same time on different days
+  const groupedSchedules: Record<string, Schedule[]> = {};
+
+  classData.schedules.forEach((schedule) => {
+    const key = `${schedule.start}-${schedule.end}`;
+    if (!groupedSchedules[key]) {
+      groupedSchedules[key] = [];
+    }
+    groupedSchedules[key].push(schedule);
+  });
+
+  const hasDate = classData.schedules.some((schedule) => schedule.date);
+  const hasUnknownDay = classData.schedules.some(
+    (schedule) => schedule.day === "U"
+  );
+
+  // Early return in case there exists a schedule with no date and unknown day
+  if (!hasDate && hasUnknownDay) {
+    return events;
+  }
+
+  const createSameTimeEvent = (
+    schedules: Schedule[]
+  ): calendar_v3.Schema$Event => {
+    const firstSchedule = schedules[0];
+    const startOffset = formatTime(firstSchedule.start);
+    const endOffset = formatTime(firstSchedule.end);
+
+    const baseStartDate = new Date(`${nextSemesterRaw} ${startOffset}`);
+    const baseEndDate = new Date(`${nextSemesterRaw} ${endOffset}`);
+
+    const startDate = addDaysToDate(
+      baseStartDate,
+      firstSchedule.day as DaysEnum
+    );
+    const endDate = addDaysToDate(baseEndDate, firstSchedule.day as DaysEnum);
+
+    const byDays = schedules
+      .map((sched) => convertToIcalDay(sched.day as DaysEnum))
+      .filter(Boolean)
+      .join(",");
+
+    return {
+      summary: `[${classData.section}] ${classData.course}`,
+      description: classData.professor
+        ? `Professor: ${toProperCase(classData.professor)}`
+        : "",
+      location: inferRoom(classData, firstSchedule),
+      start: {
+        dateTime: startDate.toISOString(),
+        timeZone: "Asia/Manila",
+      },
+      end: {
+        dateTime: endDate.toISOString(),
+        timeZone: "Asia/Manila",
+      },
+      recurrence: [
+        `RRULE:FREQ=WEEKLY;COUNT=${
+          SEMESTER_WEEKS * schedules.length
+        };BYDAY=${byDays}`,
+      ],
+    };
+  };
+
+  const createCalendarEvent = (sched: Schedule): calendar_v3.Schema$Event => {
+    const eventInfo = {
+      summary: `[${classData.section}] ${classData.course}`,
+      description: classData.professor
+        ? `Professor: ${toProperCase(classData.professor)}`
+        : "",
+      location: inferRoom(classData, sched),
+    };
+
+    // Handle all-day events
+    if (sched.date && sched.start === sched.end && sched.date) {
+      return {
+        ...eventInfo,
+        start: {
+          date: `${sched.date}`,
+        },
+        end: {
+          date: `${sched.date}`,
+        },
+      };
+    }
+
+    // Convert time and create dates
+    const startOffset = formatTime(sched.start);
+    const endOffset = formatTime(sched.end);
+
+    let startDate: Date, endDate: Date;
+
+    // Handles one time events that have a time interval
+    if (sched.date) {
+      startDate = new Date(
+        `${sched.date}, ${nextSemesterDate.getFullYear()} ${startOffset}`
+      );
+      endDate = new Date(
+        `${sched.date}, ${nextSemesterDate.getFullYear()} ${endOffset}`
+      );
+    } else {
+      startDate = addDaysToDate(
+        new Date(`${nextSemesterRaw} ${startOffset}`),
+        sched.day as DaysEnum
+      );
+      endDate = addDaysToDate(
+        new Date(`${nextSemesterRaw} ${endOffset}`),
+        sched.day as DaysEnum
+      );
+    }
+
+    const eventConfig: calendar_v3.Schema$Event = {
+      ...eventInfo,
+      start: {
+        dateTime: startDate.toISOString(),
+        timeZone: "Asia/Manila",
+      },
+      end: {
+        dateTime: endDate.toISOString(),
+        timeZone: "Asia/Manila",
+      },
+    };
+
+    // Add repeating config for non-date based events
+    if (!sched.date && sched.day !== "U") {
+      eventConfig.recurrence = [
+        `RRULE:FREQ=WEEKLY;COUNT=${SEMESTER_WEEKS};BYDAY=${convertToIcalDay(
+          sched.day
+        )}`,
+      ];
+    }
+
+    return eventConfig;
+  };
+
+  if (hasDate) {
+    classData.schedules.forEach((sched) =>
+      events.push(createCalendarEvent(sched))
+    );
+  } else if (!hasUnknownDay) {
+    Object.values(groupedSchedules).forEach((group) =>
+      events.push(
+        group.length > 1
+          ? createSameTimeEvent(group)
+          : createCalendarEvent(group[0])
+      )
+    );
+  }
+
+  return events;
+}
+
+export async function createEvent(
+  accessToken: string,
+  calendarId: string,
+  event: calendar_v3.Schema$Event
+) {
+  const calendar = google.calendar({ version: "v3", auth: accessToken });
+
+  const res = await calendar.events.insert({
+    calendarId,
+    requestBody: event,
+  });
+
+  return res.data;
+}
+
+export async function createBatchEvents(
+  accessToken: string,
+  calendarId: string,
+  classes: Class[]
+) {
+  const calendar = google.calendar({
+    version: "v3",
+    auth: process.env.GOOGLE_API_KEY,
+  });
+
+  console.log("Creating events for calendar:", calendarId);
+
+  const promises: GaxiosPromise<calendar_v3.Schema$Event>[] = [];
+
+  try {
+    // Process each class and create its events
+    for (const classData of classes) {
+      console.log("Processing class:", classData.course);
+      const events = convertClassToEvent(classData);
+      console.log("Processed Events:", events.length);
+
+      // Create each event for the class
+      for (const event of events) {
+        try {
+          const res = calendar.events.insert({
+            calendarId,
+            requestBody: event,
+            oauth_token: accessToken,
+          });
+          promises.push(res);
+        } catch (error) {
+          console.error("Error creating event:", error);
+        }
+      }
+    }
+
+    console.log("Creating events:", promises.length);
+    const results = await Promise.all(promises);
+
+    return { data: "Success!", error: undefined };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return { data: undefined, error: error.message };
+    }
+    return { data: undefined, error: "An unknown error occurred." };
+  }
 }

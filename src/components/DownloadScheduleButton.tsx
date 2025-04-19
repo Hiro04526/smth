@@ -5,7 +5,7 @@ import { Download, Monitor, Smartphone } from "lucide-react";
 import { useRef } from "react";
 import { toast } from "sonner";
 import Calendar from "./Calendar";
-import Dropdown, { DropdownItems } from "./common/Dropdown";
+import Dropdown, { DropdownItem } from "./common/Dropdown";
 import SchedaddleLogo from "./SchedaddleLogo";
 import ScheduleOverview from "./ScheduleOverview";
 import { Button, ButtonProps } from "./ui/button";
@@ -67,7 +67,7 @@ export default function DownloadScheduleButton({
     },
   });
 
-  const dropdownItems: DropdownItems[] = [
+  const dropdownItems: DropdownItem[] = [
     {
       name: "Desktop",
       Icon: Monitor,

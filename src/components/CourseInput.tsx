@@ -25,7 +25,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
-import Dropdown, { DropdownItems } from "./common/Dropdown";
+import Dropdown, { DropdownItem } from "./common/Dropdown";
 import IDInput from "./IDInput";
 
 const formSchema = z.object({
@@ -159,7 +159,7 @@ const CourseInput = ({ setActiveCourse }: CourseInputProps) => {
     });
   };
 
-  const dropdownItems: DropdownItems[] = [
+  const dropdownItems: DropdownItem[] = [
     {
       name: "Add from MLS",
       Icon: Import,
