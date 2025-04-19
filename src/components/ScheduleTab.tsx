@@ -57,24 +57,18 @@ const ScheduleTab = () => {
       return;
     }
 
-    const { schedules: newSchedules, colors: newColors } =
-      createGroupedSchedules({
-        groups,
-        courses: selectedData,
-        filter,
-      });
+    const {
+      schedules: newSchedules,
+      colors: newColors,
+      error,
+    } = createGroupedSchedules({
+      groups,
+      courses: selectedData,
+      filter,
+    });
 
-    if (newSchedules.length === 0) {
-      toast.error("Uh oh! No schedules could be generated.", {
-        description:
-          "Try selecting more classes that don't conflict with each other.",
-      });
-      return;
-    } else if (newSchedules.length >= 2048) {
-      toast.error("Uh oh! Too many classes will be generated.", {
-        description:
-          "Adjust your filters and select less classes, then try generating again.",
-      });
+    if (error) {
+      toast.error(...error);
       return;
     }
 
@@ -86,13 +80,10 @@ const ScheduleTab = () => {
       setColors(newColors);
     } else {
       // Remove any colors that are not in the new colors and keep the old ones
-      const refinedColors = Object.keys(newColors).reduce(
-        (acc, course) => {
-          acc[course] = colors[course] ?? newColors[course];
-          return acc;
-        },
-        {} as typeof colors
-      );
+      const refinedColors = Object.keys(newColors).reduce((acc, course) => {
+        acc[course] = colors[course] ?? newColors[course];
+        return acc;
+      }, {} as typeof colors);
 
       setColors(refinedColors);
     }

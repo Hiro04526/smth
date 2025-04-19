@@ -9,6 +9,8 @@ import {
 import { ColorsEnum, ColorsEnumSchema, DaysEnum } from "./enums";
 import { militaryTimeToMinutes } from "./utils";
 
+export const MAX_SCHEDULES = 2048; // Maximum number of schedules to generate
+
 export function getRandomColors(courses: string[]): Record<string, ColorsEnum> {
   const availableColors = [...ColorsEnumSchema.options];
   const courseColors: Record<string, ColorsEnum> = {};
@@ -176,6 +178,7 @@ export function createGroupedSchedules({
   const ungroupedCourses = courses.filter(
     (course) => !course.group || course.group === "Ungrouped"
   );
+  let overflow = false;
 
   // Generates possible combinations per group
   // Example: [SUBJ1, SUBJ2, SUBJ3] with pick 2 and [SUBJ4, SUBJ5] with pick 1
@@ -209,7 +212,11 @@ export function createGroupedSchedules({
       (course) => course.classes
     );
     const [schedules, colors] = createSchedules(combinedCourses, filter);
-
+    const newLength = generatedSchedules.length + schedules.length;
+    if (newLength > MAX_SCHEDULES) {
+      overflow = true;
+      break;
+    }
     if (schedules.length && schedules[0].classes.length > 0) {
       generatedSchedules.push(...schedules);
       generatedColors = { ...generatedColors, ...colors };
@@ -221,9 +228,30 @@ export function createGroupedSchedules({
     name: `Schedule ${i + 1}`,
   }));
 
+  let error: [error: string, options: { description: string }] | undefined;
+
+  if (overflow) {
+    error = [
+      "Uh oh! You hit the max schedules limit.",
+      {
+        description:
+          "Try selecting fewer classes, making more groups, or adjusting the filters.",
+      },
+    ];
+  } else if (formattedSchedules.length === 0) {
+    error = [
+      "Uh oh! No schedules could be generated.",
+      {
+        description:
+          "Try selecting more classes that don't conflict with each other.",
+      },
+    ];
+  }
+
   return {
     schedules: formattedSchedules,
     colors: generatedColors,
+    error,
   };
 }
 
