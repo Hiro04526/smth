@@ -107,7 +107,12 @@ const CalendarCard = ({
           {formatTime(sched.start)} - {formatTime(sched.end)}
         </div>
         {currClass.professor && (
-          <div className="overflow-hidden text-ellipsis text-nowrap">
+          <div
+            className={cn(
+              "overflow-hidden text-ellipsis text-nowrap",
+              !isSmall && isMobile && "line-clamp-2 text-wrap"
+            )}
+          >
             {`${toProperCase(currClass.professor)}`}
           </div>
         )}

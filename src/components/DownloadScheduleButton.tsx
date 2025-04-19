@@ -105,10 +105,10 @@ export default function DownloadScheduleButton({
             columns={2}
             className="w-[35%] bg-background/30 dark:bg-background/40 border-none backdrop-blur-lg shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
           />
-          <div className="p-2 bg-accent rounded-lg flex justify-center pl-3 max-w-[40px] absolute right-16 bottom-16">
+          <div className="p-2 bg-accent rounded-lg flex justify-center pl-3 absolute right-12 bottom-12">
             <SchedaddleLogo
-              width={24}
-              height={24}
+              width={32}
+              height={32}
               className="text-accent-foreground"
             />
           </div>

@@ -68,7 +68,7 @@ const Calendar = ({
       )}
     >
       {/* Day Indicator Row */}
-      <div className="flex w-full flex-row border-b bg-primary/90 text-primary-foreground dark:text-muted-foreground dark:bg-background dark:border-muted py-1">
+      <div className="flex w-full flex-row border-b bg-primary/90 text-primary-foreground dark:text-secondary-foreground dark:bg-secondary/40 dark:border-muted py-1">
         <div className="w-[50px] shrink-0" />
         <div className="w-2 shrink-0" />
 
