@@ -25,13 +25,31 @@ export const nextSemesterRaw =
  * @param classData - The class object containing schedule information to evaluate.
  * @returns `true` if the class is convertible, otherwise `false`.
  */
-function isClassValidEvent(classData: Class): boolean {
+function isClassInvalidEvent(classData: Class): boolean {
   return classData.schedules.every((schedule) => {
     const isUnknownDay = schedule.day === "U";
     const hasNoDate = !schedule.date;
-    const hasValidTime = schedule.start > 0 && schedule.end > 0;
-    return isUnknownDay && hasNoDate && hasValidTime;
+
+    return isUnknownDay && hasNoDate;
   });
+}
+
+/**
+ * Parses a date string with a specific offset and returns a Date object.
+ *
+ * @param offset - A string representing the time offset to be parsed in the format "h:mm a".
+ *                 This is combined with the `nextSemesterRaw` date string to form the full date.
+ *                 Example: "10:00 AM" or "2:30 PM".
+ * @returns A `Date` object representing the parsed date and time.
+ *
+ * @throws Will throw an error if the input string does not match the expected format.
+ */
+function parseDate(offset: string, baseDateString?: string) {
+  return parse(
+    `${baseDateString ?? nextSemesterRaw} ${offset}`,
+    "MMM d, yyyy h:mm a",
+    new Date()
+  );
 }
 
 function createSameTimeEvent(
@@ -42,9 +60,6 @@ function createSameTimeEvent(
   const firstSchedule = schedules[0];
   const startOffset = formatTime(firstSchedule.start);
   const endOffset = formatTime(firstSchedule.end);
-
-  const parseDate = (offset: string) =>
-    parse(`${nextSemesterRaw} ${offset}`, "MMM d, yyyy h:mm a", new Date());
 
   const baseStartDate = parseDate(startOffset);
   const baseEndDate = parseDate(endOffset);
@@ -119,25 +134,22 @@ function createCalendarEvent(
     };
   }
 
+  const baseDateString = sched.date
+    ? `${sched.date}, ${semYear}`
+    : nextSemesterRaw;
+
   // Convert time and create dates
   const startOffset = formatTime(sched.start);
   const endOffset = formatTime(sched.end);
 
   let startDate: Date, endDate: Date;
+  startDate = parseDate(startOffset, baseDateString);
+  endDate = parseDate(endOffset, baseDateString);
 
-  // Handles one time events that have a time interval
-  if (sched.date) {
-    startDate = new Date(`${sched.date}, ${semYear} ${startOffset}`);
-    endDate = new Date(`${sched.date}, ${semYear} ${endOffset}`);
-  } else {
-    startDate = addDaysToDate(
-      new Date(`${nextSemesterRaw} ${startOffset}`),
-      sched.day as DaysEnum
-    );
-    endDate = addDaysToDate(
-      new Date(`${nextSemesterRaw} ${endOffset}`),
-      sched.day as DaysEnum
-    );
+  // Add day offset if no date is provided
+  if (!sched.date) {
+    startDate = addDaysToDate(startDate, sched.day as DaysEnum);
+    endDate = addDaysToDate(endDate, sched.day as DaysEnum);
   }
 
   const eventConfig: calendar_v3.Schema$Event = {
@@ -191,7 +203,7 @@ export function convertClassToEvent(
 ): calendar_v3.Schema$Event[] {
   const events: calendar_v3.Schema$Event[] = [];
 
-  if (!isClassValidEvent(classData)) return events;
+  if (isClassInvalidEvent(classData)) return events;
 
   // Group schedules with the same time on different days
   const groupedSchedules = classData.schedules.reduce<
