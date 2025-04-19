@@ -2,7 +2,7 @@ import { Class } from "@/lib/definitions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Ellipsis } from "lucide-react";
 import { useState } from "react";
-import Dropdown, { DropdownItems } from "../common/Dropdown";
+import Dropdown, { DropdownItem } from "../common/Dropdown";
 import ConfirmDialog from "../ConfirmDialog";
 import EditClassDialog from "../EditClassDialog";
 import { Button } from "../ui/button";
@@ -16,7 +16,7 @@ export default function RowSettings({ data }: Props) {
   const [openEdit, setOpenEdit] = useState(false);
   const deleteClass = useGlobalStore((state) => state.deleteClass);
 
-  const items: DropdownItems[] = [
+  const items: DropdownItem[] = [
     {
       name: "Edit",
       onClick: () => setOpenEdit(true),
