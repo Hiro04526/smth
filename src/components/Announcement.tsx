@@ -47,14 +47,9 @@ export default function Announcement() {
         "UI has been improved, along with the design of the Image Downloads. Check it out in Schedules & Saved!",
     },
     {
-      title: "Export to Google Calendar or as .ics file",
+      title: "(Fixed) Export to Google Calendar or as .ics file",
       description:
         "You can now export your schedule to Google Calendar or as an .ics file! Click the 'Export' button near the download button. Thanks for the suggestion @Ed*****oded! (Note: You can only use your DLSU email for this!)",
-    },
-    {
-      title: "A bunch of bug fixes",
-      description:
-        "A lot of bugs have been fixed! Not gonna list them all here, but everything should be working much better now.",
     },
     {
       title: "Call for suggestions",
