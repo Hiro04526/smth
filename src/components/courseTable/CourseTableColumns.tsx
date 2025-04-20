@@ -230,16 +230,13 @@ export const columns: ColumnDef<Class>[] = [
   {
     id: "schedules",
     accessorFn: (row) => {
-      const schedules = row.schedules.reduce<Schedule[]>(
-        (acc, curr) => {
-          if (
-            !acc.some((acc) => acc.start === curr.start && acc.end === curr.end)
-          )
-            acc.push(curr);
-          return acc;
-        },
-        []
-      );
+      const schedules = row.schedules.reduce<Schedule[]>((acc, curr) => {
+        if (
+          !acc.some((acc) => acc.start === curr.start && acc.end === curr.end)
+        )
+          acc.push(curr);
+        return acc;
+      }, []);
 
       return schedules.map(
         (sched) => `${formatTime(sched.start)} - ${formatTime(sched.end)}`
