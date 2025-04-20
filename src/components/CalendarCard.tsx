@@ -11,7 +11,6 @@ import {
 } from "@/lib/utils";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { X } from "lucide-react";
-import { Badge } from "./ui/badge";
 
 interface CalendarCardProps {
   currClass: Class & ReturnType<typeof getCardColors>;
@@ -49,6 +48,7 @@ const CalendarCard = ({
   };
 
   const isSmall = height <= cellSizePx;
+  const room = inferRoom(currClass, sched);
 
   return (
     <Card
@@ -75,11 +75,6 @@ const CalendarCard = ({
           isSmall && "py-1"
         )}
       >
-        {isMobile && (
-          <Badge className={currClass.secondaryColor}>
-            {currClass.section}
-          </Badge>
-        )}
         <div>{`${isMobile ? "" : `[${currClass.section}]`} ${
           currClass.course
         }`}</div>
@@ -95,13 +90,15 @@ const CalendarCard = ({
       </div>
       <div
         className={cn(
-          "text-xs bg-background px-3 h-full rounded-t-md py-2 flex flex-col justify-center overflow-hidden",
+          "text-xs bg-background px-2 h-full rounded-t-md py-2 flex flex-col justify-center overflow-hidden",
           currClass.secondaryColor,
           isSmall && !isMobile && "py-0.5 text-xs"
         )}
       >
         {height > cellSizePx && (
-          <div className="font-medium">{inferRoom(currClass, sched)}</div>
+          <div className="font-medium">
+            {isMobile && currClass.section} {room === "TBA" ? "" : room}
+          </div>
         )}
         <div className="font-medium">
           {formatTime(sched.start)} - {formatTime(sched.end)}
