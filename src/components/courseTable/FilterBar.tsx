@@ -5,6 +5,7 @@ import { Table } from "@tanstack/react-table";
 import {
   Calendar,
   CheckCircle,
+  Clock,
   FilePen,
   FilterX,
   Lock,
@@ -37,6 +38,7 @@ export function FilterBar<TData>({ table }: FilterBarProps<TData>) {
       icon: TableOfContents,
     },
     { type: "facet", column: "Professor", title: "Professor", icon: User },
+    { type: "facet", column: "schedules", title: "Schedules", icon: Clock },
     { type: "facet", column: "Days", title: "Days", icon: Calendar },
     { type: "facet", column: "modality", title: "Modality", icon: Monitor },
     { type: "facet", column: "restriction", title: "Restriction", icon: Lock },

@@ -35,6 +35,8 @@ export function FacetedFilter<TData, TValue>({
   const options = facets ? [...facets.keys()] : [];
   const selectedValues = new Set(column?.getFilterValue() as string[]);
 
+  const hasLongText = options.some((option) => option.length > 10);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -55,10 +57,13 @@ export function FacetedFilter<TData, TValue>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
+      <PopoverContent
+        className={cn("w-max p-0", !hasLongText && "w-[200px]")}
+        align="start"
+      >
         <Command>
           <CommandInput placeholder={title} />
-          <CommandList>
+          <CommandList className="">
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
@@ -91,7 +96,7 @@ export function FacetedFilter<TData, TValue>({
                     {option.icon && (
                       <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <span>{option}</span>
+                    <span className="mr-2">{option}</span>
                     {facets?.get(option) && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
                         {facets.get(option)}

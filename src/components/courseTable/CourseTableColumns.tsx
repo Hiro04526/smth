@@ -227,4 +227,21 @@ export const columns: ColumnDef<Class>[] = [
       return <RowSettings data={row.original} />;
     },
   },
+  {
+    id: "schedules",
+    accessorFn: (row) => {
+      return row.schedules.map(
+        (sched) => `${formatTime(sched.start)} - ${formatTime(sched.end)}`
+      );
+    },
+    filterFn: (row, columnId, filterValue) => {
+      const formattedSchedules = row.original.schedules.map(
+        (sched) => `${formatTime(sched.start)} - ${formatTime(sched.end)}`
+      );
+
+      return filterValue.some((val: string) =>
+        formattedSchedules.includes(val)
+      );
+    },
+  },
 ];

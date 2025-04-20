@@ -5,7 +5,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
-  getFacetedUniqueValues,
   getFilteredRowModel,
   getSortedRowModel,
   SortingState,
@@ -20,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getFacetedUniqueValues } from "@/lib/table-functions";
 import { useGlobalStore } from "@/stores/useGlobalStore";
 import { Eraser } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -84,7 +84,10 @@ export function CourseDataTable<TData, TValue>({
     restriction: false,
     status: false,
     sectionType: false,
+    schedules: false,
   };
+
+  const getCustomFacetedUniqueValues = (columnId: string) => {};
 
   const table = useReactTable({
     data,
