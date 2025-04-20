@@ -146,7 +146,7 @@ export default function OverviewCard({
           if (!item.shouldRender) return null;
           return (
             <div key={index} className="inline-flex items-center gap-2 text-sm">
-              <item.icon className="size-4 mr-2" strokeWidth={3} />
+              <item.icon className="size-4 mr-2 shrink-0" strokeWidth={3} />
               {item.content}
             </div>
           );
