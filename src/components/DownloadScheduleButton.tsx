@@ -1,9 +1,19 @@
+/* eslint-disable @next/next/no-img-element */
 import { Class } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
 import { cn } from "@/lib/utils";
-import { useToJpeg } from "@hugocxl/react-to-image";
-import { Download, Monitor, Smartphone, Tablet } from "lucide-react";
-import { useState } from "react";
+import { useToJpeg, useToPng } from "@hugocxl/react-to-image";
+import {
+  Download,
+  Eye,
+  EyeClosed,
+  Loader2,
+  Monitor,
+  Smartphone,
+  Tablet,
+  Upload,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Calendar from "./Calendar";
 import SchedaddleLogo from "./SchedaddleLogo";
@@ -17,7 +27,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import {
   Select,
@@ -89,10 +98,19 @@ function DownloadDialog({
   const [aspectRatio, setAspectRatio] = useState<[number, number]>([
     2560, 1440,
   ]);
+  const [imgName, setImgName] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const isMobile = aspectRatio[0] <= aspectRatio[1];
+  const [showPreview, setShowPreview] = useState(false);
 
-  const [{ isLoading }, convert, ref] = useToJpeg<HTMLDivElement>({
+  const [{ isLoading: isPreviewLoading, data }, convertPreview] =
+    useToJpeg<HTMLDivElement>({
+      selector: "#wallpaper",
+      quality: 0.3,
+      pixelRatio: 0.5,
+    });
+
+  const [{ isLoading }, convert, ref] = useToPng<HTMLDivElement>({
     quality: 1,
     pixelRatio: isMobile ? 3 : 2,
     onLoading: () => {
@@ -100,9 +118,8 @@ function DownloadDialog({
     },
     onSuccess: (data) => {
       const link = document.createElement("a");
-      const isMobile = aspectRatio[0] <= aspectRatio[1];
 
-      link.download = isMobile ? "Schedaddle-Mobile.png" : "Schedaddle.png";
+      link.download = "Schedaddle.png";
       link.href = data;
       link.click();
       link.remove();
@@ -111,6 +128,8 @@ function DownloadDialog({
       toast.success("Downloaded Image successfully!");
       setImageUrl(null);
       setOpen(false);
+      setImgName(null);
+      setShowPreview(false);
       setAspectRatio([2560, 1440]);
     },
   });
@@ -149,15 +168,37 @@ function DownloadDialog({
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (file && file.type.startsWith("image/")) {
       const tempUrl = URL.createObjectURL(file);
       setImageUrl(tempUrl);
+      setImgName(file.name);
+    } else {
+      toast.error("Please select a valid image file.");
+    }
+  };
+
+  useEffect(() => {
+    if (showPreview) {
+      convertPreview();
+    }
+    // Disabled because the function re-renders everytime it's run
+    // useCallback did not work here, so this is the next best thing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showPreview, aspectRatio, imageUrl]);
+
+  const handleOpenChange = (open: boolean) => {
+    setOpen(open);
+    if (!open) {
+      setShowPreview(false);
+      setImgName(null);
+      setImageUrl(null);
+      setAspectRatio([2560, 1440]);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Download Schedule</DialogTitle>
           <DialogDescription>
@@ -165,12 +206,11 @@ function DownloadDialog({
             image to use as a background.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid grid-cols-[fit-content(30%)_auto] gap-2 items-center">
+        <div className="grid grid-cols-[fit-content(30%)_auto] gap-2 items-center min-w-0">
           <Label htmlFor="aspectRatio" className="text-nowrap">
             Aspect Ratio
           </Label>
           <Select
-            name="aspectRatio"
             onValueChange={(value) => {
               const selectedItem = [
                 ...dropdownItems.landscape,
@@ -182,7 +222,7 @@ function DownloadDialog({
             }}
             defaultValue="Desktop (16:9)"
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full" id="aspectRatio">
               <div className="ml-2">
                 <SelectValue />
               </div>
@@ -225,9 +265,55 @@ function DownloadDialog({
           <Label htmlFor="fileUpload" className="text-nowrap">
             Custom BG
           </Label>
-          <Input name="fileUpload" type="file" onChange={handleImageUpload} />
+          <Button
+            onClick={() => document.getElementById("fileUpload")?.click()}
+            variant="outline"
+            className="justify-start"
+          >
+            <Upload className="size-4 mr-2" />
+            <span
+              className={cn(
+                "text-ellipsis w-[35ch] truncate text-left ",
+                !imgName && "text-muted-foreground"
+              )}
+            >
+              {imgName ?? "Select file..."}
+            </span>
+          </Button>
+          <input
+            id="fileUpload"
+            type="file"
+            onChange={handleImageUpload}
+            accept="image/*"
+            hidden
+          />
+        </div>
+        <div className="flex items-center justify-center max-h-[300px]">
+          {showPreview && (
+            <>
+              {isPreviewLoading ? (
+                <Loader2 className="size-20 my-20 animate-spin text-muted-foreground" />
+              ) : (
+                data && (
+                  <img src={data} alt="Image Preview" className="h-full" />
+                )
+              )}
+            </>
+          )}
         </div>
         <DialogFooter>
+          <Button
+            onClick={() => setShowPreview(!showPreview)}
+            className="inline-flex gap-2"
+            variant="outline"
+          >
+            {showPreview ? (
+              <EyeClosed className="size-4" />
+            ) : (
+              <Eye className="size-4" />
+            )}
+            {showPreview ? "Hide" : "Show"} Preview
+          </Button>
           <Button onClick={convert} disabled={isLoading}>
             <Download className="size-4 mr-2" /> Download
           </Button>
@@ -262,8 +348,6 @@ function Wallpaper({
   ref,
 }: WallpaperProps) {
   const isMobile = aspectRatio[0] <= aspectRatio[1];
-  console.log(isMobile);
-  console.log(aspectRatio);
   const [width, height] = aspectRatio;
   const cellSize = Math.min(height / (17.5 + (isMobile ? 4 : 0)), 0.7 * height);
 
@@ -281,8 +365,8 @@ function Wallpaper({
           backgroundImage: imageUrl
             ? `url(${imageUrl})`
             : isMobile
-              ? `url(/SchedaddleBG.Mobile.png)`
-              : `url(/SchedaddleBG.Desktop.png)`,
+            ? `url(/SchedaddleBG.Mobile.png)`
+            : `url(/SchedaddleBG.Desktop.png)`,
         }}
         id="wallpaper"
         ref={ref}
@@ -300,20 +384,23 @@ function Wallpaper({
             colors={colors}
             columns={2}
             className="w-[45%] bg-background/30 dark:bg-background/40 border-none backdrop-blur-lg shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
+            noAnimations
           />
         )}
-        <div
-          className={cn(
-            "p-2 bg-accent rounded-lg flex justify-center pl-3 absolute w-max",
-            isMobile ? "bottom-6 left-0 right-0 mx-auto" : "right-12 bottom-12"
-          )}
-        >
-          <SchedaddleLogo
-            width={32}
-            height={32}
-            className="text-accent-foreground"
-          />
-        </div>
+        {!isMobile && (
+          <div
+            className={cn(
+              "p-2 bg-accent rounded-lg flex justify-center pl-3 absolute w-max",
+              "right-12 bottom-12"
+            )}
+          >
+            <SchedaddleLogo
+              width={32}
+              height={32}
+              className="text-accent-foreground"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
