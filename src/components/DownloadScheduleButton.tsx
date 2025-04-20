@@ -281,8 +281,8 @@ function Wallpaper({
           backgroundImage: imageUrl
             ? `url(${imageUrl})`
             : isMobile
-            ? `url(/SchedaddleBG.Mobile.png)`
-            : `url(/SchedaddleBG.Desktop.png)`,
+              ? `url(/SchedaddleBG.Mobile.png)`
+              : `url(/SchedaddleBG.Desktop.png)`,
         }}
         id="wallpaper"
         ref={ref}
