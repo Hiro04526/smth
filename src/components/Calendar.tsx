@@ -9,7 +9,6 @@ import ManualScheduleCard from "./ManualScheduleCard";
 import { ScrollArea } from "./ui/scroll-area";
 
 export const CELL_SIZE_PX = 68;
-export const CELL_HEIGHT = "h-[4.25rem]";
 export const TOP_OFFSET = 16; // Based on 16px (1rem) padding in the calendar
 export const LEFT_OFFSET = 66; // Based on 50px + 4rem (16px)
 
@@ -17,7 +16,6 @@ interface CalendarProps {
   classes: Class[];
   colors: Record<string, ColorsEnum>;
   cellSizePx?: number;
-  cellHeight?: string;
   isMobile?: boolean;
   manualProps?: ReturnType<typeof useManualSchedule>;
   className?: string;
@@ -27,7 +25,6 @@ const Calendar = ({
   classes,
   colors,
   cellSizePx = CELL_SIZE_PX,
-  cellHeight = CELL_HEIGHT,
   isMobile = false,
   manualProps,
   className,
@@ -88,8 +85,11 @@ const Calendar = ({
           <div className="ml-2 flex w-[50px] shrink-0 flex-col items-end">
             {[...Array(16)].map((_, index) => (
               <div
-                className={cn(`${cellHeight} shrink-0`)}
+                className="shrink-0"
                 key={"time" + index}
+                style={{
+                  height: cellSizePx,
+                }}
               >
                 {" "}
                 <span className="relative top-[3px] w-7 text-nowrap pr-2 text-right text-xs text-gray-500">
@@ -105,11 +105,10 @@ const Calendar = ({
             <div className="h-full w-0 pt-4">
               {[...Array(16)].map((_, index) => (
                 <div
-                  className={cn(
-                    `${
-                      index === 15 ? "h-0" : cellHeight
-                    } after:absolute after:h-[1px] after:w-full after:dark:bg-muted/50 after:bg-muted after:content-['']`
-                  )}
+                  className="after:absolute after:h-[1px] after:w-full after:dark:bg-muted/50 after:bg-muted after:content-['']"
+                  style={{
+                    height: index === 15 ? "0" : cellSizePx,
+                  }}
                   key={index}
                 />
               ))}
