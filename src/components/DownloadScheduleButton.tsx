@@ -2,7 +2,7 @@ import { Class } from "@/lib/definitions";
 import { ColorsEnum } from "@/lib/enums";
 import { cn } from "@/lib/utils";
 import { useToJpeg } from "@hugocxl/react-to-image";
-import { Apple, Download, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Download, Monitor, Smartphone, Tablet } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import Calendar from "./Calendar";
@@ -130,13 +130,13 @@ function DownloadDialog({
     ],
     portrait: [
       {
-        name: "Mobile (16:9)",
+        name: "Phone (16:9)",
         Icon: Smartphone,
         value: [1080, 1920],
       },
       {
-        name: "iPhone (21:9)",
-        Icon: Apple,
+        name: "Tall Phone (21:9)",
+        Icon: Smartphone,
         value: [1080, 2520],
       },
       {
