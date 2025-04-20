@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface GroupHelpProps {}
 
@@ -17,7 +18,7 @@ const GroupHelp = (props: GroupHelpProps) => {
     {
       title: "Create a Group",
       description:
-        "Click the 'Create Group' button to start creating a new group for your courses.",
+        "Click the 'Create Group' box to start creating a new group for your courses. You can also drag it to the 'Create Group' box",
     },
     {
       title: "Add Courses to Group",
@@ -32,6 +33,11 @@ const GroupHelp = (props: GroupHelpProps) => {
       title: "Generate Schedules",
       description:
         "Once you're done, go to the 'Schedules' tab and click 'Generate Schedules'. This will generate all possible schedules!",
+    },
+    {
+      title: "Why would I use this?",
+      description:
+        "Say you have 5 GEs you can take, but you only want to take 2. You can group them together and set the number of picks to 2. This will generate schedules with any combination of 2 GEs.",
     },
   ];
 
@@ -52,14 +58,18 @@ const GroupHelp = (props: GroupHelpProps) => {
             flexible schedules.
           </DialogDescription>
         </DialogHeader>
-        {steps.map(({ description, title }, i) => (
-          <StepCard
-            key={i}
-            step={i + 1}
-            description={description}
-            title={title}
-          />
-        ))}
+        <ScrollArea className="max-h-[500px] w-full">
+          <div className="flex flex-col gap-4">
+            {steps.map(({ description, title }, i) => (
+              <StepCard
+                key={i}
+                step={i + 1}
+                description={description}
+                title={title}
+              />
+            ))}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
