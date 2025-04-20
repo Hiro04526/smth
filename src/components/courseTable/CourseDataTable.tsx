@@ -87,8 +87,6 @@ export function CourseDataTable<TData, TValue>({
     schedules: false,
   };
 
-  const getCustomFacetedUniqueValues = (columnId: string) => {};
-
   const table = useReactTable({
     data,
     columns,
