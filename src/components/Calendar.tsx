@@ -19,6 +19,7 @@ interface CalendarProps {
   isMobile?: boolean;
   manualProps?: ReturnType<typeof useManualSchedule>;
   className?: string;
+  noAnimations?: boolean;
 }
 
 const Calendar = ({
@@ -28,6 +29,7 @@ const Calendar = ({
   isMobile = false,
   manualProps,
   className,
+  noAnimations,
 }: CalendarProps) => {
   const { dragging, selection, setSelection, popoverRef, ...listeners } =
     manualProps ?? {};
@@ -122,7 +124,8 @@ const Calendar = ({
                     `relative flex h-full w-full flex-col border-l border-muted/50 pr-2`,
                     ["M", "W", "F"].includes(day) &&
                       "dark:bg-muted/10 bg-muted/30",
-                    "animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
+                    !noAnimations &&
+                      "animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
                   )}
                   key={day}
                 >
